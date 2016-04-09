@@ -5,11 +5,12 @@ module.exports = function(boundIssueExtractor, github) {
 
   that.checkPullRequest = (prInfo, cb) => {
     const boundIssue = boundIssueExtractor.extract(prInfo.body);
-    console.log('boundIssue', boundIssue);
+
     if (boundIssue) {
       github.getIssueLabels(boundIssue, (err, labels) => {
         if (err) return cb(err);
 
+        console.log('labels', labels);
         const hasDeployNotes = labels.some(label => label.toLowerCase() === 'deploy notes');
         if (hasDeployNotes) {
           cb(null, {
