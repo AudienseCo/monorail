@@ -9,4 +9,4 @@ deployNotesCheck.subscribe(emitter);
 const githubToken = process.env.GH_TOKEN;
 
 const webApp  = createWebApp(emitter, githubToken);
-webApp.listen(8080);
+webApp.listen(process.env.PORT || 8080);
