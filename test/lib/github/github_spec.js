@@ -2,7 +2,7 @@
 
 require('should');
 const sinon = require('sinon');
-const createGithub = require('../../lib/github');
+const createGithub = require('../../../lib/github/github');
 
 describe('Github API wrapper', () => {
 
