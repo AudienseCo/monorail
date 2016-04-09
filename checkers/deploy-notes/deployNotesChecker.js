@@ -4,7 +4,7 @@ module.exports = function(boundIssueExtractor, github) {
   let that = {};
 
   that.checkPullRequest = (prInfo, cb) => {
-    const boundIssue = boundIssueExtractor.extract(prInfo);
+    const boundIssue = boundIssueExtractor.extract(prInfo.body);
     console.log('boundIssue', boundIssue);
     if (boundIssue) {
       github.getIssueLabels(boundIssue, (err, labels) => {
