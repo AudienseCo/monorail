@@ -13,8 +13,8 @@ module.exports = function(eventEmitter, githubToken) {
   });
 
   app.post('/ghwebook', (req, res) => {
-    const event     = req.headers['X-GitHub-Event'];
-    const signature = req.headers['X-Hub-Signature'];
+    const event     = req.get('X-GitHub-Event');
+    const signature = req.get('X-Hub-Signature');
 
     console.log('>> event', event);
     console.log('>> signature', signature);
