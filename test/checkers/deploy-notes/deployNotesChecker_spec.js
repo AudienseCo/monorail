@@ -31,7 +31,7 @@ describe('Deploy notes checker', () => {
 
     it('should return an error status if the bound issue has the deploy tag added', done => {
       const boundIssueExtractorDummy = createBoundIssueExtractorDummy('1234');
-      const githubDummy = createGithubDummy(['Deploy Notes']);
+      const githubDummy = createGithubDummy([{ name: 'Deploy Notes' }]);
 
       const deployNotes = createDeployNotesChecker(boundIssueExtractorDummy, githubDummy);
       deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {

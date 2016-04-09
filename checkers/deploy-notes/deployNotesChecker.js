@@ -10,8 +10,7 @@ module.exports = function(boundIssueExtractor, github) {
       github.getIssueLabels(boundIssue, (err, labels) => {
         if (err) return cb(err);
 
-        console.log('labels', labels);
-        const hasDeployNotes = labels.some(label => label.toLowerCase() === 'deploy notes');
+        const hasDeployNotes = labels.some(label => label.name.toLowerCase() === 'deploy notes');
         if (hasDeployNotes) {
           cb(null, {
             state: 'failure',
