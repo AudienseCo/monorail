@@ -11,7 +11,7 @@ module.exports = function(emitter, deployNotesService) {
       });
 
       emitter.on('issue_comment', payload => {
-        console.log('issue_comment');
+        console.log('issue_comment', payload);
         if (payload.action === 'created' && payload.issue && payload.issue.pull_request) {
           if (payload.comment.body.toLowerCase() === 'check deploy notes please') {
             const prInfo = payload.issue;
