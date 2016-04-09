@@ -4,6 +4,7 @@
   "description": "A list of checks to pass for each pull request on GitHub",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "mocha $(find test/ -name *_spec.js)"
   },
   "keywords": [
