@@ -4,7 +4,6 @@ module.exports = function createDeployNotesService(deployNotesChecker, github) {
   let that = {};
 
   that.updatePullRequestCommit = (prInfo, cb) => {
-    console.log('updatePullRequestCommit');
     deployNotesChecker.checkPullRequest(prInfo, (err, status) => {
       console.log('checkPullRequest', status);
       github.updateCommitStatus(status, (err, result) => {

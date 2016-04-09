@@ -7,7 +7,7 @@ const createGithub = require('../../../lib/github/github');
 describe('Github API wrapper', () => {
 
   context('Interface', () => {
-    const github = createGithub();
+    const github = createGithub({ authenticate: () => {}}, {});
     it('should have the "getIssueLabels" method', () => {
       github.getIssueLabels.should.be.a.Function();
     });
@@ -21,6 +21,7 @@ describe('Github API wrapper', () => {
 
     function createGithubDummy(result) {
       return {
+        authenticate: () => {},
         issues: {
           getIssueLabels: (issue, cb) => {
             cb(null, result);
