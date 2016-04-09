@@ -6,7 +6,7 @@ const emitter = new EventEmitter();
 const deployNotesCheck = require('./checkers/deploy-notes');
 deployNotesCheck.subscribe(emitter);
 
-const githubToken = process.env.GH_TOKEN;
+const githubSecret = process.env.GH_SECRET;
 
-const webApp  = createWebApp(emitter, githubToken);
+const webApp  = createWebApp(emitter, githubSecret);
 webApp.listen(process.env.PORT || 8080);
