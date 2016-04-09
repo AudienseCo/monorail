@@ -15,9 +15,12 @@ module.exports = function(eventEmitter, githubToken) {
   app.post('/ghwebook', (req, res) => {
     const event     = req.headers['X-GitHub-Event'];
     const signature = req.headers['X-Hub-Signature'];
-    console.log('>> req.body.payload', req.body.payload);
-    console.log('>> req.body', req.body);
+
+    console.log('>> event', event);
+    console.log('>> signature', signature);
+
     verifySignature(signature, req.body.payload, (err, success) => {
+      console.log('>> success', success);
       if (success) {
         eventEmitter.emit(event, req.body.payload);
       }
