@@ -39,8 +39,15 @@ module.exports = function(eventEmitter, secret) {
 
   app.post('/ghwebook', (req, res) => {
     const event = req.get('x-github-event');
-    eventEmitter.emit(event, req.body.payload);
-    res.status(200).send('ok');
+    try {
+      const payload = JSON.parse(req.body.payload);
+      eventEmitter.emit(event, payload);
+      res.status(200).send('ok');
+    }
+    catch (ex) {
+      res.status(500).send(ex);
+    }
+
   });
 
   return app;
