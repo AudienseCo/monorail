@@ -8,6 +8,10 @@ module.exports = function(eventEmitter, githubToken) {
   var app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
 
+  app.get('/', (req, res) => {
+    res.status(200).send('pong!');
+  });
+
   app.post('/ghwebook', (req, res) => {
     const event     = req.headers['X-GitHub-Event'];
     const signature = req.headers['X-Hub-Signature'];
