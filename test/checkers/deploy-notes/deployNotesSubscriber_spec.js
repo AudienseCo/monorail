@@ -17,6 +17,9 @@ describe('Deploy notes subscriber', () => {
 
   function createGithubDummy(result) {
     return {
+      getPullRequest: (issue, cb) => {
+        cb(null, result);
+      },
       updateCommitStatus: (status, cb) => {
         cb(null, result);
       }
@@ -52,7 +55,7 @@ describe('Deploy notes subscriber', () => {
     it('should call the deploy notes checker on new pull requests', done => {
       const emitter = new EventEmitter();
       const deployNotesCheckerDummy = createDeployNotesCheckerDummy({});
-      const githubDummy = createGithubDummy({});
+      const githubDummy = createGithubDummy({ head: { sha: '' } });
       const deployNotesService = createDeployNotesService(deployNotesCheckerDummy, githubDummy);
       const deployNotesSubscriber = createDeployNotesSubscriber(emitter, deployNotesService);
       const spy = sinon.spy(deployNotesService, 'updatePullRequestCommit');
@@ -70,7 +73,7 @@ describe('Deploy notes subscriber', () => {
     it('should not call the deploy notes service on close a pull request', done => {
       const emitter = new EventEmitter();
       const deployNotesCheckerDummy = createDeployNotesCheckerDummy({});
-      const githubDummy = createGithubDummy({});
+      const githubDummy = createGithubDummy({ head: { sha: '' } });
       const deployNotesService = createDeployNotesService(deployNotesCheckerDummy, githubDummy);
       const deployNotesSubscriber = createDeployNotesSubscriber(emitter, deployNotesService);
       const spy = sinon.spy(deployNotesService, 'updatePullRequestCommit');
@@ -89,7 +92,7 @@ describe('Deploy notes subscriber', () => {
     deploy notes please"`, done => {
       const emitter = new EventEmitter();
       const deployNotesCheckerDummy = createDeployNotesCheckerDummy({});
-      const githubDummy = createGithubDummy({});
+      const githubDummy = createGithubDummy({ head: { sha: '' } });
       const deployNotesService = createDeployNotesService(deployNotesCheckerDummy, githubDummy);
       const deployNotesSubscriber = createDeployNotesSubscriber(emitter, deployNotesService);
       const spy = sinon.spy(deployNotesService, 'updatePullRequestCommit');
@@ -112,7 +115,7 @@ describe('Deploy notes subscriber', () => {
     notes please" (case insensitive)`, done => {
       const emitter = new EventEmitter();
       const deployNotesCheckerDummy = createDeployNotesCheckerDummy({});
-      const githubDummy = createGithubDummy({});
+      const githubDummy = createGithubDummy({ head: { sha: '' } });
       const deployNotesService = createDeployNotesService(deployNotesCheckerDummy, githubDummy);
       const deployNotesSubscriber = createDeployNotesSubscriber(emitter, deployNotesService);
       const spy = sinon.spy(deployNotesService, 'updatePullRequestCommit');
