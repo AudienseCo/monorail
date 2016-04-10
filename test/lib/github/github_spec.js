@@ -15,6 +15,10 @@ describe('Github API wrapper', () => {
     it('should have the "updateCommitStatus" method', () => {
       github.updateCommitStatus.should.be.a.Function();
     });
+
+    it('should have the "getPullRequest" method', () => {
+      github.getPullRequest.should.be.a.Function();
+    });
   });
 
   context('Behaviour', () => {
@@ -29,6 +33,11 @@ describe('Github API wrapper', () => {
         },
         statuses: {
           create: (options, cb) => {
+            cb(null, result);
+          }
+        },
+        pullRequests: {
+          get: (number, cb) => {
             cb(null, result);
           }
         }
@@ -77,6 +86,21 @@ describe('Github API wrapper', () => {
           description: 'A dummy description for the state',
           target_url: 'htttp://foo/bar'
 
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('should get a pull request info', done => {
+      const githubApiDummy = createGithubDummy({ number: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.pullRequests, 'get');
+      github.getPullRequest(1234, (err, result) => {
+        result.number.should.be.eql(1234);
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'socialbro',
+          number: 1234
         }).should.be.ok();
         done();
       });
