@@ -29,17 +29,12 @@ describe('Deploy notes checker', () => {
 
   context('Behaviour', () => {
 
-    const headInfo = {
-      head: { sha: '123abc' }
-    };
-
     it('should return an error status if the bound issue has the deploy tag added', done => {
       const boundIssueExtractorDummy = createBoundIssueExtractorDummy('1234');
       const githubDummy = createGithubDummy([{ name: 'Deploy Notes' }]);
 
       const deployNotes = createDeployNotesChecker(boundIssueExtractorDummy, githubDummy);
-      const prInfo = Object.assign({}, headInfo, { body: '#1234' });
-      deployNotes.checkPullRequest(prInfo, (err, status) => {
+      deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Notes');
         status.state.should.be.eql('failure');
         done();
@@ -51,8 +46,7 @@ describe('Deploy notes checker', () => {
       const githubDummy = createGithubDummy([]);
 
       const deployNotes = createDeployNotesChecker(boundIssueExtractorDummy, githubDummy);
-      const prInfo = Object.assign({}, headInfo, { body: '#1234' });
-      deployNotes.checkPullRequest(prInfo, (err, status) => {
+      deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Notes');
         status.state.should.be.eql('success');
         done();
@@ -64,8 +58,7 @@ describe('Deploy notes checker', () => {
       const githubDummy = createGithubDummy([]);
 
       const deployNotes = createDeployNotesChecker(boundIssueExtractorDummy, githubDummy);
-      const prInfo = Object.assign({}, headInfo, { body: '#1234' });
-      deployNotes.checkPullRequest(prInfo, (err, status) => {
+      deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Notes');
         status.state.should.be.eql('success');
         done();
