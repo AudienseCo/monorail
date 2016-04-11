@@ -6,6 +6,9 @@ const emitter = new EventEmitter();
 const deployNotesCheck = require('./checkers/deploy-notes');
 deployNotesCheck.subscribe(emitter);
 
+const qaReviewChecker = require('./checkers/qa-review');
+qaReviewChecker.subscribe(emitter);
+
 const githubSecret = process.env.GH_SECRET;
 
 const webApp  = createWebApp(emitter, githubSecret);
