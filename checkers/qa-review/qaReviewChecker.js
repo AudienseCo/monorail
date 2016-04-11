@@ -7,9 +7,9 @@ module.exports = function(github) {
     github.getIssueLabels(prInfo.number, (err, labels) => {
       if (err) return cb(err);
 
-      const hasDeployNotes = labels.some(label => label.name.toLowerCase() === 'review-done:qa');
+      const hasQAReview = labels.some(label => label.name.toLowerCase() === 'review-done:qa');
 
-      if (hasDeployNotes) {
+      if (!hasQAReview) {
         cb(null, {
           state: 'failure',
           context: 'QA Review'

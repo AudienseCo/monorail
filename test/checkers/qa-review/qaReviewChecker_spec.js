@@ -22,8 +22,8 @@ describe('QA Review checker', () => {
 
   context('Behaviour', () => {
 
-    it('should return an error status if the PR has the "review-done:qa" label added', done => {
-      const githubDummy = createGithubDummy([{ name: 'review-done:qa' }]);
+    it('should return an error status if the PR has not the "review-done:qa" label added', done => {
+      const githubDummy = createGithubDummy([{ name: 'other' }]);
 
       const qaReviewChecker = createQAReviewChecker(githubDummy);
       qaReviewChecker.checkPullRequest({ body: '#1234' }, (err, status) => {
@@ -33,8 +33,8 @@ describe('QA Review checker', () => {
       });
     });
 
-    it('should return a success status if the PR has not "review-done:qa" label added', done => {
-      const githubDummy = createGithubDummy([]);
+    it('should return a success status if the PR has "review-done:qa" label added', done => {
+      const githubDummy = createGithubDummy([{ name: 'review-done:qa' }]);
 
       const qaReviewChecker = createQAReviewChecker(githubDummy);
       qaReviewChecker.checkPullRequest({ body: '#1234' }, (err, status) => {
