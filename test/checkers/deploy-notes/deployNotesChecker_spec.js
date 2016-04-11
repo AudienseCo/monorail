@@ -5,13 +5,6 @@ require('should');
 const createDeployNotesChecker = require('../../../checkers/deploy-notes/deployNotesChecker');
 
 describe('Deploy notes checker', () => {
-  function createBoundIssueExtractorDummy(result) {
-    return {
-      extract: (body) => {
-        return result;
-      }
-    };
-  }
 
   function createGithubDummy(result) {
     return {
@@ -29,11 +22,10 @@ describe('Deploy notes checker', () => {
 
   context('Behaviour', () => {
 
-    it('should return an error status if the bound issue has the deploy tag added', done => {
-      const boundIssueExtractorDummy = createBoundIssueExtractorDummy('1234');
+    it('should return an error status if the PR has the deploy notes tag added', done => {
       const githubDummy = createGithubDummy([{ name: 'Deploy Notes' }]);
 
-      const deployNotes = createDeployNotesChecker(boundIssueExtractorDummy, githubDummy);
+      const deployNotes = createDeployNotesChecker(githubDummy);
       deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Notes');
         status.state.should.be.eql('failure');
@@ -41,23 +33,10 @@ describe('Deploy notes checker', () => {
       });
     });
 
-    it('should return a success status if none issue has the deploy tag added', done => {
-      const boundIssueExtractorDummy = createBoundIssueExtractorDummy('1234');
+    it('should return a success status if the PR has not the deploy notes tag added', done => {
       const githubDummy = createGithubDummy([]);
 
-      const deployNotes = createDeployNotesChecker(boundIssueExtractorDummy, githubDummy);
-      deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
-        status.context.should.be.eql('Deploy Notes');
-        status.state.should.be.eql('success');
-        done();
-      });
-    });
-
-    it('should return a success status if the PR has not any issue bound', done => {
-      const boundIssueExtractorDummy = createBoundIssueExtractorDummy();
-      const githubDummy = createGithubDummy([]);
-
-      const deployNotes = createDeployNotesChecker(boundIssueExtractorDummy, githubDummy);
+      const deployNotes = createDeployNotesChecker(githubDummy);
       deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Notes');
         status.state.should.be.eql('success');
