@@ -9,6 +9,9 @@ deployNotesCheck.subscribe(emitter);
 const qaReviewChecker = require('./checkers/qa-review');
 qaReviewChecker.subscribe(emitter);
 
+const codeReviewChecker = require('./checkers/code-review');
+codeReviewChecker.subscribe(emitter);
+
 const githubSecret = process.env.GH_SECRET;
 
 const webApp  = createWebApp(emitter, githubSecret);
