@@ -2,7 +2,7 @@
 
 require('should');
 
-const createPullRequestDeployInfo = require('../../../services/pullRequestDeployInfo');
+const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
 const createGetPullRequestsDeployInfo = require('../../../core/actions/getPullRequestsDeployInfo');
 
 describe('Get pull requests deploy info action', () => {

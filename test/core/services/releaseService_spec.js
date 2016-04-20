@@ -2,7 +2,7 @@
 
 require('should');
 const sinon  = require('sinon');
-const createReleaseService = require('../../services/releaseService');
+const createReleaseService = require('../../../core/services/releaseService');
 
 describe('Create release service', () => {
   context('Interface', () => {

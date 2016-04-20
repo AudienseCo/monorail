@@ -4,8 +4,8 @@ const sinon  = require('sinon');
 const should = require('should');
 
 const createCreateRelease = require('../../../core/actions/createRelease');
-const createReleaseService = require('../../../services/releaseService');
-const createBoundIssueExtractor = require('../../../services/boundIssueExtractor');
+const createReleaseService = require('../../../core/services/releaseService');
+const createBoundIssueExtractor = require('../../../core/services/boundIssueExtractor');
 
 describe('Create release action', () => {
   const boundIssueExtractor = createBoundIssueExtractor();

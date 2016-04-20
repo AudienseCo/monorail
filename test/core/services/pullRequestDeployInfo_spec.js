@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-const createPullRequestDeployInfo = require('../../services/pullRequestDeployInfo');
+const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
 
 describe('Get pull request deploy info', () => {
   context('Interface', () => {
