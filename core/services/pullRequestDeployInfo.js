@@ -8,6 +8,8 @@ module.exports = function createPullRequestDeployInfo(github) {
     const deployTagRegex = /^deploy-to:(.+)/;
 
     github.getIssueLabels(prId, (err, labels) => {
+      if (err) return cb(err);
+
       cb(null, {
         deployNotes: labels.some(label => {
           return label.name.toLowerCase() === deployNotesTag;
