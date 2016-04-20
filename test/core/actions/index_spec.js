@@ -9,5 +9,10 @@ describe('Actions builder', () => {
     it('should have the "subscriberCheckersToEvents method"', () => {
       actions.subscribeCheckersToEvents.should.be.a.Function();
     });
+
+    it('should have the "getPullRequestsDeployInfo method"', () => {
+      actions.getPullRequestsDeployInfo.should.be.a.Function();
+    });
+
   });
 });

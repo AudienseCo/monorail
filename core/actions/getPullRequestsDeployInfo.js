@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function createGetPullRequestsDeployInfo(prDeployInfo) {
+module.exports = function(prDeployInfo) {
   return function(ids, cb) {
     prDeployInfo.get(ids, cb);
   };

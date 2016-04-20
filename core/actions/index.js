@@ -6,6 +6,9 @@ const checkers = [
   require('../services/checkers/deploy-notes')
 ];
 
+const pullRequestDeployInfo = require('../services/pullRequestDeployInfo');
+
 module.exports = {
-  subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers)
+  subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
+  getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo)
 };
