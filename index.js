@@ -1,5 +1,5 @@
 const EventEmitter        = require('events');
-const createPublicWebApp  = require('./web');
+const createPublicWebApp  = require('./web/public');
 const createPrivateWebApp = require('./web/private');
 const actions             = require('./core/actions');
 
