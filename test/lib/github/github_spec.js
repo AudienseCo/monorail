@@ -150,6 +150,7 @@ describe('Github API wrapper', () => {
       github.createRelease(releaseInfo, (err, result) => {
         result.id.should.be.eql(1234);
         spy.calledWith({
+          owner: 'AudienseCo',
           user: 'AudienseCo',
           repo: 'socialbro',
           tag_name: 'v1.2.3',
