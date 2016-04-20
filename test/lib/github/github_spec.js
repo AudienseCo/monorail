@@ -19,6 +19,14 @@ describe('Github API wrapper', () => {
     it('should have the "getPullRequest" method', () => {
       github.getPullRequest.should.be.a.Function();
     });
+
+    it('should have the "getIssue" method', () => {
+      github.getIssue.should.be.a.Function();
+    });
+
+    it('should have the "createRelease" method', () => {
+      github.createRelease.should.be.a.Function();
+    });
   });
 
   context('Behaviour', () => {
@@ -29,6 +37,9 @@ describe('Github API wrapper', () => {
         issues: {
           getIssueLabels: (issue, cb) => {
             cb(null, result);
+          },
+          getRepoIssue: (number, cb) => {
+            cb(null, result);
           }
         },
         statuses: {
@@ -38,6 +49,11 @@ describe('Github API wrapper', () => {
         },
         pullRequests: {
           get: (number, cb) => {
+            cb(null, result);
+          }
+        },
+        releases: {
+          createRelease: (info, cb) => {
             cb(null, result);
           }
         }
@@ -101,6 +117,44 @@ describe('Github API wrapper', () => {
           user: 'AudienseCo',
           repo: 'socialbro',
           number: 1234
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('should get an issue info', done => {
+      const githubApiDummy = createGithubDummy({ number: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.issues, 'getRepoIssue');
+      github.getIssue(1234, (err, result) => {
+        result.number.should.be.eql(1234);
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'socialbro',
+          number: 1234
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('create a release', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.releases, 'createRelease');
+      const releaseInfo = {
+        tag_name: 'v1.2.3',
+        name: 'Release',
+        body: 'Release body'
+      };
+
+      github.createRelease(releaseInfo, (err, result) => {
+        result.id.should.be.eql(1234);
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'socialbro',
+          tag_name: 'v1.2.3',
+          name: 'Release',
+          body: 'Release body'
         }).should.be.ok();
         done();
       });
