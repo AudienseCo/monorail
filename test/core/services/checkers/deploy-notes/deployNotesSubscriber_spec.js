@@ -3,8 +3,8 @@
 require('should');
 const sinon = require('sinon');
 const EventEmitter = require('events');
-const createDeployNotesSubscriber = require('../../../checkers/deploy-notes/deployNotesSubscriber');
-const createDeployNotesService = require('../../../checkers/deploy-notes/deployNotesService');
+const createDeployNotesSubscriber = require('../../../../../core/services/checkers/deploy-notes/deployNotesSubscriber');
+const createDeployNotesService = require('../../../../../core/services/checkers/deploy-notes/deployNotesService');
 
 describe('Deploy notes subscriber', () => {
   function createDeployNotesCheckerDummy(result) {

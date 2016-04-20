@@ -2,7 +2,7 @@
 
 require('should');
 
-const createQAReviewChecker = require('../../../checkers/qa-review/qaReviewChecker');
+const createQAReviewChecker = require('../../../../../core/services/checkers/qa-review/qaReviewChecker');
 
 describe('QA Review checker', () => {
 

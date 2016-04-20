@@ -1,6 +1,6 @@
 'use strict';
 
-const github = require('../../lib/github');
+const github = require('../../../../lib/github');
 const createQAReviewSubscriber = require('./qaReviewSubscriber');
 const createQAReviewService    = require('./qaReviewService');
 const createQAReviewChecker    = require('./qaReviewChecker');

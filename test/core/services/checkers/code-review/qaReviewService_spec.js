@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-const createQAReviewService = require('../../../checkers/code-review/codeReviewService');
+const createQAReviewService = require('../../../../../core/services/checkers/code-review/codeReviewService');
 
 describe('Code Review service', () => {
   const codeReviewService = createQAReviewService();

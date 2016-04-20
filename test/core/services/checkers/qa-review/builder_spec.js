@@ -1,8 +1,8 @@
 'use strict';
 
-const deployNotes = require('../../../checkers/deploy-notes');
+const deployNotes = require('../../../../../core/services/checkers/qa-review');
 
-describe('Deploy notes module builder', () => {
+describe('QA Review module builder', () => {
 
   context('Interface', () => {
     it('should have the "subscribe" method', () => {

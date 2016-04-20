@@ -1,6 +1,6 @@
 'use strict';
 
-const deployNotes = require('../../../checkers/code-review');
+const deployNotes = require('../../../../../core/services/checkers/code-review');
 
 describe('Code Review module builder', () => {
 

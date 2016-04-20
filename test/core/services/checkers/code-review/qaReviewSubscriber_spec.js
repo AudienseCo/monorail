@@ -3,8 +3,8 @@
 require('should');
 const sinon = require('sinon');
 const EventEmitter = require('events');
-const createCodeReviewSubscriber = require('../../../checkers/code-review/codeReviewSubscriber');
-const createCodeService = require('../../../checkers/code-review/codeReviewService');
+const createCodeReviewSubscriber = require('../../../../../core/services/checkers/code-review/codeReviewSubscriber');
+const createCodeService = require('../../../../../core/services/checkers/code-review/codeReviewService');
 
 describe('Code Review subscriber', () => {
   function createCodeReviewCheckerDummy(result) {

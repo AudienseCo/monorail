@@ -1,6 +1,6 @@
 'use strict';
 
-const github = require('../../lib/github');
+const github = require('../../../../lib/github');
 const createDeployNotesSubscriber = require('./deployNotesSubscriber');
 const createDeployNotesService    = require('./deployNotesService');
 const createDeployNotesChecker    = require('./deployNotesChecker');

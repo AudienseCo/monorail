@@ -2,7 +2,7 @@
 
 require('should');
 
-const createDeployNotesChecker = require('../../../checkers/deploy-notes/deployNotesChecker');
+const createDeployNotesChecker = require('../../../../../core/services/checkers/deploy-notes/deployNotesChecker');
 
 describe('Deploy notes checker', () => {
 
