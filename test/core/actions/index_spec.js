@@ -14,5 +14,9 @@ describe('Actions builder', () => {
       actions.getPullRequestsDeployInfo.should.be.a.Function();
     });
 
+    it('should have the "createRelease method"', () => {
+      actions.createRelease.should.be.a.Function();
+    });
+
   });
 });
