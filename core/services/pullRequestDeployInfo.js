@@ -5,7 +5,7 @@ module.exports = function createPullRequestDeployInfo(github) {
 
   that.get = (prId, cb) => {
     const deployNotesTag = 'deploy notes';
-    const deployTagRegex = /^deploy (.+)/;
+    const deployTagRegex = /^deploy-to:(.+)/;
 
     github.getIssueLabels(prId, (err, labels) => {
       cb(null, {
@@ -25,4 +25,4 @@ module.exports = function createPullRequestDeployInfo(github) {
   };
 
   return that;
-}
+};

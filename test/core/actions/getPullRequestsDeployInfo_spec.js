@@ -24,8 +24,8 @@ describe('Get pull requests deploy info action', () => {
 
     it('should get the issues deploy info', (done) => {
       const githubDummy  = createGithubDummy([
-        { name: 'deploy tasks-as' },
-        { name: 'deploy globalreports' }
+        { name: 'deploy-to:tasks-as' },
+        { name: 'deploy-to:globalreports' }
       ]);
       const prDeployInfo = createPullRequestDeployInfo(githubDummy);
       const getPullRequestsDeployInfo = createGetPullRequestsDeployInfo(prDeployInfo);

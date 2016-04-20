@@ -36,8 +36,8 @@ describe('Get pull request deploy info', () => {
 
     it('should get the services to deploy', (done) => {
       const githubDummy = createGithubDummy([
-        { name: 'deploy globalreports'},
-        { name: 'deploy sync-as'}
+        { name: 'deploy-to:globalreports'},
+        { name: 'deploy-to:sync-as'}
       ]);
       const prDeployInfo = createPullRequestDeployInfo(githubDummy);
 
