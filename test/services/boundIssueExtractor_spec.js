@@ -1,7 +1,7 @@
 'use strict';
 
 const should = require('should');
-const createBoundIssueExtractor = require('../../../checkers/deploy-notes/boundIssueExtractor');
+const createBoundIssueExtractor = require('../../services/boundIssueExtractor');
 
 describe('Bound Issue Extractor', () => {
   const boundIssueExtractor = createBoundIssueExtractor();
