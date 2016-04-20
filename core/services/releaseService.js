@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 module.exports = function(github) {
   return {
@@ -11,4 +11,4 @@ module.exports = function(github) {
       github.createRelease(releaseInfo, cb);
     }
   };
-}
+};

@@ -8,7 +8,6 @@ const createReleaseService = require('../../../core/services/releaseService');
 const createBoundIssueExtractor = require('../../../core/services/boundIssueExtractor');
 
 describe('Create release action', () => {
-  const boundIssueExtractor = createBoundIssueExtractor();
 
   context('Interface', () => {
     const createRelease = createCreateRelease();
@@ -38,6 +37,11 @@ describe('Create release action', () => {
       const prInfo = { title: 'Foo PR', body: 'Closes #1234' };
       const issueInfo = { number: 1234, title: 'Bar issue' };
       githubDummy = createGithubDummy(prInfo, issueInfo);
+    });
+
+    let boundIssueExtractor;
+    beforeEach(() => {
+      boundIssueExtractor = createBoundIssueExtractor();
     });
 
     it('should fetch the PR info', done => {
@@ -95,6 +99,28 @@ describe('Create release action', () => {
           tag_name: 'v1.2.3',
           name: 'v1.2.3 Release',
           body: '#1234 Bar issue'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('should use the PR title if there is not issue bound', done => {
+      sinon.stub(githubDummy, 'getPullRequest').callsArgWith(1, null, {
+        title: 'Foo pr', number: '4321'
+      });
+      sinon.stub(boundIssueExtractor, 'extract').onFirstCall().returns(null);
+      const releaseService = createReleaseService(githubDummy);
+      const createRelease = createCreateRelease(githubDummy, boundIssueExtractor, releaseService);
+      const tag = 'v1.2.3';
+      const ids = [1];
+      const spy = sinon.spy(githubDummy, 'createRelease');
+
+      createRelease(tag, ids, err => {
+        should.not.exist(err);
+        spy.calledWith({
+          tag_name: 'v1.2.3',
+          name: 'v1.2.3 Release',
+          body: '#4321 Foo pr'
         }).should.be.ok();
         done();
       });

@@ -9,11 +9,12 @@ module.exports = function(github, boundIssueExtractor, releaseService) {
         if (err) return next(err);
 
         var boundIssue = boundIssueExtractor.extract(prInfo.body);
-        if (!boundIssue) next(null, acc);
-
-        github.getIssue(boundIssue, (err, issueInfo) => {
-          next(err, acc.concat(issueInfo));
-        });
+        if (!boundIssue) next(null, acc.concat(prInfo));
+        else {
+          github.getIssue(boundIssue, (err, issueInfo) => {
+            next(err, acc.concat(issueInfo));
+          });
+        }
       });
     }, (err, issues) => {
       if (err) cb(err);
