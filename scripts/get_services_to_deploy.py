@@ -38,6 +38,11 @@ json_list = r.json()
 services=json_list['services']
 deploynotes=json_list['deployNotes']
 
+print 'deploynotes:'
+print deploynotes
+print '\nservices:'
+print services
+
 if deploynotes == 'True':
     print 'There are deployNotes so we cannot continue'
     exit(3)
