@@ -7,7 +7,7 @@ import argparse
 
 parser = argparse.ArgumentParser('Queries Monorail to get the services and deployNotes where a list of Pull requests will be deployed')
 parser.add_argument('--url', help='URL where Monorail is located')
-parser.add_argument('--pr', help='List of pull requests we will ask for')
+parser.add_argument('--pr', help='Comma or space separated list of pull requests we will ask for')
 args = parser.parse_args()
 
 curl_uri = '/deploy-info?pr='
