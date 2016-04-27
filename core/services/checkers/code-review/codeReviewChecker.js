@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(github) {
-  let that = {};
+  const that = {};
 
   that.checkPullRequest = (prInfo, cb) => {
     github.getIssueLabels(prInfo.number, (err, labels) => {

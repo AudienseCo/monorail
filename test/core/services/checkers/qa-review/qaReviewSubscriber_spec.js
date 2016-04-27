@@ -36,7 +36,7 @@ describe('QA Review subscriber', () => {
   context('Behaviour', () => {
     it('should subscribe to the "pull_request" event', done => {
       const emitter = new EventEmitter();
-      var spy = sinon.spy(emitter, 'on');
+      const spy = sinon.spy(emitter, 'on');
       const qaReviewSubscriber = createQAReviewSubscriber(emitter);
       qaReviewSubscriber.subscribe();
       spy.calledWith('pull_request').should.be.ok();

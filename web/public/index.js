@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const crypto = require('crypto');
 
 module.exports = function(eventEmitter, secret) {
-  var app = express();
+  const app = express();
 
   function signBlob(key, blob) {
     return 'sha1=' + crypto.createHmac('sha1', key).update(blob).digest('hex');
@@ -20,8 +20,8 @@ module.exports = function(eventEmitter, secret) {
       if (!req.get('x-github-event'))
         throw new Error('No X-Github-Event found on request');
 
-      var signature = req.get('x-hub-signature');
-      var computedSignature = signBlob(secret, buffer);
+      const signature = req.get('x-hub-signature');
+      const computedSignature = signBlob(secret, buffer);
 
       console.log('verified', signature, computedSignature);
 

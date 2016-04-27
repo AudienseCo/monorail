@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(emitter, qaReviewService) {
-  let that = {
+  const that = {
     subscribe: () => {
       emitter.on('pull_request', payload => {
         if (payload.action === 'opened' || payload.action === 'labeled' ||

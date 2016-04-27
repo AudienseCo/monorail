@@ -1,8 +1,8 @@
 'use strict';
-var async = require('async');
+const async = require('async');
 
 module.exports = function(qaReviewChecker, github) {
-  let that = {};
+  const that = {};
 
   that.updatePullRequestCommit = (prInfo) => {
     async.waterfall([

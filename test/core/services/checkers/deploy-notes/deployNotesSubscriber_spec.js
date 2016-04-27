@@ -36,7 +36,7 @@ describe('Deploy notes subscriber', () => {
   context('Behaviour', () => {
     it('should subscribe to the "pull_request" event', done => {
       const emitter = new EventEmitter();
-      var spy = sinon.spy(emitter, 'on');
+      const spy = sinon.spy(emitter, 'on');
       const deployNotesSubscriber = createDeployNotesSubscriber(emitter);
       deployNotesSubscriber.subscribe();
       spy.calledWith('pull_request').should.be.ok();
@@ -45,7 +45,7 @@ describe('Deploy notes subscriber', () => {
 
     it('should subscribe to the "issue_comment" event', done => {
       const emitter = new EventEmitter();
-      var spy = sinon.spy(emitter, 'on');
+      const spy = sinon.spy(emitter, 'on');
       const deployNotesSubscriber = createDeployNotesSubscriber(emitter);
       deployNotesSubscriber.subscribe();
       spy.calledWith('issue_comment').should.be.ok();

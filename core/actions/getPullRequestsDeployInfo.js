@@ -30,14 +30,14 @@ module.exports = function(prDeployInfo, config) {
 };
 
 function map(services, config) {
-  var mapper = config.services ? config.services.mapper : null;
+  const mapper = config.services ? config.services.mapper : null;
 
   if (mapper) return services.map(mapper);
   else return services;
 }
 
 function reduce(data, config) {
-  var reducer = config.services ? config.services.reducer : null;
+  const reducer = config.services ? config.services.reducer : null;
 
   if (reducer && data.services.length) {
     return Object.assign({}, data, { services: data.services.reduce(reducer, null) });

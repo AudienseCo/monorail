@@ -8,7 +8,7 @@ module.exports = function(github, boundIssueExtractor, releaseService) {
       github.getPullRequest(id, (err, prInfo) => {
         if (err) return next(err);
 
-        var boundIssue = boundIssueExtractor.extract(prInfo.body);
+        const boundIssue = boundIssueExtractor.extract(prInfo.body);
         if (!boundIssue) next(null, acc.concat(prInfo));
         else {
           github.getIssue(boundIssue, (err, issueInfo) => {
