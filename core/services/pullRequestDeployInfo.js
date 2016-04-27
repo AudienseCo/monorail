@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function createPullRequestDeployInfo(github) {
-  var that = {};
+  const that = {};
 
   that.get = (prId, cb) => {
     const deployNotesTag = 'deploy notes';

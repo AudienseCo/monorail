@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 module.exports = function(actions) {
-  var app = express();
+  const app = express();
 
   app.use(bodyParser.urlencoded());
   app.use(bodyParser.json());
