@@ -2,7 +2,7 @@
 
 const async = require('async');
 
-module.exports = function(prDeployInfo) {
+module.exports = function(prDeployInfo, config) {
   return function(ids, cb) {
 
     const initial = {
@@ -13,14 +13,34 @@ module.exports = function(prDeployInfo) {
     async.reduce(ids, initial, (acc, id, next) => {
       prDeployInfo.get(id, (err, prInfo) => {
         if (err) return next(err);
-
+        const prServices = map(prInfo.services, config);
+        const services = Array.from(new Set(acc.services.concat(prServices)));
         const newState = {
           deployNotes: acc.deployNotes || prInfo.deployNotes,
-          services: Array.from(new Set(acc.services.concat(prInfo.services)))
+          services: services
         };
         next(null, newState);
 
       });
-    }, cb);
+    }, (err, result) => {
+      if (err) cb(err);
+      else cb(null, reduce(result, config));
+    });
   };
 };
+
+function map(services, config) {
+  var mapper = config.services ? config.services.mapper : null;
+
+  if (mapper) return services.map(mapper);
+  else return services;
+}
+
+function reduce(data, config) {
+  var reducer = config.services ? config.services.reducer : null;
+
+  if (reducer && data.services.length) {
+    return Object.assign({}, data, { services: data.services.reduce(reducer, null) });
+  }
+  else return data;
+}

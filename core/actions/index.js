@@ -1,5 +1,7 @@
 'use strict';
 
+const config = require('../../config');
+
 const checkers = [
   require('../services/checkers/code-review'),
   require('../services/checkers/qa-review'),
@@ -13,6 +15,6 @@ const releaseService = require('../services/releaseService')(github);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
-  getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo),
+  getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
   createRelease: require('./createRelease')(github, boundIssueExtractor, releaseService)
 };
