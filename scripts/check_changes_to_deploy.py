@@ -1,28 +1,27 @@
 #!/usr/bin/env python
-
 import requests
 import json
 import sys
 import argparse
 
 parser = argparse.ArgumentParser('Queries Monorail to get the services and deployNotes where a list of Pull requests will be deployed')
-parser.add_argument('--url', help='URL where Monorail is located')
-parser.add_argument('--pr', help='Comma or space separated list of pull requests we will ask for')
+parser.add_argument('--monorail', help='URL where Monorail is located')
+parser.add_argument('--pullrequests', help='Comma or space separated list of pull requests we will ask for')
 args = parser.parse_args()
 
 curl_uri = '/deploy-info?pr='
 
-if (args.url):
-    if args.url.startswith('http'):
-        request_url = args.url+curl_uri
+if (args.monorail):
+    if args.monorail.startswith('http'):
+        request_url = args.monorail+curl_uri
     else:
-        request_url = 'http://'+args.url+curl_uri
+        request_url = 'http://'+args.monorail+curl_uri
 else:
     print 'We need an URL'
     exit(1)
 
-if (args.pr):
-    pull_requests = args.pr.split()
+if (args.pullrequests):
+    pull_requests = args.pullrequests.split()
     pull_requests = ",".join(pull_requests)
 else:
     print 'A list of PRs is needed'
@@ -34,16 +33,11 @@ except:
     print 'Something went wrong querying Monorail'
     exit(2)
 
-json_list = r.json()
-services=json_list['services']
-deploynotes=json_list['deployNotes']
+data = r.json()
+deployNotes = data['deployNotes']
+services = data['services']
 
-print 'deploynotes:'
-print deploynotes
-print '\nservices:'
-print services
-
-if deploynotes == 'True':
+if deployNotes == True:
     print 'There are deployNotes so we cannot continue'
     exit(3)
 
