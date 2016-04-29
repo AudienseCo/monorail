@@ -74,10 +74,10 @@ for batch_same_node_version in services:
     if statics:
         payload['static_files_version'] = tagVersion
 
-    services_list = []
+    services_list = set()
     for service in batch_same_node_version['deploy']:
-        services_list.append(service)
-    payload['where_to_deploy'] = services_list
+        services_list.add(service)
+    payload['where_to_deploy'] = list(services_list)
 
     try:
         r = requests.post(request_jenkins, auth=(args.jenkinsUser, args.jenkinsApiToken), params=payload)
