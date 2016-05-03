@@ -7,7 +7,8 @@ import argparse
 parser = argparse.ArgumentParser('Queries Monorail to get the services and deployNotes where a list of Pull requests will be deployed')
 parser.add_argument('--monorail', help='URL where Monorail is located')
 parser.add_argument('--pullrequests', help='Comma or space separated list of pull requests we will ask for')
-parser.add_argument('--tag', help='tag associated to the deployment')
+parser.add_argument('--tag', help='Tag associated to the deployment')
+parser.add_argument('--statics', help='Statics version associated to the deployment')
 parser.add_argument('--jenkinsURL', help='URL where Jenkins is located. Defaults to HTTPS if protocol is not entered!')
 parser.add_argument('--jenkinsJob', help='Jenkins job that will be triggered')
 parser.add_argument('--jenkinsUser', help='Jenkins user for authentication')
@@ -35,7 +36,13 @@ else:
 if (args.tag):
     tagVersion = args.tag
 else:
-    print 'We need the tag associated to the deployment'
+    print 'We need the Tag associated to the deployment'
+    exit(1)
+
+if (args.statics):
+    staticsVersion = args.statics
+else:
+    print 'We need the Statics version associated to the deployment'
     exit(1)
 
 if (args.jenkinsURL):
@@ -72,7 +79,7 @@ for batch_same_node_version in services:
 
     statics = batch_same_node_version['statics']
     if statics:
-        payload['static_files_version'] = tagVersion
+        payload['static_files_version'] = staticsVersion
 
     services_list = set()
     for service in batch_same_node_version['deploy']:
