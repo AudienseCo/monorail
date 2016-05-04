@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const morgan  = require('morgan');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 
@@ -10,6 +11,9 @@ module.exports = function(eventEmitter, secret) {
   function signBlob(key, blob) {
     return 'sha1=' + crypto.createHmac('sha1', key).update(blob).digest('hex');
   }
+
+  app.use(morgan(`[public] :remote-addr - :remote-user [:date[clf]] ":method :url \
+    HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"`));
 
   app.use(bodyParser.urlencoded({
     extended: true,
