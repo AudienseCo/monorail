@@ -5,7 +5,8 @@ const config = require('../../config');
 const checkers = [
   require('../services/checkers/code-review'),
   require('../services/checkers/qa-review'),
-  require('../services/checkers/deploy-notes')
+  require('../services/checkers/deploy-notes'),
+  require('../services/checkers/deploy-labels')
 ];
 
 const github = require('../../lib/github');
