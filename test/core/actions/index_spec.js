@@ -18,5 +18,9 @@ describe('Actions builder', () => {
       actions.createRelease.should.be.a.Function();
     });
 
+    it('should have the "previewRelease method"', () => {
+      actions.previewRelease.should.be.a.Function();
+    });
+
   });
 });

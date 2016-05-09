@@ -17,5 +17,6 @@ const releaseService = require('../services/releaseService')(github);
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
-  createRelease: require('./createRelease')(github, boundIssueExtractor, releaseService)
+  createRelease: require('./createRelease')(github, boundIssueExtractor, releaseService),
+  previewRelease: require('./previewRelease')(github, boundIssueExtractor)
 };
