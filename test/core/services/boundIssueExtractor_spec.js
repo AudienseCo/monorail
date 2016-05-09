@@ -19,11 +19,47 @@ describe('Bound Issue Extractor', () => {
 
     it('should return the issue number (Closes #issue)', () => {
       const input = 'Closes #1234';
+      console.log(boundIssueExtractor.extract(input));
       boundIssueExtractor.extract(input).should.be.eql('1234');
     });
 
     it('should return the issue number (Fixes #issue)', () => {
       const input = 'Fixes #1234';
+      boundIssueExtractor.extract(input).should.be.eql('1234');
+    });
+
+    it('should return the issue number (Fixed #issue)', () => {
+      const input = 'Fixed #1234';
+      boundIssueExtractor.extract(input).should.be.eql('1234');
+    });
+
+    it('should return the issue number (Fix #issue)', () => {
+      const input = 'Fix #1234';
+      boundIssueExtractor.extract(input).should.be.eql('1234');
+    });
+
+    it('should return the issue number (Close #issue)', () => {
+      const input = 'Close #1234';
+      boundIssueExtractor.extract(input).should.be.eql('1234');
+    });
+
+    it('should return the issue number (Closed #issue)', () => {
+      const input = 'Closed #1234';
+      boundIssueExtractor.extract(input).should.be.eql('1234');
+    });
+
+    it('should return the issue number (Resolve #issue)', () => {
+      const input = 'Resolve #1234';
+      boundIssueExtractor.extract(input).should.be.eql('1234');
+    });
+
+    it('should return the issue number (Resolves #issue)', () => {
+      const input = 'Resolves #1234';
+      boundIssueExtractor.extract(input).should.be.eql('1234');
+    });
+
+    it('should return the issue number (Resolved #issue)', () => {
+      const input = 'Resolved #1234';
       boundIssueExtractor.extract(input).should.be.eql('1234');
     });
 
