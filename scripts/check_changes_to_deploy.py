@@ -7,6 +7,7 @@ import argparse
 parser = argparse.ArgumentParser('Queries Monorail to get the services and deployNotes where a list of Pull requests will be deployed')
 parser.add_argument('--monorail', help='URL where Monorail is located')
 parser.add_argument('--pullrequests', help='Comma or space separated list of pull requests we will ask for')
+parser.add_argument('--showServices', help='Prints the services related to the pullrequests', action='store_true')
 args = parser.parse_args()
 
 curl_uri = '/deploy-info?pr='
@@ -36,6 +37,14 @@ except:
 data = r.json()
 deployNotes = data['deployNotes']
 services = data['services']
+
+if (args.showServices):
+    for batch_same_node_version in services:
+        services_list = set()
+        for service in batch_same_node_version['deploy']:
+            services_list.add(service)
+        print "Node version: %s" % batch_same_node_version['nodeVersion']
+        print "Services: %s" % ', '.join(services_list)
 
 if deployNotes == True:
     print 'There are deployNotes so we cannot continue'
