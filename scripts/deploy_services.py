@@ -124,7 +124,7 @@ for batch_same_node_version in services:
         time.sleep(polling_delay)
 
     print "%s: %s" % (r_build_data['fullDisplayName'], r_build_data['result'])
-    if (r_build_data['result'] == "FAILURE"):
+    if (r_build_data['result'] != "SUCCESS"):
         exit (5)
 
 exit (0)
