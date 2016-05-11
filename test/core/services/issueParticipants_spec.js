@@ -99,5 +99,44 @@ describe('issueParticipants service', () => {
       });
     });
 
+    it('should get the participants for a list of issues', done => {
+      const comments = [
+        {
+          id: 1,
+          user: {
+            login: 'john'
+          }
+        },
+        {
+          id: 2,
+          user: {
+            login: 'ana'
+          }
+        }
+      ];
+      const githubDummy = createGithubDummy(comments);
+      const issueParticipants = createIssueParticipants(githubDummy);
+      const issues = [
+        {
+          number: 1234,
+          user: {
+            login: 'foo'
+          }
+        },
+        {
+          number: 4321,
+          user: {
+            login: 'bar'
+          }
+        }
+      ];
+
+      issueParticipants.getParticipants(issues, (err, participants) => {
+        participants.length.should.be.eql(4);
+        participants.should.be.eql(['foo', 'john', 'ana', 'bar']);
+        done();
+      });
+    });
+
   });
 });
