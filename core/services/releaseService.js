@@ -10,6 +10,7 @@ module.exports = function(github) {
           return compose(info);
         }).join('\n')
       };
+
       github.createRelease(data, err => {
         cb(err, data);
       });

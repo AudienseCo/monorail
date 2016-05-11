@@ -62,6 +62,38 @@ describe('issueParticipants service', () => {
       });
     });
 
+    it('should get the list of people mapped using the config', done => {
+      const config = {
+        users: {
+          map: user => {
+            return '@' + user;
+          }
+        }
+      };
+      const issueItem = {
+        number: 1234,
+        user: {
+          login: 'foo'
+        }
+      };
+      const comments = [
+        {
+          id: 2,
+          user: {
+            login: 'bar'
+          }
+        }
+      ];
+
+      const githubDummy = createGithubDummy(comments);
+      const issueParticipants = createIssueParticipants(githubDummy, config);
+
+      issueParticipants.getParticipants(issueItem, (err, participants) => {
+        participants.should.be.eql(['@foo', '@bar']);
+        done();
+      });
+    });
+
     it('should get the list of people who commented the PR (avoid duplicates)', done => {
       const comments = [
         {

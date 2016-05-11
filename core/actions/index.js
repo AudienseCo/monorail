@@ -13,7 +13,7 @@ const github = require('../../lib/github');
 const pullRequestDeployInfo = require('../services/pullRequestDeployInfo')(github);
 const boundIssueExtractor = require('../services/boundIssueExtractor')();
 const releaseService = require('../services/releaseService')(github);
-const issueParticipants = require('../services/issueParticipants')(github);
+const issueParticipants = require('../services/issueParticipants')(github, config);
 const issueReleaseInfo = require('../services/issueReleaseInfo')(github,
   boundIssueExtractor, issueParticipants);
 
