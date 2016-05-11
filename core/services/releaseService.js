@@ -2,13 +2,23 @@
 
 module.exports = function(github) {
   return {
-    create: (tag, issues, cb) => {
-      const releaseInfo = {
+    create: (tag, releaseInfo, cb) => {
+      const data = {
         tag_name: tag,
         name: tag + ' Release',
-        body: issues.map(issue => { return '#' + issue.number + ' ' + issue.title; }).join('\n')
+        body: releaseInfo.map(info => {
+          return compose(info);
+        }).join('\n')
       };
-      github.createRelease(releaseInfo, cb);
+      github.createRelease(data, cb);
     }
   };
 };
+
+function compose(releaseIssueInfo) {
+  const issue = releaseIssueInfo.issue;
+  const participants = releaseIssueInfo.participants.join(', ');
+
+  return '#' + issue.number + ' ' + issue.title +
+    (participants.length ? '. cc ' + participants : '');
+}
