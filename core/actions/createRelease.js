@@ -18,7 +18,9 @@ module.exports = function(github, boundIssueExtractor, releaseService) {
       });
     }, (err, issues) => {
       if (err) cb(err);
-      else releaseService.create(tag, issues, cb);
+      else releaseService.create(tag, issues, (releaseError) => {
+        cb(releaseError, issues);
+      });
     });
   };
 };
