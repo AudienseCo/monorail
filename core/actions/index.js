@@ -14,11 +14,12 @@ const pullRequestDeployInfo = require('../services/pullRequestDeployInfo')(githu
 const boundIssueExtractor = require('../services/boundIssueExtractor')();
 const releaseService = require('../services/releaseService')(github);
 const issueParticipants = require('../services/issueParticipants')(github);
+const issueReleaseInfo = require('../services/issueReleaseInfo')(github,
+  boundIssueExtractor, issueParticipants);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
-  createRelease: require('./createRelease')(github, boundIssueExtractor,
-    releaseService, issueParticipants),
+  createRelease: require('./createRelease')(issueReleaseInfo, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor)
 };
