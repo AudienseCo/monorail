@@ -33,9 +33,7 @@ module.exports = function(github, boundIssueExtractor, releaseService, issuePart
       });
     }, (err, releaseInfo) => {
       if (err) cb(err);
-      else releaseService.create(tag, releaseInfo, (releaseError) => {
-        cb(releaseError, releaseInfo);
-      });
+      else releaseService.create(tag, releaseInfo, cb);
     });
   };
 };
