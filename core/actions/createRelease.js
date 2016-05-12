@@ -2,17 +2,30 @@
 
 const async = require('async');
 
-module.exports = function(issueReleaseInfo, releaseService) {
+module.exports = function(issueReleaseInfo, releaseInfoLabel, releaseService) {
   return function(tag, ids, cb) {
 
-    async.map(ids, (id, next) => {
-      issueReleaseInfo.getInfo(id, (err, issueReleaseInfo) => {
-        next(err, issueReleaseInfo);
-      });
-    }, (err, releaseInfo) => {
-      if (err) cb(err);
-      else releaseService.create(tag, releaseInfo, cb);
-    });
+    async.waterfall([
+      function getIssues(next) {
+        async.map(ids, (id, nextId) => {
+          issueReleaseInfo.getInfo(id, (err, issueReleaseInfo) => {
+            nextId(err, issueReleaseInfo);
+          });
+        }, next);
+      },
+
+      function setIssuesAsDeployed(releaseInfo, next) {
+        releaseInfoLabel.addLabels(releaseInfo, ['deployed'], err => {
+          if (err) { console.log('Error adding the deployed label:', err); }
+          next(null, releaseInfo);
+        });
+      },
+
+      function createRelease(releaseInfo, next) {
+        releaseService.create(tag, releaseInfo, next);
+      }
+
+    ], cb);
 
   };
 };

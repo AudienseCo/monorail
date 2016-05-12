@@ -31,6 +31,10 @@ describe('Github API wrapper', () => {
     it('should have the "getIssueComments" method', () => {
       github.getIssueComments.should.be.a.Function();
     });
+
+    it('should have the "addIssueLabels" method', () => {
+      github.addIssueLabels.should.be.a.Function();
+    });
   });
 
   context('Behaviour', () => {
@@ -46,6 +50,9 @@ describe('Github API wrapper', () => {
             cb(null, result);
           },
           getComments: (number, cb) => {
+            cb(null, result);
+          },
+          edit: (options, cb) => {
             cb(null, result);
           }
         },
@@ -155,6 +162,38 @@ describe('Github API wrapper', () => {
           repo: 'socialbro',
           number: 1234,
           per_page: 100
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('should get the comments for an issue', done => {
+      const githubApiDummy = createGithubDummy([{ id: 1234 }]);
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.issues, 'getComments');
+      github.getIssueComments(1234, (err, result) => {
+        result.length.should.be.eql(1);
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'socialbro',
+          number: 1234,
+          per_page: 100
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('should add labels to an issue', done => {
+      const githubApiDummy = createGithubDummy([{ name: 'foo' }]);
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.issues, 'edit');
+      github.addIssueLabels(1234, ['foo'], (err, result) => {
+        result.length.should.be.eql(1);
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'socialbro',
+          number: 1234,
+          labels: ['foo']
         }).should.be.ok();
         done();
       });
