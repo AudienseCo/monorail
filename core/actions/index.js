@@ -13,10 +13,13 @@ const github = require('../../lib/github');
 const pullRequestDeployInfo = require('../services/pullRequestDeployInfo')(github);
 const boundIssueExtractor = require('../services/boundIssueExtractor')();
 const releaseService = require('../services/releaseService')(github);
+const issueParticipants = require('../services/issueParticipants')(github, config);
+const issueReleaseInfo = require('../services/issueReleaseInfo')(github,
+  boundIssueExtractor, issueParticipants);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
-  createRelease: require('./createRelease')(github, boundIssueExtractor, releaseService),
+  createRelease: require('./createRelease')(issueReleaseInfo, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor)
 };
