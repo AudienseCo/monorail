@@ -16,10 +16,11 @@ const releaseService = require('../services/releaseService')(github);
 const issueParticipants = require('../services/issueParticipants')(github, config);
 const issueReleaseInfo = require('../services/issueReleaseInfo')(github,
   boundIssueExtractor, issueParticipants);
+const releaseInfoLabel = require('../services/releaseInfoLabel')(github);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
-  createRelease: require('./createRelease')(issueReleaseInfo, releaseService),
+  createRelease: require('./createRelease')(issueReleaseInfo, releaseInfoLabel, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor)
 };
