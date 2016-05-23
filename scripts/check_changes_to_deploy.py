@@ -4,7 +4,7 @@ import json
 import sys
 import argparse
 
-parser = argparse.ArgumentParser('Queries Monorail to get the services and deployNotes where a list of Pull requests will be deployed')
+parser = argparse.ArgumentParser('Query Monorail to get the deployNotes and services that would be deployed from a list of pull requests')
 parser.add_argument('--monorail', help='URL where Monorail is located')
 parser.add_argument('--pullrequests', help='Comma or space separated list of pull requests we will ask for')
 parser.add_argument('--showServices', help='Prints the services related to the pullrequests', action='store_true')

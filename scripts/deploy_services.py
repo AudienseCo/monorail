@@ -6,7 +6,7 @@ import argparse
 import time
 from pprint import pprint
 
-parser = argparse.ArgumentParser('Queries Monorail to get the services and deployNotes where a list of Pull requests will be deployed')
+parser = argparse.ArgumentParser('Query Monorail to get the deployNotes and services from a list of pull requests and triggers the jenkinsJob that will deploy the new code that includes the PRs')
 parser.add_argument('--monorail', help='URL where Monorail is located', required=True)
 parser.add_argument('--pullrequests', help='Comma or space separated list of pull requests we will ask for', required=True)
 parser.add_argument('--tag', help='Tag associated to the deployment', required=True)
@@ -69,8 +69,17 @@ except:
     exit(2)
 
 data = r.json()
+deployNotes = data['deployNotes']
 services = data['services']
 polling_delay = 15 #seconds
+
+if deployNotes == True:
+    print 'There are deployNotes so we cannot continue'
+    exit(3)
+
+if len(services) == 0:
+    print 'There are not services defined so we cannot continue'
+    exit(3)
 
 for batch_same_node_version in services:
     payload = {}
