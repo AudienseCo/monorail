@@ -5,7 +5,7 @@ module.exports = function(emitter, deployNotesService) {
     subscribe: () => {
       emitter.on('pull_request', payload => {
         if (payload.action === 'opened' || payload.action === 'labeled' ||
-        payload.action === 'unlabeled') {
+        payload.action === 'unlabeled' || payload.action === 'synchronize') {
           const prInfo = payload.pull_request;
           deployNotesService.updatePullRequestCommit(prInfo);
         }
