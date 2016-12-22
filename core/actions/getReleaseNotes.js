@@ -10,7 +10,6 @@ module.exports = function getReleaseNotesBuilder(issueReleaseInfoList, releaseNo
       },
 
       (releaseInfoList, next) => {
-        console.log('Filter', filterLabels);
         if (!filterLabels || filterLabels.length === 0) return next(null, releaseInfoList);
 
         const filteredReleaseInfoList = releaseInfoList.filter(info => {

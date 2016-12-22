@@ -28,23 +28,9 @@ describe('Create release service', () => {
       const spy = sinon.spy(githubDummy, 'createRelease');
       const releaseService = createReleaseService(githubDummy);
       const tag = 'v1.3.0';
-      const info = [
-        {
-          issue: {
-            number: 1234,
-            title: 'Foo issue'
-          },
-          participants: []
-        },
-        {
-          issue: {
-            number: 4321,
-            title: 'Bar issue'
-          },
-          participants: ['ana']
-        }
-      ];
-      releaseService.create(tag, info, (err, result) => {
+      const body = '#1234 Foo issue\n#4321 Bar issue. cc ana';
+
+      releaseService.create(tag, body, (err, result) => {
         spy.calledWith({
           tag_name: 'v1.3.0',
           name: 'v1.3.0 Release',

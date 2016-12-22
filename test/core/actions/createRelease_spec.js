@@ -7,6 +7,8 @@ const createCreateRelease = require('../../../core/actions/createRelease');
 const createReleaseService = require('../../../core/services/releaseService');
 const createBoundIssueExtractor = require('../../../core/services/boundIssueExtractor');
 const createIssueReleaseInfo = require('../../../core/services/issueReleaseInfo');
+const createReleaseNotesFormatter = require('../../../core/services/releaseNotesFormatter');
+const createIssueReleaseInfoList = require('../../../core/services/issueReleaseInfoList');
 
 describe('Create release action', () => {
 
@@ -69,7 +71,10 @@ describe('Create release action', () => {
       const releaseService = createReleaseService(githubDummy);
       const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
         issueParticipantsDummy);
-      const createRelease = createCreateRelease(issueReleaseInfo, releaseInfoLabel, releaseService);
+      const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+      const releaseNotesFormatter = createReleaseNotesFormatter();
+      const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+        releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
 
@@ -85,7 +90,10 @@ describe('Create release action', () => {
       const releaseService = createReleaseService(githubDummy);
       const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
         issueParticipantsDummy);
-      const createRelease = createCreateRelease(issueReleaseInfo, releaseInfoLabel, releaseService);
+      const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+      const releaseNotesFormatter = createReleaseNotesFormatter();
+      const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+        releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(boundIssueExtractor, 'extract');
@@ -102,7 +110,10 @@ describe('Create release action', () => {
       const releaseService = createReleaseService(githubDummy);
       const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
         issueParticipantsDummy);
-      const createRelease = createCreateRelease(issueReleaseInfo, releaseInfoLabel, releaseService);
+      const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+      const releaseNotesFormatter = createReleaseNotesFormatter();
+      const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+        releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
 
@@ -118,7 +129,10 @@ describe('Create release action', () => {
       const releaseService = createReleaseService(githubDummy);
       const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
         issueParticipantsDummy);
-      const createRelease = createCreateRelease(issueReleaseInfo, releaseInfoLabel, releaseService);
+      const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+      const releaseNotesFormatter = createReleaseNotesFormatter();
+      const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+        releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(releaseInfoLabel, 'addLabels');
@@ -137,8 +151,10 @@ describe('Create release action', () => {
         issue: { number: 1234, title: 'Bar issue' },
         participants: []
       });
-      const createRelease = createCreateRelease(issueReleaseInfoDummy, releaseInfoLabel,
-        releaseService);
+      const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfoDummy);
+      const releaseNotesFormatter = createReleaseNotesFormatter();
+      const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+        releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(githubDummy, 'createRelease');
@@ -161,8 +177,10 @@ describe('Create release action', () => {
         issue: { number: 1234, title: 'Bar issue' },
         participants: ['ana', 'joe']
       });
-      const createRelease = createCreateRelease(issueReleaseInfoDummy, releaseInfoLabel,
-        releaseService);
+      const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfoDummy);
+      const releaseNotesFormatter = createReleaseNotesFormatter();
+      const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+        releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(githubDummy, 'createRelease');
@@ -186,8 +204,10 @@ describe('Create release action', () => {
         const releaseService = createReleaseService(githubDummy);
         const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
           issueParticipantsDummy);
-        const createRelease = createCreateRelease(issueReleaseInfo, releaseInfoLabel,
-          releaseService);
+        const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+        const releaseNotesFormatter = createReleaseNotesFormatter();
+        const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+          releaseNotesFormatter, releaseService);
         const tag = 'v1.2.3';
         const ids = [1];
 
@@ -203,9 +223,10 @@ describe('Create release action', () => {
         const releaseService = createReleaseService(githubDummy);
         const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
           issueParticipantsDummy);
-        const createRelease = createCreateRelease(issueReleaseInfo, releaseInfoLabel,
-          releaseService,
-          issueParticipantsDummy);
+        const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+        const releaseNotesFormatter = createReleaseNotesFormatter();
+        const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+          releaseNotesFormatter, releaseService);
         const tag = 'v1.2.3';
         const ids = [1];
 
@@ -223,8 +244,10 @@ describe('Create release action', () => {
         const releaseService = createReleaseService(githubDummy);
         const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
           issueParticipantsDummy);
-        const createRelease = createCreateRelease(issueReleaseInfo, releaseInfoLabel,
-          releaseService);
+        const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+        const releaseNotesFormatter = createReleaseNotesFormatter();
+        const createRelease = createCreateRelease(issueReleaseInfoList, releaseInfoLabel,
+          releaseNotesFormatter, releaseService);
         const tag = 'v1.2.3';
         const ids = [1];
 

@@ -22,7 +22,8 @@ const releaseNotesFormatter = require('../services/releaseNotesFormatter')();
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
-  createRelease: require('./createRelease')(issueReleaseInfo, releaseInfoLabel, releaseService),
+  createRelease: require('./createRelease')(issueReleaseInfoList, releaseInfoLabel,
+    releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
   getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter)
 };
