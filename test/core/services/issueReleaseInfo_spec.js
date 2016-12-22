@@ -1,6 +1,7 @@
 'use strict';
 
 require('should');
+var sinon = require('sinon');
 
 const createIssueReleaseInfo = require('../../../core/services/issueReleaseInfo');
 const createBoundIssueExtractor = require('../../../core/services/boundIssueExtractor');
@@ -16,14 +17,15 @@ function createIssueParticipantsDummy(result) {
 }
 
 function createGithubDummy(pr, issue) {
-  return {
-    getPullRequest: (number, cb) => {
-      cb(null, pr);
-    },
+  var that = {
     getIssue: (number, cb) => {
       cb(null, issue);
     }
   };
+  sinon.stub(that, 'getIssue')
+        .onCall(0).callsArgWith(1, null, pr)
+        .onCall(1).callsArgWith(1, null, issue);
+  return that;
 }
 
 describe('issueReleaseInfo service', () => {

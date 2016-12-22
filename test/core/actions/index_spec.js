@@ -22,5 +22,9 @@ describe('Actions builder', () => {
       actions.previewRelease.should.be.a.Function();
     });
 
+    it('should have the "getReleaseNotes method"', () => {
+      actions.getReleaseNotes.should.be.a.Function();
+    });
+
   });
 });
