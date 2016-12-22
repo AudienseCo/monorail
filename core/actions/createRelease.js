@@ -26,7 +26,9 @@ module.exports = function(issueReleaseInfoList, releaseInfoLabel, releaseNotesFo
       },
 
       (body, next) => {
-        releaseService.create(tag, body, next);
+        releaseService.create(tag, body, error => {
+          next(error, body);
+        });
       }
 
     ], cb);

@@ -42,8 +42,13 @@ module.exports = function(actions) {
     const pullRequestIds    = pullRequestIdsStr.split(',');
 
     actions.createRelease(tagName, pullRequestIds, (err, result) => {
-      if (err) res.status(400).send(err);
-      else res.status(200).send(result);
+      if (err) return res.status(400).send(err);
+
+      const info = {
+        body: result
+      };
+
+      res.status(200).send(info);
     });
 
   });
