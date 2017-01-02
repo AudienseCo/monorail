@@ -22,7 +22,7 @@ describe('Create release action', () => {
   context('Behaviour', () => {
 
     function createGithubDummy(prInfo, issueInfo) {
-      var that = {
+      const that = {
         getPullRequest: (id, cb) => {
           cb(null, prInfo);
         },

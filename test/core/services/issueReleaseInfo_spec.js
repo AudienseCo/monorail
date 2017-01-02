@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-var sinon = require('sinon');
+const sinon = require('sinon');
 
 const createIssueReleaseInfo = require('../../../core/services/issueReleaseInfo');
 const createBoundIssueExtractor = require('../../../core/services/boundIssueExtractor');
@@ -17,7 +17,7 @@ function createIssueParticipantsDummy(result) {
 }
 
 function createGithubDummy(pr, issue) {
-  var that = {
+  const that = {
     getIssue: (number, cb) => {
       cb(null, issue);
     }

@@ -21,7 +21,7 @@ module.exports = function(issueReleaseInfoList, releaseInfoLabel, releaseNotesFo
       },
 
       (releaseInfoList, next) => {
-        var body = releaseNotesFormatter.format(releaseInfoList);
+        const body = releaseNotesFormatter.format(releaseInfoList);
         next(null, body);
       },
 

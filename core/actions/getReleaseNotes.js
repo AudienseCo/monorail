@@ -15,7 +15,7 @@ module.exports = function getReleaseNotesBuilder(issueReleaseInfoList, releaseNo
         const filteredReleaseInfoList = releaseInfoList.filter(info => {
           if (!info.issue || !info.issue.labels) return false;
 
-          var labels = info.issue.labels.map(labelInfo => labelInfo.name);
+          const labels = info.issue.labels.map(labelInfo => labelInfo.name);
           return labels.indexOf(filterLabels[0]) > -1;
         });
 
@@ -23,7 +23,7 @@ module.exports = function getReleaseNotesBuilder(issueReleaseInfoList, releaseNo
       },
 
       (releaseInfoList, next) => {
-        var body = releaseNotesFormatter.format(releaseInfoList);
+        const body = releaseNotesFormatter.format(releaseInfoList);
         next(null, body);
       }
     ], callback);
