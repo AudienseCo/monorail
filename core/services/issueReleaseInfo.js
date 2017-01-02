@@ -9,7 +9,7 @@ module.exports = function(github, boundIssueExtractor, issueParticipants) {
     async.waterfall([
 
       function getPRInfo(next) {
-        github.getPullRequest(prId, next);
+        github.getIssue(prId, next);
       },
 
       function getBoundIssue(prInfo, next) {

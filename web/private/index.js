@@ -42,8 +42,13 @@ module.exports = function(actions) {
     const pullRequestIds    = pullRequestIdsStr.split(',');
 
     actions.createRelease(tagName, pullRequestIds, (err, result) => {
-      if (err) res.status(400).send(err);
-      else res.status(200).send(result);
+      if (err) return res.status(400).send(err);
+
+      const info = {
+        body: result
+      };
+
+      res.status(200).send(info);
     });
 
   });
@@ -56,11 +61,32 @@ module.exports = function(actions) {
     const pullRequestIds    = pullRequestIdsStr.split(',');
 
     actions.previewRelease(pullRequestIds, (err, result) => {
-      if (err) res.status(400).send(err);
+      if (err) return res.status(400).send(err);
 
       const info = result.map(issue => {
         return `#${issue.number} ${issue.title}`;
       });
+
+      res.status(200).send(info);
+    });
+
+  });
+
+  app.get('/release-notes', (req, res) => {
+    if (!req.query.pr)
+      return res.status(400).send({ error: 'You must include the "pr" parameter' });
+
+    const pullRequestIdsStr = req.query.pr;
+    const pullRequestIds    = pullRequestIdsStr.split(',');
+    const filterLabelsStr   = req.query.labels || '';
+    const filterLabels      = filterLabelsStr.length ? filterLabelsStr.split(',') : [];
+
+    actions.getReleaseNotes(pullRequestIds, filterLabels, (err, result) => {
+      if (err) return res.status(400).send(err);
+
+      const info = {
+        body: result
+      };
 
       res.status(200).send(info);
     });
