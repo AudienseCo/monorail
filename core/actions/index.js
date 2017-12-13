@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('../../config');
+const config = require('../../config/config');
 
 const checkers = [
   require('../services/checkers/qa-review'),
