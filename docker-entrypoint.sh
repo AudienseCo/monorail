@@ -14,8 +14,8 @@ file_env() {
 }
 
 if [ "$1" = 'node' ]; then
-    file_env 'secret'
-    file_env 'token'
+    file_env 'GH_SECRET'
+    file_env 'GH_TOKEN'
 else
     echo "Not running node code, exiting..."
     exit 1
