@@ -12,8 +12,11 @@ RUN npm install
 # Bundle monorail source
 COPY . /app/
 
+# Prepares environment before running node
+ENTRYPOINT ["docker-entrypoint.sh"]
+
 # Port 8080 faces internet and 8484 local network
 EXPOSE 8080 8484
 
 # Run monorail
-CMD [ "source", "/app/config/monorail-keys.sh", "&&", "node", "/app/index.js" ]
+CMD [ "node", "/app/index.js" ]
