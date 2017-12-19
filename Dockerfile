@@ -13,7 +13,7 @@ RUN npm install
 COPY . /app/
 
 # Prepares environment before running node
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Port 8080 faces internet and 8484 local network
 EXPOSE 8080 8484
