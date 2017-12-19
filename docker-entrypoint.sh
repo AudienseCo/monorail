@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 set -e
 
 # fills in the value of a variable from a file and exports it
@@ -7,7 +7,7 @@ file_env() {
 	local fileVar="/app/config/${var}_SECRET"
 
 	if [ -r "${fileVar}" ]; then
-		val="$(< "${fileVar}")"
+		val="$(cat "${fileVar}")"
 	fi
 	export "$var"="$val"
 	unset "$fileVar"
