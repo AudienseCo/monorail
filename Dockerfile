@@ -12,6 +12,9 @@ RUN npm install
 # Bundle monorail source
 COPY . /app/
 
+# Create symlink for new configuration path
+RUN mkdir -p /app/config && ln -sf /app/config/config.js /app/config.js
+
 # Prepares environment before running node
 ENTRYPOINT ["/bin/sh", "./docker-entrypoint.sh"]
 
