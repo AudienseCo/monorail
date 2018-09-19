@@ -96,7 +96,7 @@ for batch_same_node_version in services:
     services_list = set()
     for service in batch_same_node_version['deploy']:
         services_list.add(service)
-    payload['where_to_deploy'] = list(services_list)
+    payload['where_to_deploy'] = ','.join(services_list)
 
     try:
         r = requests.post(request_jenkins, auth=(args.jenkinsUser, args.jenkinsApiToken), params=payload)
