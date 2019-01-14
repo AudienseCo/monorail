@@ -1,0 +1,21 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:8.6
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - node-modules-cache-v1-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - node-modules-cache-v1-
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: node-modules-cache-v1-{{ checksum "package.json" }}
+      - run: npm run test:coverage
