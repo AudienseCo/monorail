@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "GH_SECRET=fake GH_TOKEN=fake mocha $(find test/ -name *_spec.js)",
-    "test:coverage": "nyc npm run test"
+    "test:coverage": "nyc --reporter=lcov npm run test"
   },
   "keywords": [
     "ci",
