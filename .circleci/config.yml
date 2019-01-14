@@ -26,7 +26,6 @@ jobs:
       - run:
           name: Run tests
           command: |
-              sudo docker-php-ext-enable xdebug
               # notify Code Climate of a pending test report using `before-build`
               ./cc-test-reporter before-build
               npm run test:coverage
