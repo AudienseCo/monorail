@@ -7,9 +7,9 @@ const createSlack = require('../../../lib/slack/slack');
 describe('Slack API wrapper', () => {
 
   function createIncomingWebhookDummy(err, result) {
-    function IncomingWebhook(url) {
+    function IncomingWebhook() {
     }
-    IncomingWebhook.prototype.send = (text, cb) => cb(err, result);
+    IncomingWebhook.prototype.send = (msg, cb) => cb(err, result);
     return IncomingWebhook;
   }
 
@@ -28,12 +28,11 @@ describe('Slack API wrapper', () => {
       const webhookUrl = '';
       const slack = createSlack(IncomingWebhookDummy, webhookUrl);
       const spy = sinon.spy(slack, 'send');
-      const text = 'hello world';
-      slack.send(text, (err, res) => {
-        spy.calledWith(text).should.be.ok();
+      const msg = { text: 'hello world' };
+      slack.send(payload, (err, res) => {
+        spy.calledWith(msg).should.be.ok();
         done();
       });
     });
-
   });
 });
