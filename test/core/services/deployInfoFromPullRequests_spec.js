@@ -46,12 +46,12 @@ describe('Get pull requests deploy info service', () => {
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
       const servicesMap = {
         globalreports: {
-          'node-version': 'v0.10.24',
+          nodeVersion: 'v0.10.24',
           statics: true,
           deploy: ['globalreports']
         },
         'tasks-as': {
-          'node-version': 'v0.10.24',
+          nodeVersion: 'v0.10.24',
           statics: true,
           deploy: ['tasks']
         }
@@ -72,8 +72,8 @@ describe('Get pull requests deploy info service', () => {
         info.should.be.eql({
           deployNotes: false,
           services: [
-            { deploy: ['tasks'], 'node-version': 'v0.10.24', statics: true },
-            { deploy: ['globalreports'], 'node-version': 'v0.10.24', statics: true }
+            { deploy: ['tasks'], nodeVersion: 'v0.10.24', statics: true },
+            { deploy: ['globalreports'], nodeVersion: 'v0.10.24', statics: true }
           ]
         });
         done();
