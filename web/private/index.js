@@ -97,7 +97,7 @@ module.exports = function(actions) {
 
     actions.slackPreviewRelease((err) => {
       if (err) return res.status(400).send(err);
-      res.status(200).send(info);
+      res.status(200).send('OK');
     });
 
   });
