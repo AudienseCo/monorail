@@ -70,6 +70,11 @@ describe('Github API wrapper', () => {
           createRelease: (info, cb) => {
             cb(null, result);
           }
+        },
+        repos: {
+          compareCommits: (info, cb) => {
+            cb(null, result);
+          }
         }
       };
     }
@@ -223,5 +228,24 @@ describe('Github API wrapper', () => {
       });
     });
 
+    it('get changes', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.repos, 'compareCommits');
+      const msg  = {
+        base: 'master',
+        head: 'dev'
+      };
+      github.compareCommits(msg, (err, result) => {
+        spy.calledWith({
+          owner: 'AudienseCo',
+          user: 'AudienseCo',
+          repo: 'socialbro',
+          base: 'master',
+          head: 'dev'
+        }).should.be.ok();
+        done();
+      });
+    });
   });
 });
