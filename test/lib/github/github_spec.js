@@ -238,7 +238,6 @@ describe('Github API wrapper', () => {
       };
       github.compareCommits(msg, (err, result) => {
         spy.calledWith({
-          owner: 'AudienseCo',
           user: 'AudienseCo',
           repo: 'socialbro',
           base: 'master',
