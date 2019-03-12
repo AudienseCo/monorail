@@ -40,8 +40,8 @@ describe('Get pull requests ids from changes', () => {
     it('should return an error if the fetching fails', (done) => {
       const githubDummy = createGithubDummyWithError('foo_error');
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
-
-      pullRequestsFromChanges((err, ids) => {
+      const repo = 'socialbro';
+      pullRequestsFromChanges(repo, (err, ids) => {
         err.should.be.eql('foo_error');
         should.not.exist(ids);
         done();
@@ -64,8 +64,8 @@ describe('Get pull requests ids from changes', () => {
         ]
       });
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
-
-      pullRequestsFromChanges((err, ids) => {
+      const repo = 'socialbro';
+      pullRequestsFromChanges(repo, (err, ids) => {
         should.not.exist(err);
         ids.should.be.eql(['10499']);
         done();

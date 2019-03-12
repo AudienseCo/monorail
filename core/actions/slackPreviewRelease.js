@@ -14,7 +14,7 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
 
   function repoReleasePreview(repo, cb) {
     waterfall([
-      next => pullRequestsFromChanges(next),
+      next => pullRequestsFromChanges(repo, next),
       getDeployInfo,
       getIssues
     ], (error, pullRequestList, issues, deployInfo) => {

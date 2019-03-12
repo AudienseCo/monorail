@@ -1,8 +1,9 @@
 'use strict';
 
 module.exports = (github, { masterBranch, devBranch }) => {
-  return (cb) => {
+  return (repo, cb) => {
     const compareInfo  = {
+      repo,
       base: masterBranch,
       head: devBranch
     };

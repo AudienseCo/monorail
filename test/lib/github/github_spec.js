@@ -233,13 +233,14 @@ describe('Github API wrapper', () => {
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.repos, 'compareCommits');
       const msg  = {
+        repo: 'another',
         base: 'master',
         head: 'dev'
       };
       github.compareCommits(msg, (err, result) => {
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           base: 'master',
           head: 'dev'
         }).should.be.ok();
