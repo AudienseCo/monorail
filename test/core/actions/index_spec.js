@@ -26,5 +26,9 @@ describe('Actions builder', () => {
       actions.getReleaseNotes.should.be.a.Function();
     });
 
+    it('should have the "slackPreviewRelease method"', () => {
+      actions.slackPreviewRelease.should.be.a.Function();
+    });
+
   });
 });
