@@ -6,7 +6,7 @@ const createPullRequestsFromChanges = require('../../../core/services/pullReques
 describe('Get pull requests ids from changes', () => {
   context('Interface', () => {
 
-    const pullRequestsFromChanges = createPullRequestsFromChanges();
+    const pullRequestsFromChanges = createPullRequestsFromChanges({}, {});
 
     it('should be a method', () => {
       pullRequestsFromChanges.should.be.a.Function();
@@ -15,6 +15,11 @@ describe('Get pull requests ids from changes', () => {
   });
 
   context('Behaviour', () => {
+
+    const configDummy = {
+      masterBranch: 'master',
+      devBranch: 'dev'
+    };
 
     function createGithubDummy(response) {
       return {
@@ -34,7 +39,7 @@ describe('Get pull requests ids from changes', () => {
 
     it('should return an error if the fetching fails', (done) => {
       const githubDummy = createGithubDummyWithError('foo_error');
-      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy);
+      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
 
       pullRequestsFromChanges((err, ids) => {
         err.should.be.eql('foo_error');
@@ -58,7 +63,7 @@ describe('Get pull requests ids from changes', () => {
           }
         ]
       });
-      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy);
+      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
 
       pullRequestsFromChanges((err, ids) => {
         should.not.exist(err);

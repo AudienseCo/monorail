@@ -21,31 +21,6 @@ describe('slackPreviewRelease action', () => {
 
   context('Behaviour', () => {
 
-    function createGithubDummy(prInfo, issueInfo, commitsInfo, labelsInfo) {
-      return {
-        getPullRequest: (id, cb) => {
-          cb(null, prInfo);
-        },
-        getIssue: (id, cb) => {
-          cb(null, issueInfo);
-        },
-        compareCommits: (info, cb) => {
-          cb(null, commitsInfo);
-        },
-        getIssueLabels: (id, cb) => {
-          cb(null, labelsInfo);
-        }
-      };
-    }
-
-    function createSlackDummy() {
-      return {
-        send: (msg, cb) => {
-          cb(null, {});
-        }
-      };
-    }
-
     it('should notify a NO_CHANGES error if there are no changes', done => {
       const configDummy = {};
       const prInfo = {};
@@ -56,7 +31,7 @@ describe('slackPreviewRelease action', () => {
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
-      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy);
+      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
@@ -94,7 +69,7 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
-      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy);
+      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
@@ -132,7 +107,7 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(1, null, []);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
-      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy);
+      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
@@ -187,7 +162,7 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
-      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy);
+      const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
@@ -204,5 +179,31 @@ describe('slackPreviewRelease action', () => {
         done();
       });
     });
+
+    function createGithubDummy(prInfo, issueInfo, commitsInfo, labelsInfo) {
+      return {
+        getPullRequest: (id, cb) => {
+          cb(null, prInfo);
+        },
+        getIssue: (id, cb) => {
+          cb(null, issueInfo);
+        },
+        compareCommits: (info, cb) => {
+          cb(null, commitsInfo);
+        },
+        getIssueLabels: (id, cb) => {
+          cb(null, labelsInfo);
+        }
+      };
+    }
+
+    function createSlackDummy() {
+      return {
+        send: (msg, cb) => {
+          cb(null, {});
+        }
+      };
+    }
+
   });
 });

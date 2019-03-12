@@ -20,7 +20,11 @@ const releaseInfoLabel = require('../services/releaseInfoLabel')(github);
 const issueReleaseInfoList = require('../services/issueReleaseInfoList')(issueReleaseInfo);
 const releaseNotesFormatter = require('../services/releaseNotesFormatter')();
 
-const pullRequestsFromChanges = require('../services/pullRequestsFromChanges')(github);
+const branchesConfig = {
+  masterBranch: config.github.masterBranch,
+  devBranch: config.github.devBranch
+};
+const pullRequestsFromChanges = require('../services/pullRequestsFromChanges')(github, branchesConfig);
 const issuesFromPullRequests = require('../services/issuesFromPullRequests')(github);
 const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo, config);
 
