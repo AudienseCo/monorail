@@ -1,9 +1,11 @@
-module.exports = ({ pullRequestList, deployInfo, issues, organization, repo }) => {
+const { user, repo } = require('../../config').github;
+
+module.exports = ({ pullRequestList, deployInfo, issues }) => {
 
   const changes = pullRequestList.join(', ');
 
   const formatedIssues = issues.map(issue => {
-    return `<https://github.com/${organization}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title}`;
+    return `<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title}`;
   });
 
   const formatedServices = deployInfo.services.reduce((res, service) => {

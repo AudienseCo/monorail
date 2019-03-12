@@ -2,8 +2,6 @@
 
 const { reduce, waterfall } = require('async');
 const templates = require('../../templates/slack-preview-release');
-const organization = 'AudienseCo';
-const repo = 'socialbro';
 
 module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slack) {
 
@@ -36,7 +34,7 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
   }
 
   function getReleasePreviewMessage(pullRequestList, issues, deployInfo) {
-    return templates.RELEASE_PREVIEW({ pullRequestList, deployInfo, issues, organization, repo });
+    return templates.RELEASE_PREVIEW({ pullRequestList, deployInfo, issues });
   };
 
 };
