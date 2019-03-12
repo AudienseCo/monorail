@@ -1,5 +1,6 @@
 'use strict';
 
+require('should');
 const github = require('../../../lib/github');
 
 describe('Github builder', () => {

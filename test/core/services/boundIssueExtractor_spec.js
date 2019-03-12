@@ -19,7 +19,6 @@ describe('Bound Issue Extractor', () => {
 
     it('should return the issue number (Closes #issue)', () => {
       const input = 'Closes #1234';
-      console.log(boundIssueExtractor.extract(input));
       boundIssueExtractor.extract(input).should.be.eql('1234');
     });
 

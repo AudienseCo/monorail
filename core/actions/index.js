@@ -9,6 +9,7 @@ const checkers = [
 ];
 
 const github = require('../../lib/github');
+const slack = require('../../lib/slack');
 const pullRequestDeployInfo = require('../services/pullRequestDeployInfo')(github);
 const boundIssueExtractor = require('../services/boundIssueExtractor')();
 const releaseService = require('../services/releaseService')(github);
@@ -19,11 +20,20 @@ const releaseInfoLabel = require('../services/releaseInfoLabel')(github);
 const issueReleaseInfoList = require('../services/issueReleaseInfoList')(issueReleaseInfo);
 const releaseNotesFormatter = require('../services/releaseNotesFormatter')();
 
+const branchesConfig = {
+  masterBranch: config.github.masterBranch,
+  devBranch: config.github.devBranch
+};
+const pullRequestsFromChanges = require('../services/pullRequestsFromChanges')(github, branchesConfig);
+const issuesFromPullRequests = require('../services/issuesFromPullRequests')(github);
+const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo, config);
+
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
   createRelease: require('./createRelease')(issueReleaseInfoList, releaseInfoLabel,
     releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
+  slackPreviewRelease: require('./slackPreviewRelease')(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slack),
   getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter)
 };
