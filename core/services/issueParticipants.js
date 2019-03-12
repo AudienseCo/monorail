@@ -32,8 +32,8 @@ module.exports = function(github, config) {
   }
 
   function map(participants) {
-    if (!config || !config.users || !config.users.map) return participants;
-    return participants.map(config.users.map);
+    if (!config || !config.slack || !config.slack.users || !config.slack.users.map) return participants;
+    return participants.map(config.slack.users.map);
   }
 
   return that;

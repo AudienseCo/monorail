@@ -26,7 +26,7 @@ module.exports = {
     repo: process.env.GH_REPO || 'socialbro',
     token: process.env.GH_TOKEN,
     masterBranch: 'master',
-    devBranch: 'dev'    
+    devBranch: 'dev'
   },
   services: {
     mapper: service => {
@@ -50,7 +50,10 @@ module.exports = {
       return acc;
     }
   },
-  users: {
+  slack: {
+    channel: 'monorail-tests',
+    webhookUrl: process.env.SLACK_URL || '',
+    users: {
       map: user => {
         const list = {
           'github.username': 'slack_username'
@@ -58,4 +61,5 @@ module.exports = {
         return '@' + (list[user] || user);
       }
     }
+  }
 };

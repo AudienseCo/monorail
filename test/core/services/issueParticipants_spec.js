@@ -64,9 +64,11 @@ describe('issueParticipants service', () => {
 
     it('should get the list of people mapped using the config', done => {
       const config = {
-        users: {
-          map: user => {
-            return '@' + user;
+        slack: {
+          users: {
+            map: user => {
+              return '@' + user;
+            }
           }
         }
       };
