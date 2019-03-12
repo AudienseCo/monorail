@@ -150,7 +150,7 @@ describe('slackPreviewRelease action', () => {
       });
     });
 
-    it('should return the list of affected issues from a list of pull requests', done => {
+    it('should notify the release preview with PRs, issues and deploy info', done => {
       const servicesMap = {
         globalreports: {
           nodeVersion: 'v0.10.24',
