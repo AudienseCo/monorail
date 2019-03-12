@@ -66,11 +66,8 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          channel: 'monorail-tests',
-          attachments: [ {
-            pretext: '',
-            text: 'Monorail will not deploy anything in the next 10 minutes as there are no changes to deploy.'
-          }]
+          pretext: '',
+          text: 'Monorail will not deploy anything in the next 10 minutes as there are no changes to deploy.'
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -107,11 +104,8 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          channel: 'monorail-tests',
-          attachments: [ {
-            pretext: '',
-            text: 'Monorail will not deploy anything in the next 10 minutes as there are deployNotes.'
-          }]
+          pretext: '',
+          text: 'Monorail will not deploy anything in the next 10 minutes as there are deployNotes.'
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -148,11 +142,8 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          channel: 'monorail-tests',
-          attachments: [ {
-            pretext: '',
-            text: 'Monorail will not deploy anything in the next 10 minutes because the list of services is empty.'
-          }]
+          pretext: '',
+          text: 'Monorail will not deploy anything in the next 10 minutes because the list of services is empty.'
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -206,14 +197,10 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          channel: 'monorail-tests',
-          attachments: [ {
-            pretext: 'PRs, services and issues that would be deployed with the next release in 10 minutes...',
-            text: 'Pull Requests: 1234\n\nNode version: v0.10.24\nServices: tasks\n\n\nIssues:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\nTo stop this deploy, please insert a deploy_note or <$JENKINS_DEPLOY_URL/job/$TARBALLS_JOB/|disable the deploy job> in Jenkins'
-          }]
+          pretext: 'PRs, services and issues that would be deployed with the next release in 10 minutes...',
+          text: 'Pull Requests: 1234\n\nNode version: v0.10.24\nServices: tasks\n\n\nIssues:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\nTo stop this deploy, please insert a deploy_note or <$JENKINS_DEPLOY_URL/job/$TARBALLS_JOB/|disable the deploy job> in Jenkins'
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
-
         done();
       });
     });

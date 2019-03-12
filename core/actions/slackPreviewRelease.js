@@ -1,7 +1,6 @@
 'use strict';
 
 const { reduce, waterfall } = require('async');
-const channel = 'monorail-tests';
 const organization = 'AudienseCo';
 const repo = 'socialbro';
 
@@ -46,15 +45,10 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
       default:
         'Unhandled error. Monorail will not deploy anything in the next 10 minutes.'
     }
-    const pretext = deployInfo ? deployInfo.services.join(', ') : '';
+    const pretext = '';
     return {
-      channel,
-      attachments: [
-        {
-          pretext,
-          text
-        }
-      ]
+      pretext,
+      text
     };
   }
 
@@ -65,15 +59,11 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
       return `<https://github.com/${organization}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title}`;
     });
     const text = `Pull Requests: ${changes}\n\n${services}\n\nIssues:\n${formatedIssues}\n\nTo stop this deploy, please insert a deploy_note or <$JENKINS_DEPLOY_URL/job/$TARBALLS_JOB/|disable the deploy job> in Jenkins`;
+    const pretext = 'PRs, services and issues that would be deployed with the next release in 10 minutes...';
     return {
-      channel,
-      attachments: [
-        {
-          pretext: 'PRs, services and issues that would be deployed with the next release in 10 minutes...',
-          text
-        }
-      ]
-    }
+      pretext,
+      text
+    };
   };
 
   function formatServices(deployInfo) {
