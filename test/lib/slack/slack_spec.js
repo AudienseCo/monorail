@@ -19,7 +19,7 @@ describe('Slack API wrapper', () => {
     const incomingWebhookDummy = createIncomingWebhookDummy(null, {});
     const channel = '';
     const slack = createSlack(incomingWebhookDummy, { channel });
-    it('should have the "getIssueLabels" method', () => {
+    it('should have the "send" method', () => {
       slack.send.should.be.a.Function();
     });
   });
