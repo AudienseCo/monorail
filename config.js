@@ -24,6 +24,7 @@ module.exports = {
   github: {
     user: process.env.GH_USER || 'AudienseCo',
     repo: process.env.GH_REPO || 'socialbro',
+    repos: ['socialbro'],
     token: process.env.GH_TOKEN,
     masterBranch: 'master',
     devBranch: 'dev'

@@ -20,6 +20,7 @@ describe('slackPreviewRelease action', () => {
   });
 
   context('Behaviour', () => {
+    const repos = ['socialbro'];
 
     it('should notify a NO_CHANGES error if there are no changes', done => {
       const configDummy = {};
@@ -36,7 +37,7 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
@@ -74,7 +75,7 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
@@ -112,7 +113,7 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
@@ -167,13 +168,13 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: 'PRs, services and issues that would be deployed with the next release in 10 minutes...',
-          text: 'Pull Requests: 1234\n\nNode version: v0.10.24\nServices: tasks\n\n\nIssues:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\nTo stop this deploy, please insert a deploy_note or <$JENKINS_DEPLOY_URL/job/$TARBALLS_JOB/|disable the deploy job> in Jenkins'
+          pretext: '',
+          text: 'Repository: socialbro\n\nPull Requests: 1234\n\nNode version: v0.10.24\nServices: tasks\n\n\nIssues:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\n\n\n'
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();

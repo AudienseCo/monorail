@@ -34,6 +34,6 @@ module.exports = {
   createRelease: require('./createRelease')(issueReleaseInfoList, releaseInfoLabel,
     releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
-  slackPreviewRelease: require('./slackPreviewRelease')(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slack),
+  slackPreviewRelease: require('./slackPreviewRelease')(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slack, config.github.repos),
   getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter)
 };
