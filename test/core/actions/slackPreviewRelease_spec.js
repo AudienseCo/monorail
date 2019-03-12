@@ -66,8 +66,8 @@ describe('slackPreviewRelease action', () => {
 
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy notes' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy notes' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
@@ -104,8 +104,8 @@ describe('slackPreviewRelease action', () => {
 
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(1, null, []);
-      stub.onSecondCall().callsArgWith(1, null, []);
+      stub.onFirstCall().callsArgWith(2, null, []);
+      stub.onSecondCall().callsArgWith(2, null, []);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
@@ -159,8 +159,8 @@ describe('slackPreviewRelease action', () => {
       };
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy-to:tasks-as' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
@@ -192,7 +192,7 @@ describe('slackPreviewRelease action', () => {
         compareCommits: (info, cb) => {
           cb(null, commitsInfo);
         },
-        getIssueLabels: (id, cb) => {
+        getIssueLabels: (repo, id, cb) => {
           cb(null, labelsInfo);
         }
       };

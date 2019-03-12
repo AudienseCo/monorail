@@ -14,7 +14,7 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
 
   function repoReleasePreview(repo, cb) {
     waterfall([
-      next => pullRequestsFromChanges(repo, next),
+      next => getPullRequests(repo, next),
       getDeployInfo,
       getIssues
     ], (error, pullRequestList, issues, deployInfo) => {
@@ -22,9 +22,15 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
     });
   }
 
-  function getDeployInfo(pullRequestList, cb) {
+  function getPullRequests(repo, cb) {
+    pullRequestsFromChanges(repo, (err, pullRequestList) => {
+      cb(err, repo, pullRequestList);
+    });
+  }
+
+  function getDeployInfo(repo, pullRequestList, cb) {
     if (pullRequestList.length === 0) return cb(new Error('NO_CHANGES'));
-    deployInfoFromPullRequests(pullRequestList, (err, deployInfo) => {
+    deployInfoFromPullRequests(repo, pullRequestList, (err, deployInfo) => {
       if (err) return cb(err);
       if (deployInfo.deployNotes) return cb(new Error('DEPLOY_NOTES'), deployInfo);
       if (deployInfo.services.length === 0) return cb(new Error('NO_SERVICES'), deployInfo);

@@ -8,7 +8,7 @@ describe('QA Review checker', () => {
 
   function createGithubDummy(result) {
     return {
-      getIssueLabels: (issue, cb) => {
+      getIssueLabels: (repo, issue, cb) => {
         cb(null, result);
       }
     };

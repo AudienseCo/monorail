@@ -3,7 +3,7 @@
 const async = require('async');
 
 module.exports = function(prDeployInfo, config) {
-  return function(ids, cb) {
+  return function(repo, ids, cb) {
 
     const initial = {
       deployNotes: false,
@@ -11,7 +11,7 @@ module.exports = function(prDeployInfo, config) {
     };
 
     async.reduce(ids, initial, (acc, id, next) => {
-      prDeployInfo.get(id, (err, prInfo) => {
+      prDeployInfo.get(repo, id, (err, prInfo) => {
         if (err) return next(err);
         const prServices = map(prInfo.services, config);
         const services = Array.from(new Set(acc.services.concat(prServices)));

@@ -88,11 +88,12 @@ describe('Github API wrapper', () => {
       const githubApiDummy = createGithubDummy(['tag1', 'tag2']);
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.issues, 'getIssueLabels');
-      github.getIssueLabels(1234, (err, labels) => {
+      const repo = 'another'
+      github.getIssueLabels(repo, 1234, (err, labels) => {
         labels.should.be.eql(['tag1', 'tag2']);
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           number: 1234
         }).should.be.ok();
         done();

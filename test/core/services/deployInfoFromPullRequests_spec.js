@@ -17,7 +17,7 @@ describe('Get pull requests deploy info service', () => {
   context('Behaviour', () => {
     function createGithubDummy(response) {
       return {
-        getIssueLabels: (id, cb) => {
+        getIssueLabels: (repo, id, cb) => {
           cb(null, response);
         }
       };
@@ -27,12 +27,13 @@ describe('Get pull requests deploy info service', () => {
       const githubDummy  = createGithubDummy();
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
       const configDummy = {};
+      const repo = 'socialbro';
 
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy-to:tasks-as' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const prDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(prDeployInfo, configDummy);
-      deployInfoFromPullRequests([1234, 4321], (err, info) => {
+      deployInfoFromPullRequests(repo, [1234, 4321], (err, info) => {
         info.should.be.eql({
           deployNotes: false,
           services: ['tasks-as', 'globalreports']
@@ -63,12 +64,13 @@ describe('Get pull requests deploy info service', () => {
           }
         }
       };
+      const repo = 'socialbro';
 
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy-to:tasks-as' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const prDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(prDeployInfo, configDummy);
-      deployInfoFromPullRequests([1234, 4321], (err, info) => {
+      deployInfoFromPullRequests(repo, [1234, 4321], (err, info) => {
         info.should.be.eql({
           deployNotes: false,
           services: [
@@ -92,12 +94,13 @@ describe('Get pull requests deploy info service', () => {
           }
         }
       };
+      const repo = 'socialbro';
 
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy-to:tasks-as' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const prDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(prDeployInfo, configDummy);
-      deployInfoFromPullRequests([1234, 4321], (err, info) => {
+      deployInfoFromPullRequests(repo, [1234, 4321], (err, info) => {
         info.should.be.eql({
           deployNotes: false,
           services: {
@@ -124,12 +127,13 @@ describe('Get pull requests deploy info service', () => {
           }
         }
       };
+      const repo = 'socialbro';
 
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy-to:tasks-as' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const prDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(prDeployInfo, configDummy);
-      deployInfoFromPullRequests([1234, 4321], (err, info) => {
+      deployInfoFromPullRequests(repo, [1234, 4321], (err, info) => {
         info.should.be.eql({
           deployNotes: false,
           services: {

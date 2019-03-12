@@ -8,7 +8,7 @@ describe('Deploy notes checker', () => {
 
   function createGithubDummy(result) {
     return {
-      getIssueLabels: (issue, cb) => {
+      getIssueLabels: (repo, issue, cb) => {
         cb(null, result);
       }
     };

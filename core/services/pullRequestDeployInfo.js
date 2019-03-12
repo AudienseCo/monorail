@@ -3,11 +3,11 @@
 module.exports = function createPullRequestDeployInfo(github) {
   const that = {};
 
-  that.get = (prId, cb) => {
+  that.get = (repo, prId, cb) => {
     const deployNotesTag = 'deploy notes';
     const deployTagRegex = /^deploy-to:(.+)/;
 
-    github.getIssueLabels(prId, (err, labels) => {
+    github.getIssueLabels(repo, prId, (err, labels) => {
       if (err) return cb(err);
 
       cb(null, {

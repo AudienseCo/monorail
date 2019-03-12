@@ -4,7 +4,7 @@ module.exports = function(github) {
   const that = {};
 
   that.checkPullRequest = (prInfo, cb) => {
-    github.getIssueLabels(prInfo.number, (err, labels) => {
+    github.getIssueLabels(prInfo.repository.name, prInfo.number, (err, labels) => {
       if (err) return cb(err);
 
       const hasdDeployLabels = labels.some(label => label.name.toLowerCase().match(/^deploy-to:/));
