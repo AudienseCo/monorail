@@ -7,27 +7,36 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
 
   return function previewRelease(cb) {
     waterfall([
-      next => pullRequestsFromChanges(next),
-      (pullRequestList, next) => {
-        if (pullRequestList.length === 0) return next(new Error('NO_CHANGES'));
-        deployInfoFromPullRequests(pullRequestList, (err, deployInfo) => {
-          if (deployInfo.deployNotes) return next(new Error('DEPLOY_NOTES'), deployInfo);
-          if (deployInfo.services.length === 0) return next(new Error('NO_SERVICES'), deployInfo);
-          next(err, pullRequestList, deployInfo);
-        });
-      },
-      (pullRequestList, deployInfo, next) => {
-        issuesFromPullRequests(pullRequestList, (err, issues) => {
-          next(err, pullRequestList, issues, deployInfo);
-        });
-      }
+      pullRequestsFromChanges,
+      getDeployInfo,
+      getIssues
     ], (err, pullRequestList, issues, deployInfo) => {
-      const msg = err
-        ? getErrorMessage(err)
-        : getReleasePreviewMessage(pullRequestList, issues, deployInfo);
-      slack.send(msg, cb);
+      publishInSlack(err, pullRequestList, issues, deployInfo, cb);
     });
   };
+
+  function getDeployInfo(pullRequestList, cb) {
+    if (pullRequestList.length === 0) return cb(new Error('NO_CHANGES'));
+    deployInfoFromPullRequests(pullRequestList, (err, deployInfo) => {
+      if (err) return cb(err);
+      if (deployInfo.deployNotes) return cb(new Error('DEPLOY_NOTES'), deployInfo);
+      if (deployInfo.services.length === 0) return cb(new Error('NO_SERVICES'), deployInfo);
+      cb(err, pullRequestList, deployInfo);
+    });
+  }
+
+  function getIssues(pullRequestList, deployInfo, cb) {
+    issuesFromPullRequests(pullRequestList, (err, issues) => {
+      cb(err, pullRequestList, issues, deployInfo);
+    });
+  }
+
+  function publishInSlack(err, pullRequestList, issues, deployInfo, cb) {
+    const msg = err
+      ? getErrorMessage(err)
+      : getReleasePreviewMessage(pullRequestList, issues, deployInfo);
+    slack.send(msg, cb);
+  }
 
   function getErrorMessage(err) {
     return templates[err.message] || templates.UNkNOWN_ERROR;
