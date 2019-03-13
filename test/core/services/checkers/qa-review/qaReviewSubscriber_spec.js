@@ -9,7 +9,7 @@ const createQAService = require('../../../../../core/services/checkers/qa-review
 describe('QA Review subscriber', () => {
   function createDeployNotesCheckerDummy(result) {
     return {
-      checkPullRequest: (prInfo, cb) => {
+      checkPullRequest: (repo, prInfo, cb) => {
         cb(null, result);
       }
     };
@@ -53,7 +53,8 @@ describe('QA Review subscriber', () => {
       const payload = {
         action: 'opened',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       qaReviewSubscriber.subscribe();
       emitter.emit('pull_request', payload);
@@ -71,7 +72,8 @@ describe('QA Review subscriber', () => {
       const payload = {
         action: 'closed',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       qaReviewSubscriber.subscribe();
       emitter.emit('pull_request', payload);
@@ -89,7 +91,8 @@ describe('QA Review subscriber', () => {
       const payload = {
         action: 'labeled',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       qaReviewSubscriber.subscribe();
       emitter.emit('pull_request', payload);
@@ -107,7 +110,8 @@ describe('QA Review subscriber', () => {
       const payload = {
         action: 'unlabeled',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       qaReviewSubscriber.subscribe();
       emitter.emit('pull_request', payload);

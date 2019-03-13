@@ -62,7 +62,8 @@ describe('Deploy notes subscriber', () => {
       const payload = {
         action: 'opened',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       deployNotesSubscriber.subscribe();
       emitter.emit('pull_request', payload);
@@ -80,7 +81,8 @@ describe('Deploy notes subscriber', () => {
       const payload = {
         action: 'closed',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       deployNotesSubscriber.subscribe();
       emitter.emit('pull_request', payload);
@@ -103,7 +105,8 @@ describe('Deploy notes subscriber', () => {
         },
         comment: {
           body: 'check deploy notes please'
-        }
+        },
+        repository: { name: '' }
       };
       deployNotesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);
@@ -126,7 +129,8 @@ describe('Deploy notes subscriber', () => {
         },
         comment: {
           body: 'Check deploy notes please'
-        }
+        },
+        repository: { name: '' }
       };
       deployNotesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);
@@ -148,7 +152,8 @@ describe('Deploy notes subscriber', () => {
         },
         comment: {
           body: 'Dummy text comment'
-        }
+        },
+        repository: { name: '' }
       };
       deployNotesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);
@@ -169,7 +174,8 @@ describe('Deploy notes subscriber', () => {
         },
         comment: {
           body: 'check deploy notes please'
-        }
+        },
+        repository: { name: '' }
       };
       deployNotesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);

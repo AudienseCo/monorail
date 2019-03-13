@@ -7,7 +7,8 @@ module.exports = function(emitter, qaReviewService) {
         if (payload.action === 'opened' || payload.action === 'labeled' ||
         payload.action === 'unlabeled' || payload.action === 'synchronize') {
           const prInfo = payload.pull_request;
-          qaReviewService.updatePullRequestCommit(prInfo);
+          const repo = payload.repository.name;
+          qaReviewService.updatePullRequestCommit(repo, prInfo);
         }
       });
     }

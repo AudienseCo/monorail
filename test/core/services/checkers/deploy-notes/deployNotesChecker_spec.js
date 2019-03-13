@@ -24,9 +24,10 @@ describe('Deploy notes checker', () => {
 
     it('should return an error status if the PR has the deploy notes tag added', done => {
       const githubDummy = createGithubDummy([{ name: 'Deploy Notes' }]);
+      const repo = '';
 
       const deployNotes = createDeployNotesChecker(githubDummy);
-      deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
+      deployNotes.checkPullRequest(repo, { body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Notes');
         status.state.should.be.eql('failure');
         done();
@@ -35,9 +36,10 @@ describe('Deploy notes checker', () => {
 
     it('should return a success status if the PR has not the deploy notes tag added', done => {
       const githubDummy = createGithubDummy([]);
+      const repo = '';
 
       const deployNotes = createDeployNotesChecker(githubDummy);
-      deployNotes.checkPullRequest({ body: '#1234' }, (err, status) => {
+      deployNotes.checkPullRequest(repo, { body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Notes');
         status.state.should.be.eql('success');
         done();
