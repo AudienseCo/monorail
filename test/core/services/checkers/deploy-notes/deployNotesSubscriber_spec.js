@@ -17,7 +17,7 @@ describe('Deploy notes subscriber', () => {
 
   function createGithubDummy(result) {
     return {
-      getPullRequest: (issue, cb) => {
+      getPullRequest: (repo, issue, cb) => {
         cb(null, result);
       },
       updateCommitStatus: (status, cb) => {

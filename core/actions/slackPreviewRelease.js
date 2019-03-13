@@ -34,12 +34,12 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
       if (err) return cb(err);
       if (deployInfo.deployNotes) return cb(new Error('DEPLOY_NOTES'), deployInfo);
       if (deployInfo.services.length === 0) return cb(new Error('NO_SERVICES'), deployInfo);
-      cb(err, pullRequestList, deployInfo);
+      cb(err, repo, pullRequestList, deployInfo);
     });
   }
 
-  function getIssues(pullRequestList, deployInfo, cb) {
-    issuesFromPullRequests(pullRequestList, (err, issues) => {
+  function getIssues(repo, pullRequestList, deployInfo, cb) {
+    issuesFromPullRequests(repo, pullRequestList, (err, issues) => {
       cb(err, pullRequestList, issues, deployInfo);
     });
   }

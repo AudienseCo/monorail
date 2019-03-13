@@ -29,12 +29,13 @@ describe('Create release service', () => {
       const releaseService = createReleaseService(githubDummy);
       const tag = 'v1.3.0';
       const body = '#1234 Foo issue\n#4321 Bar issue. cc ana';
-
-      releaseService.create(tag, body, (err, result) => {
+      const repo = 'socialbro';
+      releaseService.create(repo, tag, body, (err, result) => {
         spy.calledWith({
           tag_name: 'v1.3.0',
           name: 'v1.3.0 Release',
-          body: '#1234 Foo issue\n#4321 Bar issue. cc ana'
+          body: '#1234 Foo issue\n#4321 Bar issue. cc ana',
+          repo
         }).should.be.ok();
         done();
       });

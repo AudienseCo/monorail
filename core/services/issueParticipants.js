@@ -5,11 +5,11 @@ const async = require('async');
 module.exports = function(github, config) {
   const that = {};
 
-  that.getParticipants = (listOrIssue, cb) => {
+  that.getParticipants = (repo, listOrIssue, cb) => {
     const list = Array.isArray(listOrIssue) ? listOrIssue : [listOrIssue];
     const initial = [];
     async.reduce(list, initial, (participants, issueItem, done) => {
-      getIssueParticipants(issueItem, (err, issueParticipants) => {
+      getIssueParticipants(repo, issueItem, (err, issueParticipants) => {
         done(err, participants.concat(issueParticipants));
       });
     }, onFinish);
@@ -19,8 +19,8 @@ module.exports = function(github, config) {
     }
   };
 
-  function getIssueParticipants(issueItem, cb) {
-    github.getIssueComments(issueItem.number, (err, comments) => {
+  function getIssueParticipants(repo, issueItem, cb) {
+    github.getIssueComments(repo, issueItem.number, (err, comments) => {
       if (err) return cb(err);
 
       const initial = [issueItem.user.login];

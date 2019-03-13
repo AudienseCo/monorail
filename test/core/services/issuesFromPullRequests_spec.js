@@ -18,10 +18,10 @@ describe('issuesFromPullRequests service', () => {
 
     function createGithubDummy(prInfo, issueInfo) {
       return {
-        getPullRequest: (id, cb) => {
+        getPullRequest: (repo, id, cb) => {
           cb(null, prInfo);
         },
-        getIssue: (id, cb) => {
+        getIssue: (repo, id, cb) => {
           cb(null, issueInfo);
         }
       };
@@ -38,9 +38,10 @@ describe('issuesFromPullRequests service', () => {
           title: 'Bar issue'
         }
       ];
+      const repo = 'socialbro';
 
       const pullRequestList = ['1234'];
-      issuesFromPullRequests(pullRequestList, (err, issues) => {
+      issuesFromPullRequests(repo, pullRequestList, (err, issues) => {
         should.not.exist(err);
         issues.should.be.eql(expectedIssues);
         done();

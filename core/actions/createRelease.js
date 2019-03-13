@@ -5,16 +5,16 @@ const async = require('async');
 module.exports = function(issueReleaseInfoList, releaseInfoLabel, releaseNotesFormatter,
   releaseService) {
 
-  return function(tag, ids, cb) {
+  return function(repo, tag, ids, cb) {
 
     async.waterfall([
 
       (next) => {
-        issueReleaseInfoList.get(ids, next);
+        issueReleaseInfoList.get(repo, ids, next);
       },
 
       (releaseInfoList, next) => {
-        releaseInfoLabel.addLabels(releaseInfoList, ['deployed'], err => {
+        releaseInfoLabel.addLabels(repo, releaseInfoList, ['deployed'], err => {
           if (err) { console.error('Error adding the deployed label:', err); }
           next(null, releaseInfoList);
         });
@@ -26,7 +26,7 @@ module.exports = function(issueReleaseInfoList, releaseInfoLabel, releaseNotesFo
       },
 
       (body, next) => {
-        releaseService.create(tag, body, error => {
+        releaseService.create(repo, tag, body, error => {
           next(error, body);
         });
       }

@@ -5,9 +5,9 @@ const async = require('async');
 module.exports = function issueReleaseInfoListBuilder(issueReleaseInfo) {
   const that = {};
 
-  that.get = (ids, callback) => {
+  that.get = (repo, ids, callback) => {
     async.map(ids, (id, nextId) => {
-      issueReleaseInfo.getInfo(id, (err, issueReleaseInfo) => {
+      issueReleaseInfo.getInfo(repo, id, (err, issueReleaseInfo) => {
         nextId(err, issueReleaseInfo);
       });
     }, callback);

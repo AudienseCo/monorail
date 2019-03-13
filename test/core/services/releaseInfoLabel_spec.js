@@ -18,7 +18,7 @@ describe('releaseInfoLabel service', () => {
 
     function createGithubDummy(result) {
       return {
-        addIssueLabels: (issueNumber, labels, cb) => {
+        addIssueLabels: (repo, issueNumber, labels, cb) => {
           cb(null, result);
         }
       };
@@ -28,7 +28,8 @@ describe('releaseInfoLabel service', () => {
       const githubDummy = createGithubDummy();
       const releaseInfoLabel = createReleaseInfoLabel(githubDummy);
       const spy = sinon.spy(githubDummy, 'addIssueLabels');
-      releaseInfoLabel.addLabels([{ issue: { number: 1234 }}], ['foo', 'bar'], err => {
+      const repo = 'socialbro';
+      releaseInfoLabel.addLabels(repo, [{ issue: { number: 1234 }}], ['foo', 'bar'], err => {
         spy.calledOnce.should.be.ok();
         done();
       });
@@ -39,7 +40,8 @@ describe('releaseInfoLabel service', () => {
       const releaseInfoLabel = createReleaseInfoLabel(githubDummy);
       const spy = sinon.spy(githubDummy, 'addIssueLabels');
       const releaseInfo = [{ issue: { number: 1234 } }, { issue: { number: 4321 }}];
-      releaseInfoLabel.addLabels(releaseInfo, ['foo', 'bar'], err => {
+      const repo = 'socialbro';
+      releaseInfoLabel.addLabels(repo, releaseInfo, ['foo', 'bar'], err => {
         spy.callCount.should.be.eql(2);
         done();
       });
@@ -57,8 +59,9 @@ describe('releaseInfoLabel service', () => {
           }
         }
       ];
-      releaseInfoLabel.addLabels(releaseInfo, ['bar'], err => {
-        spy.calledWith(1234, ['foo', 'bar']).should.be.ok();
+      const repo = 'socialbro';
+      releaseInfoLabel.addLabels(repo, releaseInfo, ['bar'], err => {
+        spy.calledWith(repo, 1234, ['foo', 'bar']).should.be.ok();
         done();
       });
     });

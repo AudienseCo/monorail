@@ -183,10 +183,10 @@ describe('slackPreviewRelease action', () => {
 
     function createGithubDummy(prInfo, issueInfo, commitsInfo, labelsInfo) {
       return {
-        getPullRequest: (id, cb) => {
+        getPullRequest: (repo, id, cb) => {
           cb(null, prInfo);
         },
-        getIssue: (id, cb) => {
+        getIssue: (repo, id, cb) => {
           cb(null, issueInfo);
         },
         compareCommits: (info, cb) => {

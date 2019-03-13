@@ -1,5 +1,6 @@
 'use strict';
 
+require('should');
 const issueReleaseInfoListBuilder = require('../../../core/services/issueReleaseInfoList');
 
 describe('issueReleaseInfoList service', () => {
@@ -11,10 +12,11 @@ describe('issueReleaseInfoList service', () => {
       { issue: { number: 2 } },
       { issue: { number: 3 } }
     ];
+    const repo = 'socialbro';
 
     const issueReleaseInfoFake = _createIssueReleaseInfoFake();
     const issueReleaseInfoList = issueReleaseInfoListBuilder(issueReleaseInfoFake);
-    issueReleaseInfoList.get(ids, (error, list) => {
+    issueReleaseInfoList.get(repo, ids, (error, list) => {
       list.should.be.eql(expected);
       done();
     });
@@ -22,7 +24,7 @@ describe('issueReleaseInfoList service', () => {
 
   function _createIssueReleaseInfoFake() {
     return {
-      getInfo: (id, callback) => callback(null, { issue: { number: id } })
+      getInfo: (repo, id, callback) => callback(null, { issue: { number: id } })
     };
   }
 });
