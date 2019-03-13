@@ -1,7 +1,7 @@
 'use strict';
 
 const { reduce, waterfall, mapSeries } = require('async');
-const previewReleaseTemplate = require('../../templates/slack-preview-release');
+const previewReleaseTemplate = require('./slack-views/slack-preview-release');
 
 module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slack, repos) {
 

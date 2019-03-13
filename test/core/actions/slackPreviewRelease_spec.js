@@ -42,8 +42,12 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: '',
-          text: 'Monorail will not deploy anything in the next 10 minutes as there are no changes to deploy.'
+          attachments: [ {
+            text: 'Monorail will not deploy anything in the next 10 minutes as there are no changes to deploy.',
+            color: '#439FE0',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -80,8 +84,12 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: '',
-          text: 'Monorail will not deploy anything in the next 10 minutes as there are deployNotes.'
+          attachments: [ {
+            text: 'Monorail will not deploy anything in the next 10 minutes as there are deployNotes.',
+            color: 'danger',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -118,8 +126,12 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: '',
-          text: 'Monorail will not deploy anything in the next 10 minutes because the list of services is empty.'
+          attachments: [ {
+            text: 'Monorail will not deploy anything in the next 10 minutes because the list of services is empty.',
+            color: 'warning',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -173,8 +185,12 @@ describe('slackPreviewRelease action', () => {
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: '',
-          text: 'Repository: socialbro\n\nPull Requests: 1234\n\nNode version: v0.10.24\nServices: tasks\n\n\nIssues:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\n\n\n'
+          attachments: [ {
+            text: '*Pull Requests*: <https://github.com/AudienseCo/socialbro/issues/1234|#1234>\n\n*Node version*: v0.10.24\n*Services*: tasks\n\n\n*Issues*:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\n',
+            color: 'good',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
