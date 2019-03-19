@@ -16,7 +16,7 @@ file_env() {
 if [ "$1" = 'node' ]; then
     file_env 'GH_SECRET'
     file_env 'GH_TOKEN'
-		file_env 'SLACK_URL_SECRET'
+    file_env 'SLACK_URL'
 else
     echo "Not running node code, exiting..."
     exit 1
