@@ -96,7 +96,10 @@ module.exports = function(actions) {
   app.get('/slack-preview-release', (req, res) => {
 
     actions.slackPreviewRelease((err) => {
-      if (err) return res.status(400).send(err);
+      if (err) {
+        console.error('Error', err);
+        return res.status(400).send(err);
+      }
       res.status(200).send('OK');
     });
 
