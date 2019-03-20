@@ -20,10 +20,10 @@ describe('previewRelease action', () => {
 
     function createGithubDummy(prInfo, issueInfo) {
       return {
-        getPullRequest: (id, cb) => {
+        getPullRequest: (repo, id, cb) => {
           cb(null, prInfo);
         },
-        getIssue: (id, cb) => {
+        getIssue: (repo, id, cb) => {
           cb(null, issueInfo);
         }
       };
@@ -35,7 +35,7 @@ describe('previewRelease action', () => {
       const githubDummy = createGithubDummy(prInfo, issueInfo);
       const previewRelease = createPreviewRelease(githubDummy, boundIssueExtractor);
       const pullRequestList = ['1234'];
-
+      const repo = 'socialbro';
       const expected = [
         {
           number: 4321,
@@ -43,7 +43,7 @@ describe('previewRelease action', () => {
         }
       ];
 
-      previewRelease(pullRequestList, (err, issues) => {
+      previewRelease(repo, pullRequestList, (err, issues) => {
         should.not.exist(err);
         issues.should.be.eql(expected);
         done();

@@ -4,14 +4,14 @@ const { reduce } = require('async');
 
 module.exports = (pullRequestDeployInfo, config) => {
 
-  return (pullRequestList, cb) => {
+  return (repo, pullRequestList, cb) => {
     const initial = {
       deployNotes: false,
       services: []
     };
 
     reduce(pullRequestList, initial, (acc, id, next) => {
-      pullRequestDeployInfo.get(id, (err, prInfo) => {
+      pullRequestDeployInfo.get(repo, id, (err, prInfo) => {
         if (err) return next(err);
         const prServices = map(prInfo.services, config);
         const services = Array.from(new Set(acc.services.concat(prServices)));

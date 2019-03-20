@@ -3,8 +3,8 @@
 module.exports = function(github) {
   const that = {};
 
-  that.checkPullRequest = (prInfo, cb) => {
-    github.getIssueLabels(prInfo.number, (err, labels) => {
+  that.checkPullRequest = (repo, prInfo, cb) => {
+    github.getIssueLabels(repo, prInfo.number, (err, labels) => {
       if (err) return cb(err);
 
       const hasQAReview = labels.some(label => label.name.toLowerCase() === 'review-done:qa');

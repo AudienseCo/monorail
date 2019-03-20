@@ -19,7 +19,7 @@ describe('Slack API wrapper', () => {
     const incomingWebhookDummy = createIncomingWebhookDummy(null, {});
     const channel = '';
     const slack = createSlack(incomingWebhookDummy, { channel });
-    it('should have the "getIssueLabels" method', () => {
+    it('should have the "send" method', () => {
       slack.send.should.be.a.Function();
     });
   });
@@ -32,7 +32,8 @@ describe('Slack API wrapper', () => {
       const spy = sinon.spy(incomingWebhookDummy, 'send');
       const pretext = 'pre';
       const text = 'hello world';
-      slack.send({ pretext, text }, (err, res) => {
+      const msg = { attachments: [{ pretext, text }] };
+      slack.send(msg, (err, res) => {
         const expectedMsg = {
           channel,
           attachments: [ {

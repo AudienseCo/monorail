@@ -8,7 +8,7 @@ describe('QA Review checker', () => {
 
   function createGithubDummy(result) {
     return {
-      getIssueLabels: (issue, cb) => {
+      getIssueLabels: (repo, issue, cb) => {
         cb(null, result);
       }
     };
@@ -24,9 +24,10 @@ describe('QA Review checker', () => {
 
     it('should return an error status if the PR has not the "review-done:qa" label added', done => {
       const githubDummy = createGithubDummy([{ name: 'other' }]);
+      const repo = '';
 
       const qaReviewChecker = createQAReviewChecker(githubDummy);
-      qaReviewChecker.checkPullRequest({ body: '#1234' }, (err, status) => {
+      qaReviewChecker.checkPullRequest(repo, { body: '#1234' }, (err, status) => {
         status.context.should.be.eql('QA Review');
         status.state.should.be.eql('failure');
         done();
@@ -35,9 +36,10 @@ describe('QA Review checker', () => {
 
     it('should return a success status if the PR has "review-done:qa" label added', done => {
       const githubDummy = createGithubDummy([{ name: 'review-done:qa' }]);
+      const repo = '';
 
       const qaReviewChecker = createQAReviewChecker(githubDummy);
-      qaReviewChecker.checkPullRequest({ body: '#1234' }, (err, status) => {
+      qaReviewChecker.checkPullRequest(repo, { body: '#1234' }, (err, status) => {
         status.context.should.be.eql('QA Review');
         status.state.should.be.eql('success');
         done();

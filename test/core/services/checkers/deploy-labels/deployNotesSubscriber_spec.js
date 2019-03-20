@@ -9,7 +9,7 @@ const createDeployLabelsService = require('../../../../../core/services/checkers
 describe('Deploy labels subscriber', () => {
   function createDeployLabelsCheckerDummy(result) {
     return {
-      checkPullRequest: (prInfo, cb) => {
+      checkPullRequest: (repo, prInfo, cb) => {
         cb(null, result);
       }
     };
@@ -17,7 +17,7 @@ describe('Deploy labels subscriber', () => {
 
   function createGithubDummy(result) {
     return {
-      getPullRequest: (issue, cb) => {
+      getPullRequest: (repo, issue, cb) => {
         cb(null, result);
       },
       updateCommitStatus: (status, cb) => {
@@ -62,7 +62,8 @@ describe('Deploy labels subscriber', () => {
       const payload = {
         action: 'opened',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       deployLablesSubscriber.subscribe();
       emitter.emit('pull_request', payload);
@@ -80,7 +81,8 @@ describe('Deploy labels subscriber', () => {
       const payload = {
         action: 'closed',
         number: 1234,
-        pull_request: {}
+        pull_request: {},
+        repository: { name: '' }
       };
       deployLablesSubscriber.subscribe();
       emitter.emit('pull_request', payload);
@@ -103,7 +105,8 @@ describe('Deploy labels subscriber', () => {
         },
         comment: {
           body: 'check deploy labels please'
-        }
+        },
+        repository: { name: '' }
       };
       deployLablesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);
@@ -126,7 +129,8 @@ describe('Deploy labels subscriber', () => {
         },
         comment: {
           body: 'Check deploy labels please'
-        }
+        },
+        repository: { name: '' }
       };
       deployLablesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);
@@ -148,7 +152,8 @@ describe('Deploy labels subscriber', () => {
         },
         comment: {
           body: 'Dummy text comment'
-        }
+        },
+        repository: { name: '' }
       };
       deployLablesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);
@@ -169,7 +174,8 @@ describe('Deploy labels subscriber', () => {
         },
         comment: {
           body: 'check deploy labels please'
-        }
+        },
+        repository: { name: '' }
       };
       deployLablesSubscriber.subscribe();
       emitter.emit('issue_comment', payload);

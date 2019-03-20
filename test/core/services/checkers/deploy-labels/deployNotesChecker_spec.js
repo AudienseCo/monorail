@@ -8,7 +8,7 @@ describe('Deploy notes checker', () => {
 
   function createGithubDummy(result) {
     return {
-      getIssueLabels: (issue, cb) => {
+      getIssueLabels: (repo, issue, cb) => {
         cb(null, result);
       }
     };
@@ -24,9 +24,10 @@ describe('Deploy notes checker', () => {
 
     it('should return an error status if there are not any deploy label', done => {
       const githubDummy = createGithubDummy([{ name: 'other label' }]);
+      const repo = '';
 
       const deployLabels = createDeployLablesChecker(githubDummy);
-      deployLabels.checkPullRequest({ body: '#1234' }, (err, status) => {
+      deployLabels.checkPullRequest(repo, { body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Labels');
         status.state.should.be.eql('failure');
         done();
@@ -35,9 +36,10 @@ describe('Deploy notes checker', () => {
 
     it('should return a success status if there is any deploy label', done => {
       const githubDummy = createGithubDummy([{ name: 'deploy-to:tasks' }]);
+      const repo = '';
 
       const deployLabels = createDeployLablesChecker(githubDummy);
-      deployLabels.checkPullRequest({ body: '#1234' }, (err, status) => {
+      deployLabels.checkPullRequest(repo, { body: '#1234' }, (err, status) => {
         status.context.should.be.eql('Deploy Labels');
         status.state.should.be.eql('success');
         done();

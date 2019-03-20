@@ -23,10 +23,10 @@ describe('Create release action', () => {
 
     function createGithubDummy(prInfo, issueInfo) {
       const that = {
-        getPullRequest: (id, cb) => {
+        getPullRequest: (repo, id, cb) => {
           cb(null, prInfo);
         },
-        getIssue: (id, cb) => {
+        getIssue: (repo, id, cb) => {
           cb(null, issueInfo);
         },
         createRelease: (info, cb) => {
@@ -34,8 +34,8 @@ describe('Create release action', () => {
         }
       };
       sinon.stub(that, 'getIssue')
-        .onCall(0).callsArgWith(1, null, prInfo)
-        .onCall(1).callsArgWith(1, null, issueInfo);
+        .onCall(0).callsArgWith(2, null, prInfo)
+        .onCall(1).callsArgWith(2, null, issueInfo);
       return that;
     }
     const prInfo = { title: 'Foo PR', body: 'Closes #1234' };
@@ -47,21 +47,21 @@ describe('Create release action', () => {
     });
 
     const issueParticipantsDummy = {
-      getParticipants: (issues, cb) => {
+      getParticipants: (repo, issues, cb) => {
         cb(null, []);
       }
     };
 
     function createIssueReleaseInfoDummy(result) {
       return {
-        getInfo: (issue, cb) => {
+        getInfo: (repo, issue, cb) => {
           cb(null, result);
         }
       };
     }
 
     const releaseInfoLabel = {
-      addLabels: (info, labels, cb) => {
+      addLabels: (repo, info, labels, cb) => {
         cb();
       }
     };
@@ -77,10 +77,11 @@ describe('Create release action', () => {
         releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
+      const repo = 'socialbro';
 
-      createRelease(tag, ids, err => {
+      createRelease(repo, tag, ids, err => {
         should.not.exist(err);
-        githubDummy.getIssue.calledWith(1).should.be.ok();
+        githubDummy.getIssue.calledWith(repo, 1).should.be.ok();
         done();
       });
     });
@@ -97,8 +98,9 @@ describe('Create release action', () => {
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(boundIssueExtractor, 'extract');
+      const repo = 'socialbro';
 
-      createRelease(tag, ids, err => {
+      createRelease(repo, tag, ids, err => {
         should.not.exist(err);
         spy.calledWith('Closes #1234').should.be.ok();
         done();
@@ -116,10 +118,11 @@ describe('Create release action', () => {
         releaseNotesFormatter, releaseService);
       const tag = 'v1.2.3';
       const ids = [1];
+      const repo = 'socialbro';
 
-      createRelease(tag, ids, err => {
+      createRelease(repo, tag, ids, err => {
         should.not.exist(err);
-        githubDummy.getIssue.calledWith('1234').should.be.ok();
+        githubDummy.getIssue.calledWith(repo, '1234').should.be.ok();
         done();
       });
     });
@@ -136,8 +139,9 @@ describe('Create release action', () => {
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(releaseInfoLabel, 'addLabels');
+      const repo = 'socialbro';
 
-      createRelease(tag, ids, err => {
+      createRelease(repo, tag, ids, err => {
         should.not.exist(err);
         spy.calledOnce.should.be.ok();
         done();
@@ -158,13 +162,15 @@ describe('Create release action', () => {
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(githubDummy, 'createRelease');
+      const repo = 'socialbro';
 
-      createRelease(tag, ids, err => {
+      createRelease(repo, tag, ids, err => {
         should.not.exist(err);
         spy.calledWith({
           tag_name: 'v1.2.3',
           name: 'v1.2.3 Release',
-          body: '#1234 Bar issue'
+          body: '#1234 Bar issue',
+          repo
         }).should.be.ok();
         done();
       });
@@ -184,13 +190,15 @@ describe('Create release action', () => {
       const tag = 'v1.2.3';
       const ids = [1];
       const spy = sinon.spy(githubDummy, 'createRelease');
+      const repo = 'socialbro';
 
-      createRelease(tag, ids, err => {
+      createRelease(repo, tag, ids, err => {
         should.not.exist(err);
         spy.calledWith({
           tag_name: 'v1.2.3',
           name: 'v1.2.3 Release',
-          body: '#1234 Bar issue. cc ana, joe'
+          body: '#1234 Bar issue. cc ana, joe',
+          repo
         }).should.be.ok();
         done();
       });
@@ -200,7 +208,7 @@ describe('Create release action', () => {
 
       it('should return an error when fetching PR info fails', done => {
         const githubDummy = createGithubDummy(prInfo, issueInfo);
-        githubDummy.getIssue.onCall(0).callsArgWith(1, 'foo_error');
+        githubDummy.getIssue.onCall(0).callsArgWith(2, 'foo_error');
         const releaseService = createReleaseService(githubDummy);
         const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
           issueParticipantsDummy);
@@ -210,8 +218,9 @@ describe('Create release action', () => {
           releaseNotesFormatter, releaseService);
         const tag = 'v1.2.3';
         const ids = [1];
+        const repo = 'socialbro';
 
-        createRelease(tag, ids, err => {
+        createRelease(repo, tag, ids, err => {
           err.should.be.eql('foo_error');
           done();
         });
@@ -219,7 +228,7 @@ describe('Create release action', () => {
 
       it('should return an error when fetching Issue info fails', done => {
         const githubDummy = createGithubDummy(prInfo, issueInfo);
-        githubDummy.getIssue.onCall(1).callsArgWith(1, 'foo_error');
+        githubDummy.getIssue.onCall(1).callsArgWith(2, 'foo_error');
         const releaseService = createReleaseService(githubDummy);
         const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
           issueParticipantsDummy);
@@ -229,8 +238,9 @@ describe('Create release action', () => {
           releaseNotesFormatter, releaseService);
         const tag = 'v1.2.3';
         const ids = [1];
+        const repo = 'socialbro';
 
-        createRelease(tag, ids, err => {
+        createRelease(repo, tag, ids, err => {
           err.should.be.eql('foo_error');
           done();
         });
@@ -250,8 +260,9 @@ describe('Create release action', () => {
           releaseNotesFormatter, releaseService);
         const tag = 'v1.2.3';
         const ids = [1];
+        const repo = 'socialbro';
 
-        createRelease(tag, ids, err => {
+        createRelease(repo, tag, ids, err => {
           err.should.be.eql('foo_error');
           done();
         });

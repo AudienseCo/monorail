@@ -11,11 +11,12 @@ describe('Get release notes', () => {
     const ids = ['1234', '4321'];
     const filterLabels = [];
     const expected = '#1234 Bar issue\n#4321 Foo issue';
+    const repo = 'socialbro';
 
     const issueReleaseInfoListFake = _createIssueReleaseInfoListFake();
     const releaseNotesFormatter = releaseNotesFormatterBuilder();
     const getReleaseNotes = getReleaseNotesBuilder(issueReleaseInfoListFake, releaseNotesFormatter);
-    getReleaseNotes(ids, filterLabels, (error, notes) => {
+    getReleaseNotes(repo, ids, filterLabels, (error, notes) => {
       notes.should.be.eql(expected);
       done();
     });
@@ -25,11 +26,12 @@ describe('Get release notes', () => {
     const ids = ['1234', '4321'];
     const filterLabels = ['notify:staff'];
     const expected = '#1234 Bar issue';
+    const repo = 'socialbro';
 
     const issueReleaseInfoListFake = _createIssueReleaseInfoListFake();
     const releaseNotesFormatter = releaseNotesFormatterBuilder();
     const getReleaseNotes = getReleaseNotesBuilder(issueReleaseInfoListFake, releaseNotesFormatter);
-    getReleaseNotes(ids, filterLabels, (error, notes) => {
+    getReleaseNotes(repo,ids, filterLabels, (error, notes) => {
       notes.should.be.eql(expected);
       done();
     });
@@ -39,11 +41,12 @@ describe('Get release notes', () => {
     const ids = ['1234', '4321'];
     const filterLabels = ['notify:unexisting'];
     const expected = '';
+    const repo = 'socialbro';
 
     const issueReleaseInfoListFake = _createIssueReleaseInfoListFake();
     const releaseNotesFormatter = releaseNotesFormatterBuilder();
     const getReleaseNotes = getReleaseNotesBuilder(issueReleaseInfoListFake, releaseNotesFormatter);
-    getReleaseNotes(ids, filterLabels, (error, notes) => {
+    getReleaseNotes(repo, ids, filterLabels, (error, notes) => {
       notes.should.be.eql(expected);
       done();
     });
@@ -51,7 +54,7 @@ describe('Get release notes', () => {
 
   function _createIssueReleaseInfoListFake() {
     return {
-      get: (ids, next) => {
+      get: (repo, ids, next) => {
         const releaseInfo = [
           {
             issue: {
@@ -75,4 +78,3 @@ describe('Get release notes', () => {
     };
   }
 });
-

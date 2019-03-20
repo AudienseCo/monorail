@@ -10,7 +10,7 @@ const boundIssueExtractor = createBoundIssueExtractor();
 
 function createIssueParticipantsDummy(result) {
   return {
-    getParticipants: (issues, cb) => {
+    getParticipants: (repo, issues, cb) => {
       cb(null, result);
     }
   };
@@ -18,13 +18,13 @@ function createIssueParticipantsDummy(result) {
 
 function createGithubDummy(pr, issue) {
   const that = {
-    getIssue: (number, cb) => {
+    getIssue: (repo, number, cb) => {
       cb(null, issue);
     }
   };
   sinon.stub(that, 'getIssue')
-        .onCall(0).callsArgWith(1, null, pr)
-        .onCall(1).callsArgWith(1, null, issue);
+        .onCall(0).callsArgWith(2, null, pr)
+        .onCall(1).callsArgWith(2, null, issue);
   return that;
 }
 
@@ -48,10 +48,11 @@ describe('issueReleaseInfo service', () => {
         number: 4321,
         title: 'Bar issue'
       });
+      const repo = 'socialbro';
       const issueParticipantsDummy = createIssueParticipantsDummy([]);
       const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
         issueParticipantsDummy);
-      issueReleaseInfo.getInfo(1234, (err, info) => {
+      issueReleaseInfo.getInfo(repo, 1234, (err, info) => {
         info.issue.should.be.eql({
           number: 4321,
           title: 'Bar issue'
@@ -66,10 +67,11 @@ describe('issueReleaseInfo service', () => {
         title: 'Foo PR',
         body: 'blabla'
       }, null);
+      const repo = 'socialbro';
       const issueParticipantsDummy = createIssueParticipantsDummy([]);
       const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
         issueParticipantsDummy);
-      issueReleaseInfo.getInfo(1234, (err, info) => {
+      issueReleaseInfo.getInfo(repo, 1234, (err, info) => {
         info.issue.should.be.eql({
           number: 1234,
           title: 'Foo PR',
@@ -85,10 +87,11 @@ describe('issueReleaseInfo service', () => {
         title: 'Foo PR',
         body: 'blabla'
       }, null);
+      const repo = 'socialbro';
       const issueParticipantsDummy = createIssueParticipantsDummy(['ana', 'joe']);
       const issueReleaseInfo = createIssueReleaseInfo(githubDummy, boundIssueExtractor,
         issueParticipantsDummy);
-      issueReleaseInfo.getInfo(1234, (err, info) => {
+      issueReleaseInfo.getInfo(repo, 1234, (err, info) => {
         info.participants.should.be.eql(['ana', 'joe']);
         done();
       });

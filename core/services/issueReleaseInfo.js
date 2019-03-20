@@ -5,24 +5,24 @@ var async = require('async');
 module.exports = function(github, boundIssueExtractor, issueParticipants) {
   const that = {};
 
-  that.getInfo = function(prId, cb) {
+  that.getInfo = function(repo, prId, cb) {
     async.waterfall([
 
       function getPRInfo(next) {
-        github.getIssue(prId, next);
+        github.getIssue(repo, prId, next);
       },
 
       function getBoundIssue(prInfo, next) {
         const boundIssue = boundIssueExtractor.extract(prInfo.body);
         if (!boundIssue) return next(null, [prInfo]);
 
-        github.getIssue(boundIssue, (err, issueInfo) => {
+        github.getIssue(repo, boundIssue, (err, issueInfo) => {
           next(err, [prInfo, issueInfo]);
         });
       },
 
       function getParticipants(issueList, next) {
-        issueParticipants.getParticipants(issueList, (err, participants) => {
+        issueParticipants.getParticipants(repo, issueList, (err, participants) => {
           next(err, issueList, participants);
         });
       },

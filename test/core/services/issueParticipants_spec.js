@@ -17,7 +17,7 @@ describe('issueParticipants service', () => {
 
     function createGithubDummy(result) {
       return {
-        getIssueComments: (issue, cb) => {
+        getIssueComments: (repo, issue, cb) => {
           cb(null, result);
         }
       };
@@ -33,7 +33,8 @@ describe('issueParticipants service', () => {
           login: 'foo'
         }
       };
-      issueParticipants.getParticipants(issueItem, (err, participants) => {
+      const repo = 'socialbro';
+      issueParticipants.getParticipants(repo, issueItem, (err, participants) => {
         participants.should.be.eql(['foo']);
         done();
       });
@@ -56,7 +57,8 @@ describe('issueParticipants service', () => {
           login: 'foo'
         }
       };
-      issueParticipants.getParticipants(issueItem, (err, participants) => {
+      const repo = 'socialbro';
+      issueParticipants.getParticipants(repo, issueItem, (err, participants) => {
         participants.should.be.eql(['foo', 'bar']);
         done();
       });
@@ -86,11 +88,12 @@ describe('issueParticipants service', () => {
           }
         }
       ];
+      const repo = 'socialbro';
 
       const githubDummy = createGithubDummy(comments);
       const issueParticipants = createIssueParticipants(githubDummy, config);
 
-      issueParticipants.getParticipants(issueItem, (err, participants) => {
+      issueParticipants.getParticipants(repo, issueItem, (err, participants) => {
         participants.should.be.eql(['@foo', '@bar']);
         done();
       });
@@ -125,8 +128,9 @@ describe('issueParticipants service', () => {
           login: 'foo'
         }
       };
+      const repo = 'socialbro';
 
-      issueParticipants.getParticipants(issueItem, (err, participants) => {
+      issueParticipants.getParticipants(repo, issueItem, (err, participants) => {
         participants.length.should.be.eql(2);
         participants.should.be.eql(['foo', 'bar']);
         done();
@@ -164,8 +168,9 @@ describe('issueParticipants service', () => {
           }
         }
       ];
+      const repo = 'socialbro';
 
-      issueParticipants.getParticipants(issues, (err, participants) => {
+      issueParticipants.getParticipants(repo, issues, (err, participants) => {
         participants.length.should.be.eql(4);
         participants.should.be.eql(['foo', 'john', 'ana', 'bar']);
         done();

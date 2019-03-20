@@ -3,10 +3,10 @@
 const async = require('async');
 
 module.exports = function getReleaseNotesBuilder(issueReleaseInfoList, releaseNotesFormatter) {
-  return (ids, filterLabels, callback) => {
+  return (repo, ids, filterLabels, callback) => {
     async.waterfall([
       (next) => {
-        issueReleaseInfoList.get(ids, next);
+        issueReleaseInfoList.get(repo, ids, next);
       },
 
       (releaseInfoList, next) => {

@@ -88,11 +88,12 @@ describe('Github API wrapper', () => {
       const githubApiDummy = createGithubDummy(['tag1', 'tag2']);
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.issues, 'getIssueLabels');
-      github.getIssueLabels(1234, (err, labels) => {
+      const repo = 'another'
+      github.getIssueLabels(repo, 1234, (err, labels) => {
         labels.should.be.eql(['tag1', 'tag2']);
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           number: 1234
         }).should.be.ok();
         done();
@@ -107,14 +108,15 @@ describe('Github API wrapper', () => {
         state: 'success',
         context: 'test',
         description: 'A dummy description for the state',
-        target_url: 'htttp://foo/bar'
+        target_url: 'htttp://foo/bar',
+        repo: 'another'
       };
       const spy = sinon.spy(githubApiDummy.statuses, 'create');
       github.updateCommitStatus(status, (err, result) => {
         result.context.should.be.eql('test');
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           sha: 'dummysha',
           state: 'success',
           context: 'test',
@@ -130,11 +132,12 @@ describe('Github API wrapper', () => {
       const githubApiDummy = createGithubDummy({ number: 1234 });
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.pullRequests, 'get');
-      github.getPullRequest(1234, (err, result) => {
+      const repo = 'another';
+      github.getPullRequest(repo, 1234, (err, result) => {
         result.number.should.be.eql(1234);
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           number: 1234
         }).should.be.ok();
         done();
@@ -145,11 +148,12 @@ describe('Github API wrapper', () => {
       const githubApiDummy = createGithubDummy({ number: 1234 });
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.issues, 'getRepoIssue');
-      github.getIssue(1234, (err, result) => {
+      const repo = 'another';
+      github.getIssue(repo, 1234, (err, result) => {
         result.number.should.be.eql(1234);
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           number: 1234
         }).should.be.ok();
         done();
@@ -160,27 +164,12 @@ describe('Github API wrapper', () => {
       const githubApiDummy = createGithubDummy([{ id: 1234 }]);
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.issues, 'getComments');
-      github.getIssueComments(1234, (err, result) => {
+      const repo = 'another';
+      github.getIssueComments(repo, 1234, (err, result) => {
         result.length.should.be.eql(1);
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
-          number: 1234,
-          per_page: 100
-        }).should.be.ok();
-        done();
-      });
-    });
-
-    it('should get the comments for an issue', done => {
-      const githubApiDummy = createGithubDummy([{ id: 1234 }]);
-      const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.issues, 'getComments');
-      github.getIssueComments(1234, (err, result) => {
-        result.length.should.be.eql(1);
-        spy.calledWith({
-          user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           number: 1234,
           per_page: 100
         }).should.be.ok();
@@ -192,11 +181,12 @@ describe('Github API wrapper', () => {
       const githubApiDummy = createGithubDummy([{ name: 'foo' }]);
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.issues, 'edit');
-      github.addIssueLabels(1234, ['foo'], (err, result) => {
+      const repo = 'another';
+      github.addIssueLabels(repo, 1234, ['foo'], (err, result) => {
         result.length.should.be.eql(1);
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           number: 1234,
           labels: ['foo']
         }).should.be.ok();
@@ -211,7 +201,8 @@ describe('Github API wrapper', () => {
       const releaseInfo = {
         tag_name: 'v1.2.3',
         name: 'Release',
-        body: 'Release body'
+        body: 'Release body',
+        repo: 'another'
       };
 
       github.createRelease(releaseInfo, (err, result) => {
@@ -219,7 +210,7 @@ describe('Github API wrapper', () => {
         spy.calledWith({
           owner: 'AudienseCo',
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           tag_name: 'v1.2.3',
           name: 'Release',
           body: 'Release body'
@@ -233,13 +224,14 @@ describe('Github API wrapper', () => {
       const github = createGithub(githubApiDummy, config);
       const spy = sinon.spy(githubApiDummy.repos, 'compareCommits');
       const msg  = {
+        repo: 'another',
         base: 'master',
         head: 'dev'
       };
       github.compareCommits(msg, (err, result) => {
         spy.calledWith({
           user: 'AudienseCo',
-          repo: 'socialbro',
+          repo: 'another',
           base: 'master',
           head: 'dev'
         }).should.be.ok();

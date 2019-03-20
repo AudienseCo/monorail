@@ -2,11 +2,12 @@
 
 module.exports = function(github) {
   return {
-    create: (tag, body, cb) => {
+    create: (repo, tag, body, cb) => {
       const data = {
         tag_name: tag,
         name: tag + ' Release',
-        body: body
+        body: body,
+        repo
       };
 
       github.createRelease(data, err => {

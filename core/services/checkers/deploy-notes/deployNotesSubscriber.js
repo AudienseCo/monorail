@@ -7,7 +7,8 @@ module.exports = function(emitter, deployNotesService) {
         if (payload.action === 'opened' || payload.action === 'labeled' ||
         payload.action === 'unlabeled' || payload.action === 'synchronize') {
           const prInfo = payload.pull_request;
-          deployNotesService.updatePullRequestCommit(prInfo);
+          const repo = payload.repository.name;
+          deployNotesService.updatePullRequestCommit(repo, prInfo);
         }
       });
 
@@ -15,7 +16,8 @@ module.exports = function(emitter, deployNotesService) {
         if (payload.action === 'created' && payload.issue && payload.issue.pull_request) {
           if (payload.comment.body.toLowerCase() === 'check deploy notes please') {
             const prInfo = payload.issue;
-            deployNotesService.updatePullRequestCommit(prInfo);
+            const repo = payload.repository.name;
+            deployNotesService.updatePullRequestCommit(repo, prInfo);
           }
         }
       });

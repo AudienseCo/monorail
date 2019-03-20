@@ -3,6 +3,7 @@
 const express = require('express');
 const morgan  = require('morgan');
 const bodyParser = require('body-parser');
+const config = require('../../config');
 
 module.exports = function(actions) {
   const app = express();
@@ -22,8 +23,8 @@ module.exports = function(actions) {
 
     const pullRequestIdsStr = req.query.pr;
     const pullRequestIds    = pullRequestIdsStr.split(',');
-
-    actions.getPullRequestsDeployInfo(pullRequestIds, (err, info) => {
+    const repo = req.query.repo || config.github.repo;
+    actions.getPullRequestsDeployInfo(repo, pullRequestIds, (err, info) => {
       if (err) res.status(400).send(err);
       else res.status(200).send(info);
     });
@@ -40,8 +41,9 @@ module.exports = function(actions) {
     const tagName           = req.body.tag;
     const pullRequestIdsStr = req.body.pr;
     const pullRequestIds    = pullRequestIdsStr.split(',');
+    const repo              = req.body.repo || config.github.repo;
 
-    actions.createRelease(tagName, pullRequestIds, (err, result) => {
+    actions.createRelease(repo, tagName, pullRequestIds, (err, result) => {
       if (err) return res.status(400).send(err);
 
       const info = {
@@ -59,8 +61,9 @@ module.exports = function(actions) {
 
     const pullRequestIdsStr = req.query.pr;
     const pullRequestIds    = pullRequestIdsStr.split(',');
+    const repo = req.query.repo || config.github.repo;
 
-    actions.previewRelease(pullRequestIds, (err, result) => {
+    actions.previewRelease(repo, pullRequestIds, (err, result) => {
       if (err) return res.status(400).send(err);
 
       const info = result.map(issue => {
@@ -80,8 +83,9 @@ module.exports = function(actions) {
     const pullRequestIds    = pullRequestIdsStr.split(',');
     const filterLabelsStr   = req.query.labels || '';
     const filterLabels      = filterLabelsStr.length ? filterLabelsStr.split(',') : [];
+    const repo = req.query.repo || config.github.repo;
 
-    actions.getReleaseNotes(pullRequestIds, filterLabels, (err, result) => {
+    actions.getReleaseNotes(repo, pullRequestIds, filterLabels, (err, result) => {
       if (err) return res.status(400).send(err);
 
       const info = {

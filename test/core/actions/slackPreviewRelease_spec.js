@@ -20,6 +20,7 @@ describe('slackPreviewRelease action', () => {
   });
 
   context('Behaviour', () => {
+    const repos = ['socialbro'];
 
     it('should notify a NO_CHANGES error if there are no changes', done => {
       const configDummy = {};
@@ -36,13 +37,17 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: '',
-          text: 'Monorail will not deploy anything in the next 10 minutes as there are no changes to deploy.'
+          attachments: [ {
+            text: 'Monorail will not deploy anything in the next 10 minutes as there are no changes to deploy.',
+            color: '#439FE0',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -65,8 +70,8 @@ describe('slackPreviewRelease action', () => {
 
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy notes' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy notes' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
@@ -74,13 +79,17 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: '',
-          text: 'Monorail will not deploy anything in the next 10 minutes as there are deployNotes.'
+          attachments: [ {
+            text: 'Monorail will not deploy anything in the next 10 minutes as there are deployNotes.',
+            color: 'danger',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -103,8 +112,8 @@ describe('slackPreviewRelease action', () => {
 
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(1, null, []);
-      stub.onSecondCall().callsArgWith(1, null, []);
+      stub.onFirstCall().callsArgWith(2, null, []);
+      stub.onSecondCall().callsArgWith(2, null, []);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
@@ -112,13 +121,17 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: '',
-          text: 'Monorail will not deploy anything in the next 10 minutes because the list of services is empty.'
+          attachments: [ {
+            text: 'Monorail will not deploy anything in the next 10 minutes because the list of services is empty.',
+            color: 'warning',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -158,8 +171,8 @@ describe('slackPreviewRelease action', () => {
       };
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(1, null, [{ name: 'deploy-to:tasks-as' }]);
-      stub.onSecondCall().callsArgWith(1, null, [{ name: 'deploy-to:globalreports' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
 
       const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
@@ -167,13 +180,17 @@ describe('slackPreviewRelease action', () => {
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy);
+      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
         const expectedMsg = {
-          pretext: 'PRs, services and issues that would be deployed with the next release in 10 minutes...',
-          text: 'Pull Requests: 1234\n\nNode version: v0.10.24\nServices: tasks\n\n\nIssues:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\nTo stop this deploy, please insert a deploy_note or <$JENKINS_DEPLOY_URL/job/$TARBALLS_JOB/|disable the deploy job> in Jenkins'
+          attachments: [ {
+            text: '*Pull Requests*: <https://github.com/AudienseCo/socialbro/issues/1234|#1234>\n\n*Node version*: v0.10.24\n*Services*: tasks\n\n\n*Issues*:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\n',
+            color: 'good',
+            title: 'socialbro',
+            title_link: 'https://github.com/AudienseCo/socialbro'
+          } ]
         };
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
@@ -182,16 +199,16 @@ describe('slackPreviewRelease action', () => {
 
     function createGithubDummy(prInfo, issueInfo, commitsInfo, labelsInfo) {
       return {
-        getPullRequest: (id, cb) => {
+        getPullRequest: (repo, id, cb) => {
           cb(null, prInfo);
         },
-        getIssue: (id, cb) => {
+        getIssue: (repo, id, cb) => {
           cb(null, issueInfo);
         },
         compareCommits: (info, cb) => {
           cb(null, commitsInfo);
         },
-        getIssueLabels: (id, cb) => {
+        getIssueLabels: (repo, id, cb) => {
           cb(null, labelsInfo);
         }
       };
