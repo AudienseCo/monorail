@@ -23,7 +23,7 @@ module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFr
   }
 
   function getPullRequests(repo, cb) {
-    pullRequestsFromChanges(repo, (err, pullRequestList) => {
+    pullRequestsFromChanges({ repo }, (err, pullRequestList) => {
       cb(err, repo, pullRequestList);
     });
   }

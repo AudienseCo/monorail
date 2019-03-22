@@ -1,11 +1,11 @@
 'use strict';
 
 module.exports = (github, { masterBranch, devBranch }) => {
-  return (repo, cb) => {
-    const compareInfo  = {
+  return ({ repo, base, head }, cb) => {
+    const compareInfo = {
       repo,
-      base: masterBranch,
-      head: devBranch
+      base: base || masterBranch,
+      head: head || devBranch
     };
     github.compareCommits(compareInfo, (err, result) => {
       if (err) return cb(err);
