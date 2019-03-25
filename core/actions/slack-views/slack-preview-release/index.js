@@ -7,8 +7,8 @@ const { user } = require('../../../../config').github;
 module.exports = (releasePreview) => {
 
   const attachments = releasePreview.map(repoPreview => {
-    const attachment = repoPreview.error
-      ? errorMessage(repoPreview.error)
+    const attachment = repoPreview.failReason
+      ? ERROR_TEMPLATES[repoPreview.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
       : releasePreviewMsg(repoPreview);
 
     attachment.title = repoPreview.repo;
@@ -19,8 +19,4 @@ module.exports = (releasePreview) => {
   return {
     attachments
   };
-
-  function errorMessage(error) {
-    return ERROR_TEMPLATES[error.message] || ERROR_TEMPLATES.UNkNOWN_ERROR;
-  }
 };
