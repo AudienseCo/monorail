@@ -7,6 +7,7 @@ const createIssuesFromPullRequests = require('../../../core/services/issuesFromP
 const createPullRequestsFromChanges = require('../../../core/services/pullRequestsFromChanges');
 const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
 const createDeployInfoFromPullRequests = require('../../../core/services/deployInfoFromPullRequests');
+const createGetReleasePreview = require('../../../core/services/getReleasePreview');
 
 describe('slackPreviewRelease action', () => {
 
@@ -35,9 +36,10 @@ describe('slackPreviewRelease action', () => {
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
+      const getReleasePreview = createGetReleasePreview(pullRequestsFromChanges, deployInfoFromPullRequests, issuesFromPullRequests);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
+      const previewRelease = createPreviewRelease(getReleasePreview, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
@@ -77,9 +79,10 @@ describe('slackPreviewRelease action', () => {
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
+      const getReleasePreview = createGetReleasePreview(pullRequestsFromChanges, deployInfoFromPullRequests, issuesFromPullRequests);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
+      const previewRelease = createPreviewRelease(getReleasePreview, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
@@ -119,9 +122,10 @@ describe('slackPreviewRelease action', () => {
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
+      const getReleasePreview = createGetReleasePreview(pullRequestsFromChanges, deployInfoFromPullRequests, issuesFromPullRequests);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
+      const previewRelease = createPreviewRelease(getReleasePreview, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);
@@ -178,9 +182,10 @@ describe('slackPreviewRelease action', () => {
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, configDummy);
+      const getReleasePreview = createGetReleasePreview(pullRequestsFromChanges, deployInfoFromPullRequests, issuesFromPullRequests);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slackDummy, repos);
+      const previewRelease = createPreviewRelease(getReleasePreview, slackDummy, repos);
 
       previewRelease((err) => {
         should.not.exist(err);

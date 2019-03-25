@@ -27,6 +27,7 @@ const branchesConfig = {
 const pullRequestsFromChanges = require('../services/pullRequestsFromChanges')(github, branchesConfig);
 const issuesFromPullRequests = require('../services/issuesFromPullRequests')(github);
 const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo, config);
+const getReleasePreview = require('../services/getReleasePreview')(pullRequestsFromChanges, deployInfoFromPullRequests, issuesFromPullRequests);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
@@ -34,6 +35,6 @@ module.exports = {
   createRelease: require('./createRelease')(issueReleaseInfoList, releaseInfoLabel,
     releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
-  slackPreviewRelease: require('./slackPreviewRelease')(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slack, config.github.repos),
+  slackPreviewRelease: require('./slackPreviewRelease')(getReleasePreview, slack, config.github.repos),
   getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter)
 };
