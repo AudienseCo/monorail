@@ -41,7 +41,7 @@ describe('Get pull requests ids from changes', () => {
       const githubDummy = createGithubDummyWithError('foo_error');
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const repo = 'socialbro';
-      pullRequestsFromChanges(repo, (err, ids) => {
+      pullRequestsFromChanges({ repo }, (err, ids) => {
         err.should.be.eql('foo_error');
         should.not.exist(ids);
         done();
@@ -65,7 +65,7 @@ describe('Get pull requests ids from changes', () => {
       });
       const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, configDummy);
       const repo = 'socialbro';
-      pullRequestsFromChanges(repo, (err, ids) => {
+      pullRequestsFromChanges({ repo }, (err, ids) => {
         should.not.exist(err);
         ids.should.be.eql(['10499']);
         done();

@@ -2,9 +2,9 @@
 
 const { user } = require('../../../../config').github;
 
-module.exports = ({ repo, pullRequestList, issues, deployInfo }) => {
+module.exports = ({ repo, prIds, issues, services }) => {
 
-  const formatedPRs = pullRequestList.map(prId => {
+  const formatedPRs = prIds.map(prId => {
     return `<https://github.com/${user}/${repo}/issues/${prId}|#${prId}>`;
   }).join('\n');
 
@@ -12,7 +12,7 @@ module.exports = ({ repo, pullRequestList, issues, deployInfo }) => {
     return `<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title}`;
   }).join('\n');
 
-  const formatedServices = deployInfo.services.reduce((res, service) => {
+  const formatedServices = services.reduce((res, service) => {
     res += `*Node version*: ${service.nodeVersion}\n*Services*: ${service.deploy.join(', ')}\n`;
     return res;
   }, '');

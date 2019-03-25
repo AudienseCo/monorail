@@ -5,47 +5,56 @@ const previewReleaseTemplate = require('./slack-views/slack-preview-release');
 
 module.exports = function createPreviewRelease(pullRequestsFromChanges, issuesFromPullRequests, deployInfoFromPullRequests, slack, repos) {
 
-  return function previewRelease(cb) {
-    mapSeries(repos, repoReleasePreview, (err, releasePreview) => {
-      if (err) return cb(err);
-      publishInSlack(releasePreview, cb)
-    });
+  return (cb) => {
+    waterfall([
+      (next)            => getPRsFromChangesForEachRepo(repos, next),
+      (reposInfo, next) => getDeployInfoForEachRepo(reposInfo, next),
+      (reposInfo, next) => getIssuesToReleaseForEachRepo(reposInfo, next),
+      (reposInfo, next) => notifyPreviewInSlack(reposInfo, next)
+    ], cb);
   };
 
-  function repoReleasePreview(repo, cb) {
-    waterfall([
-      next => getPullRequests(repo, next),
-      getDeployInfo,
-      getIssues
-    ], (error, pullRequestList, issues, deployInfo) => {
-      cb(null, { repo, error, pullRequestList, issues, deployInfo });
-    });
+  function getPRsFromChangesForEachRepo(repos, cb) {
+    mapSeries(repos, (repo, nextRepo) => {
+      pullRequestsFromChanges({ repo }, (err, prIds) => {
+        if (err) return nextRepo(null, { repo, failReason: err.message });
+        nextRepo(null, { repo, prIds });
+      });
+    }, cb);
   }
 
-  function getPullRequests(repo, cb) {
-    pullRequestsFromChanges(repo, (err, pullRequestList) => {
-      cb(err, repo, pullRequestList);
-    });
+  function getDeployInfoForEachRepo(reposInfo, cb) {
+    mapSeries(reposInfo, (repoInfo, nextRepo) => {
+      if (repoInfo.prIds.length === 0) {
+        return nextRepo(null, Object.assign({ failReason: 'NO_CHANGES' }, repoInfo));
+      }
+      deployInfoFromPullRequests(repoInfo.repo, repoInfo.prIds, (err, deployInfo) => {
+        let failReason;
+        if (err) {
+          failReason = err.message;
+        }
+        else if (deployInfo.deployNotes) {
+          failReason = 'DEPLOY_NOTES';
+        }
+        else if (deployInfo.services.length === 0) {
+          failReason = 'NO_SERVICES';
+        }
+        nextRepo(null, Object.assign({ failReason, services: deployInfo.services }, repoInfo));
+      });
+    }, cb);
   }
 
-  function getDeployInfo(repo, pullRequestList, cb) {
-    if (pullRequestList.length === 0) return cb(new Error('NO_CHANGES'));
-    deployInfoFromPullRequests(repo, pullRequestList, (err, deployInfo) => {
-      if (err) return cb(err);
-      if (deployInfo.deployNotes) return cb(new Error('DEPLOY_NOTES'), deployInfo);
-      if (deployInfo.services.length === 0) return cb(new Error('NO_SERVICES'), deployInfo);
-      cb(err, repo, pullRequestList, deployInfo);
-    });
+  function getIssuesToReleaseForEachRepo(reposInfo, cb) {
+    mapSeries(reposInfo, (repoInfo, nextRepo) => {
+      issuesFromPullRequests(repoInfo.repo, repoInfo.prIds, (err, issues) => {
+        if (err) return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+        nextRepo(null, Object.assign({ issues }, repoInfo));
+      });
+    }, cb);
   }
 
-  function getIssues(repo, pullRequestList, deployInfo, cb) {
-    issuesFromPullRequests(repo, pullRequestList, (err, issues) => {
-      cb(err, pullRequestList, issues, deployInfo);
-    });
-  }
-
-  function publishInSlack(releasePreview, cb) {
-    const msg = previewReleaseTemplate(releasePreview);
+  function notifyPreviewInSlack(reposInfo, cb) {
+    const msg = previewReleaseTemplate(reposInfo);
     slack.send(msg, cb);
   }
 };
