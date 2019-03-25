@@ -1,0 +1,226 @@
+'use strict';
+
+const should = require('should');
+const sinon = require('sinon');
+
+const createPullRequestsFromChanges = require('../../../core/services/pullRequestsFromChanges');
+const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
+const createDeployInfoFromPullRequests = require('../../../core/services/deployInfoFromPullRequests');
+const createIssuesFromPullRequests = require('../../../core/services/issuesFromPullRequests');
+const createGetReleasePreview = require('../../../core/services/getReleasePreview');
+
+describe('start deploy action', () => {
+  const branchesConfig = { masterBranch: '', devBranch: '' };
+
+  it('should get PRs from changes comparing each repo tmp branch with master', (done) => {
+    const githubDummy = createGithubDummy();
+    const pullRequestsFromChanges = createPullRequestsFromChanges(githubDummy, branchesConfig);
+    const pullRequestsFromChangesSpy = sinon.spy(pullRequestsFromChanges);
+    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, pullRequestsFromChanges: pullRequestsFromChangesSpy });
+
+    const repos = [
+      {repo: 'repo1', head: 'branch1' },
+      {repo: 'repo2', head: 'branch2' }
+    ];
+    getReleasePreview(repos, (err) => {
+      should.not.exist(err);
+      pullRequestsFromChangesSpy.calledTwice.should.be.ok();
+      pullRequestsFromChangesSpy.getCall(0).calledWith({ repo: 'repo1', head: 'branch1' }).should.be.ok();
+      pullRequestsFromChangesSpy.getCall(1).calledWith({ repo: 'repo2', head: 'branch2' }).should.be.ok();
+      done();
+    });
+  });
+
+  it('should get deploy info for each repo', (done) => {
+    const githubDummy = createGithubDummy();
+    const pullRequestDeployInfo = createPullRequestDeployInfo(githubDummy);
+    const config = createConfigDummy();
+    const deployInfoFromPullRequests = createDeployInfoFromPullRequests(pullRequestDeployInfo, config);
+    const deployInfoFromPullRequestsSpy = sinon.spy(deployInfoFromPullRequests);
+    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, deployInfoFromPullRequests: deployInfoFromPullRequestsSpy });
+
+    const repos = [
+      {repo: 'repo1', head: 'branch1' },
+      {repo: 'repo2', head: 'branch2' }
+    ];
+    getReleasePreview(repos, (err) => {
+      should.not.exist(err);
+      deployInfoFromPullRequestsSpy.calledTwice.should.be.ok();
+      deployInfoFromPullRequestsSpy.getCall(0).calledWith('repo1', [ '890' ]).should.be.ok();
+      deployInfoFromPullRequestsSpy.getCall(1).calledWith('repo2', [ '890' ]).should.be.ok();
+      done();
+    });
+  });
+
+  it('should get issues to release for each repo', (done) => {
+    const githubDummy = createGithubDummy();
+    const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
+    const issuesFromPullRequestsSpy = sinon.spy(issuesFromPullRequests);
+    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, issuesFromPullRequests: issuesFromPullRequestsSpy });
+
+    const repos = [
+      {repo: 'repo1', head: 'branch1' },
+      {repo: 'repo2', head: 'branch2' }
+    ];
+    getReleasePreview(repos, (err) => {
+      should.not.exist(err);
+      issuesFromPullRequestsSpy.calledTwice.should.be.ok();
+      issuesFromPullRequestsSpy.getCall(0).calledWith('repo1', [ '890' ]).should.be.ok();
+      issuesFromPullRequestsSpy.getCall(1).calledWith('repo2', [ '890' ]).should.be.ok();
+      done();
+    });
+  });
+
+
+  it('should fail with NO_CHANGES when there are no changes', (done) => {
+    const githubDummy = createGithubDummy();
+    const compareCommitsStub = sinon.stub(githubDummy, 'compareCommits');
+    compareCommitsStub.onFirstCall().callsArgWith(1, null, { commits: [] });
+    compareCommitsStub.onSecondCall().callsArgWith(1, null, { commits: [] });
+    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
+
+    const repos = [
+      {repo: 'repo1', head: 'branch1' },
+      {repo: 'repo2', head: 'branch2' }
+    ];
+    getReleasePreview(repos, (err, reposInfo) => {
+      should.not.exist(err);
+      should.exist(reposInfo);
+      reposInfo.length.should.be.eql(2);
+      reposInfo[0].repo.should.be.eql('repo1');
+      reposInfo[0].failReason.should.be.eql('NO_CHANGES');
+      done();
+    });
+  });
+
+  it('should fail with DEPLOY_NOTES when there is an issue with deploy notes label', (done) => {
+    const githubDummy = createGithubDummy();
+    const getIssueLabelsStub = sinon.stub(githubDummy, 'getIssueLabels');
+    getIssueLabelsStub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy notes' }]);
+    getIssueLabelsStub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy notes' }]);
+    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
+
+    const repos = [
+      {repo: 'repo1', head: 'branch1' },
+      {repo: 'repo2', head: 'branch2' }
+    ];
+    getReleasePreview(repos, (err, reposInfo) => {
+      should.not.exist(err);
+      should.exist(reposInfo);
+      reposInfo.length.should.be.eql(2);
+      reposInfo[0].repo.should.be.eql('repo1');
+      reposInfo[0].failReason.should.be.eql('DEPLOY_NOTES');
+      done();
+    });
+  });
+
+  it('should fail with NO_SERVICES when there are no services to deploy', (done) => {
+    const githubDummy = createGithubDummy();
+    const getIssueLabelsStub = sinon.stub(githubDummy, 'getIssueLabels');
+    getIssueLabelsStub.onFirstCall().callsArgWith(2, null, []);
+    getIssueLabelsStub.onSecondCall().callsArgWith(2, null, []);
+    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
+
+    const repos = [
+      {repo: 'repo1', head: 'branch1' },
+      {repo: 'repo2', head: 'branch2' }
+    ];
+    getReleasePreview(repos, (err, reposInfo) => {
+      should.not.exist(err);
+      should.exist(reposInfo);
+      reposInfo.length.should.be.eql(2);
+      reposInfo[0].repo.should.be.eql('repo1');
+      reposInfo[0].failReason.should.be.eql('NO_SERVICES');
+      done();
+    });
+  });
+
+  it('should get the release preview info for each repo', (done) => {
+    const getReleasePreview = createGetReleasePreviewStubs({});
+    const repos = [
+      {repo: 'repo1', head: 'branch1' },
+      {repo: 'repo2', head: 'branch2' }
+    ];
+    getReleasePreview(repos, (err, reposInfo) => {
+      should.not.exist(err);
+      should.exist(reposInfo);
+      reposInfo.length.should.be.eql(2);
+      reposInfo[0].repo.should.be.eql('repo1');
+      should.not.exist(reposInfo[0].failReason);
+      reposInfo[0].prIds.should.be.eql(['890']);
+      reposInfo[0].issues.should.be.eql([{ number: 4321, title: 'Bar issue' }]);
+      reposInfo[0].services.should.be.eql([
+        {
+          'node-version': 'v0.10.24',
+          statics: true,
+          deploy: ['tasks']
+        }
+      ]);
+      done();
+    });
+  });
+
+  function createConfigDummy() {
+    const servicesMap = {
+      globalreports: {
+        'node-version': 'v0.10.24',
+        statics: true,
+        deploy: ['globalreports']
+      },
+      'tasks-as': {
+        'node-version': 'v0.10.24',
+        statics: true,
+        deploy: ['tasks']
+      }
+    };
+    return {
+      services: {
+        mapper: service => {
+          return servicesMap[service];
+        }
+      }
+    };
+  }
+
+  function createGithubDummy(err, res) {
+    return {
+      compareCommits: (compareInfo, cb) => {
+        const defaultRes = {
+          commits: [{
+            commit: { message: 'Merge pull request #890' }
+          }]
+        };
+        cb(err, res || defaultRes);
+      },
+      getIssueLabels: (repo, id, cb) => cb(err, [{ name: 'deploy-to:tasks-as' }]),
+      getPullRequest: (repo, id, cb) => cb(err, { title: 'Foo PR', body: 'Closes #4321' }),
+      getIssue: (repo, id, cb) => cb(err, { number: 4321, title: 'Bar issue' })
+    };
+  }
+
+  function createGetReleasePreviewStubs({
+    pullRequestsFromChanges,
+    pullRequestDeployInfo,
+    deployInfoFromPullRequests,
+    issuesFromPullRequests,
+    getReleasePreview,
+    github,
+    config
+  }) {
+    const githubDummy = github || createGithubDummy();
+    const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, branchesConfig);
+    const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
+    const configDummy = config || createConfigDummy();
+    const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub, configDummy);
+    const issuesFromPullRequestsStub = issuesFromPullRequests || createIssuesFromPullRequests(githubDummy);
+    const getReleasePreviewStub = getReleasePreview || createGetReleasePreview(pullRequestsFromChangesStub, deployInfoFromPullRequestsStub, issuesFromPullRequestsStub);
+
+    return createGetReleasePreview(
+      pullRequestsFromChangesStub,
+      deployInfoFromPullRequestsStub,
+      issuesFromPullRequestsStub
+    );
+  }
+
+});
+

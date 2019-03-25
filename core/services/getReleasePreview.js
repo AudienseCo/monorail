@@ -1,23 +1,24 @@
 'use strict';
 
-const { waterfall, mapSeries } = require('async');
-const previewReleaseTemplate = require('./slack-views/slack-preview-release');
+const { mapSeries, waterfall } = require('async');
 
-module.exports = function createPreviewRelease(getReleasePreview, slack, repos) {
-
-  return (cb) => {
-    const reposBranches = repos.map(repo => ({ repo }));
+module.exports = (
+  pullRequestsFromChanges,
+  deployInfoFromPullRequests,
+  issuesFromPullRequests
+) => {
+  return (reposBranches, cb) => {
     waterfall([
-      (next)            => getReleasePreview(reposBranches, next),
-      (reposInfo, next) => notifyPreviewInSlack(reposInfo, next)
+      (next)            => getPRsFromChangesForEachRepo(reposBranches, next),
+      (reposInfo, next) => getDeployInfoForEachRepo(reposInfo, next),
+      (reposInfo, next) => getIssuesToReleaseForEachRepo(reposInfo, next)
     ], cb);
   };
 
-  function getPRsFromChangesForEachRepo(repos, cb) {
-    mapSeries(repos, (repo, nextRepo) => {
-      pullRequestsFromChanges({ repo }, (err, prIds) => {
-        if (err) return nextRepo(null, { repo, failReason: err.message });
-        nextRepo(null, { repo, prIds });
+  function getPRsFromChangesForEachRepo(reposBranches, cb) {
+    mapSeries(reposBranches, (repoBranch, nextRepo) => {
+      pullRequestsFromChanges(repoBranch, (err, prIds) => {
+        nextRepo(err, { repo: repoBranch.repo, prIds, branch: repoBranch.head });
       });
     }, cb);
   }
@@ -46,14 +47,12 @@ module.exports = function createPreviewRelease(getReleasePreview, slack, repos) 
   function getIssuesToReleaseForEachRepo(reposInfo, cb) {
     mapSeries(reposInfo, (repoInfo, nextRepo) => {
       issuesFromPullRequests(repoInfo.repo, repoInfo.prIds, (err, issues) => {
-        if (err) return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+        if (err) {
+          return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+        }
         nextRepo(null, Object.assign({ issues }, repoInfo));
       });
     }, cb);
   }
 
-  function notifyPreviewInSlack(reposInfo, cb) {
-    const msg = previewReleaseTemplate(reposInfo);
-    slack.send(msg, cb);
-  }
 };
