@@ -5,7 +5,7 @@ const { mapSeries, waterfall } = require('async');
 module.exports = (
   pullRequestsFromChanges,
   deployInfoFromPullRequests,
-  issuesFromPullRequests
+  issueReleaseInfoList
 ) => {
   return (reposBranches, cb) => {
     waterfall([
@@ -46,11 +46,16 @@ module.exports = (
 
   function getIssuesToReleaseForEachRepo(reposInfo, cb) {
     mapSeries(reposInfo, (repoInfo, nextRepo) => {
-      issuesFromPullRequests(repoInfo.repo, repoInfo.prIds, (err, issues) => {
+      issueReleaseInfoList.get(repoInfo.repo, repoInfo.prIds, (err, issuesInfo) => {
         if (err) {
           return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
         }
-        nextRepo(null, Object.assign({ issues }, repoInfo));
+        const issuesReleaseInfo = issuesInfo.map(issueInfo => ({
+          number: issueInfo.issue.number,
+          title: issueInfo.issue.title,
+          participants: issueInfo.participants
+        }));
+        nextRepo(null, Object.assign({ issues: issuesReleaseInfo }, repoInfo));
       });
     }, cb);
   }

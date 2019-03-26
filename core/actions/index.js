@@ -25,9 +25,12 @@ const branchesConfig = {
   devBranch: config.github.devBranch
 };
 const pullRequestsFromChanges = require('../services/pullRequestsFromChanges')(github, branchesConfig);
-const issuesFromPullRequests = require('../services/issuesFromPullRequests')(github);
 const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo, config);
-const getReleasePreview = require('../services/getReleasePreview')(pullRequestsFromChanges, deployInfoFromPullRequests, issuesFromPullRequests);
+const getReleasePreview = require('../services/getReleasePreview')(
+  pullRequestsFromChanges,
+  deployInfoFromPullRequests,
+  issueReleaseInfoList
+);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
