@@ -6,7 +6,10 @@ const sinon = require('sinon');
 const createPullRequestsFromChanges = require('../../../core/services/pullRequestsFromChanges');
 const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
 const createDeployInfoFromPullRequests = require('../../../core/services/deployInfoFromPullRequests');
-const createIssuesFromPullRequests = require('../../../core/services/issuesFromPullRequests');
+const createIssueParticipants = require('../../../core/services/issueParticipants');
+const createBoundIssueExtractor = require('../../../core/services/boundIssueExtractor');
+const createIssueReleaseInfo = require('../../../core/services/issueReleaseInfo');
+const createIssueReleaseInfoList = require('../../../core/services/issueReleaseInfoList');
 const createGetReleasePreview = require('../../../core/services/getReleasePreview');
 
 describe('start deploy action', () => {
@@ -54,9 +57,13 @@ describe('start deploy action', () => {
 
   it('should get issues to release for each repo', (done) => {
     const githubDummy = createGithubDummy();
-    const issuesFromPullRequests = createIssuesFromPullRequests(githubDummy);
-    const issuesFromPullRequestsSpy = sinon.spy(issuesFromPullRequests);
-    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, issuesFromPullRequests: issuesFromPullRequestsSpy });
+    const configDummy = createConfigDummy();
+    const issueParticipants = createIssueParticipants(githubDummy, configDummy);
+    const issueReleaseInfo = createIssueReleaseInfo(githubDummy, createBoundIssueExtractor(), issueParticipants);
+    const issueReleaseInfoList = createIssueReleaseInfoList(issueReleaseInfo);
+
+    const issueReleaseInfoListSpy = sinon.spy(issueReleaseInfoList, 'get');
+    const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, issueReleaseInfoList });
 
     const repos = [
       {repo: 'repo1', head: 'branch1' },
@@ -64,9 +71,9 @@ describe('start deploy action', () => {
     ];
     getReleasePreview(repos, (err) => {
       should.not.exist(err);
-      issuesFromPullRequestsSpy.calledTwice.should.be.ok();
-      issuesFromPullRequestsSpy.getCall(0).calledWith('repo1', [ '890' ]).should.be.ok();
-      issuesFromPullRequestsSpy.getCall(1).calledWith('repo2', [ '890' ]).should.be.ok();
+      issueReleaseInfoListSpy.calledTwice.should.be.ok();
+      issueReleaseInfoListSpy.getCall(0).calledWith('repo1', [ '890' ]).should.be.ok();
+      issueReleaseInfoListSpy.getCall(1).calledWith('repo2', [ '890' ]).should.be.ok();
       done();
     });
   });
@@ -148,7 +155,11 @@ describe('start deploy action', () => {
       reposInfo[0].repo.should.be.eql('repo1');
       should.not.exist(reposInfo[0].failReason);
       reposInfo[0].prIds.should.be.eql(['890']);
-      reposInfo[0].issues.should.be.eql([{ number: 4321, title: 'Bar issue' }]);
+      reposInfo[0].issues.should.be.eql([{
+        number: 4321,
+        title: 'Bar issue',
+        participants: ['']
+      }]);
       reposInfo[0].services.should.be.eql([
         {
           'node-version': 'v0.10.24',
@@ -194,7 +205,8 @@ describe('start deploy action', () => {
       },
       getIssueLabels: (repo, id, cb) => cb(err, [{ name: 'deploy-to:tasks-as' }]),
       getPullRequest: (repo, id, cb) => cb(err, { title: 'Foo PR', body: 'Closes #4321' }),
-      getIssue: (repo, id, cb) => cb(err, { number: 4321, title: 'Bar issue' })
+      getIssue: (repo, id, cb) => cb(err, { number: 4321, title: 'Bar issue', body: '', user: { login: '' } }),
+      getIssueComments: (repo, id, cb) => cb(err, [])
     };
   }
 
@@ -202,8 +214,8 @@ describe('start deploy action', () => {
     pullRequestsFromChanges,
     pullRequestDeployInfo,
     deployInfoFromPullRequests,
-    issuesFromPullRequests,
-    getReleasePreview,
+    issueReleaseInfo,
+    issueReleaseInfoList,
     github,
     config
   }) {
@@ -212,13 +224,14 @@ describe('start deploy action', () => {
     const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
     const configDummy = config || createConfigDummy();
     const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub, configDummy);
-    const issuesFromPullRequestsStub = issuesFromPullRequests || createIssuesFromPullRequests(githubDummy);
-    const getReleasePreviewStub = getReleasePreview || createGetReleasePreview(pullRequestsFromChangesStub, deployInfoFromPullRequestsStub, issuesFromPullRequestsStub);
+    const issueParticipants = createIssueParticipants(githubDummy, configDummy);
+    const issueReleaseInfoStub = issueReleaseInfo || createIssueReleaseInfo(githubDummy, createBoundIssueExtractor(), issueParticipants);
+    const issueReleaseInfoListStub = issueReleaseInfoList || createIssueReleaseInfoList(issueReleaseInfoStub);
 
     return createGetReleasePreview(
       pullRequestsFromChangesStub,
       deployInfoFromPullRequestsStub,
-      issuesFromPullRequestsStub
+      issueReleaseInfoListStub
     );
   }
 
