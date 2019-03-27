@@ -22,8 +22,8 @@ describe('start deploy action', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, pullRequestsFromChanges: pullRequestsFromChangesSpy });
 
     const repos = [
-      {repo: 'repo1', head: 'branch1' },
-      {repo: 'repo2', head: 'branch2' }
+      {repo: 'repo1', branch: 'branch1' },
+      {repo: 'repo2', branch: 'branch2' }
     ];
     getReleasePreview(repos, (err) => {
       should.not.exist(err);
@@ -43,8 +43,8 @@ describe('start deploy action', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, deployInfoFromPullRequests: deployInfoFromPullRequestsSpy });
 
     const repos = [
-      {repo: 'repo1', head: 'branch1' },
-      {repo: 'repo2', head: 'branch2' }
+      {repo: 'repo1', branch: 'branch1' },
+      {repo: 'repo2', branch: 'branch2' }
     ];
     getReleasePreview(repos, (err) => {
       should.not.exist(err);
@@ -66,8 +66,8 @@ describe('start deploy action', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, issueReleaseInfoList });
 
     const repos = [
-      {repo: 'repo1', head: 'branch1' },
-      {repo: 'repo2', head: 'branch2' }
+      {repo: 'repo1', branch: 'branch1' },
+      {repo: 'repo2', branch: 'branch2' }
     ];
     getReleasePreview(repos, (err) => {
       should.not.exist(err);
@@ -87,8 +87,8 @@ describe('start deploy action', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
 
     const repos = [
-      {repo: 'repo1', head: 'branch1' },
-      {repo: 'repo2', head: 'branch2' }
+      {repo: 'repo1', branch: 'branch1' },
+      {repo: 'repo2', branch: 'branch2' }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -108,8 +108,8 @@ describe('start deploy action', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
 
     const repos = [
-      {repo: 'repo1', head: 'branch1' },
-      {repo: 'repo2', head: 'branch2' }
+      {repo: 'repo1', branch: 'branch1' },
+      {repo: 'repo2', branch: 'branch2' }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -129,8 +129,8 @@ describe('start deploy action', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
 
     const repos = [
-      {repo: 'repo1', head: 'branch1' },
-      {repo: 'repo2', head: 'branch2' }
+      {repo: 'repo1', branch: 'branch1' },
+      {repo: 'repo2', branch: 'branch2' }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -145,8 +145,8 @@ describe('start deploy action', () => {
   it('should get the release preview info for each repo', (done) => {
     const getReleasePreview = createGetReleasePreviewStubs({});
     const repos = [
-      {repo: 'repo1', head: 'branch1' },
-      {repo: 'repo2', head: 'branch2' }
+      {repo: 'repo1', branch: 'branch1' },
+      {repo: 'repo2', branch: 'branch2' }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -158,6 +158,7 @@ describe('start deploy action', () => {
       reposInfo[0].issues.should.be.eql([{
         number: 4321,
         title: 'Bar issue',
+        labels: [],
         participants: ['']
       }]);
       reposInfo[0].services.should.be.eql([
@@ -205,7 +206,15 @@ describe('start deploy action', () => {
       },
       getIssueLabels: (repo, id, cb) => cb(err, [{ name: 'deploy-to:tasks-as' }]),
       getPullRequest: (repo, id, cb) => cb(err, { title: 'Foo PR', body: 'Closes #4321' }),
-      getIssue: (repo, id, cb) => cb(err, { number: 4321, title: 'Bar issue', body: '', user: { login: '' } }),
+      getIssue: (repo, id, cb) => {
+        cb(err, {
+          number: 4321,
+          title: 'Bar issue',
+          body: '',
+          labels: [],
+          user: { login: '' }
+        });
+      },
       getIssueComments: (repo, id, cb) => cb(err, [])
     };
   }

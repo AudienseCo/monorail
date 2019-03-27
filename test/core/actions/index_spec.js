@@ -30,5 +30,9 @@ describe('Actions builder', () => {
       actions.slackPreviewRelease.should.be.a.Function();
     });
 
+    it('should have the "startDEploy method"', () => {
+      actions.startDeploy.should.be.a.Function();
+    });
+
   });
 });

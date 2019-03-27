@@ -7,9 +7,9 @@ module.exports = (
   deployInfoFromPullRequests,
   issueReleaseInfoList
 ) => {
-  return (reposBranches, cb) => {
+  return (reposInfo, cb) => {
     waterfall([
-      (next)            => getPRsFromChangesForEachRepo(reposBranches, next),
+      (next)            => getPRsFromChangesForEachRepo(reposInfo, next),
       (reposInfo, next) => getDeployInfoForEachRepo(reposInfo, next),
       (reposInfo, next) => getIssuesToReleaseForEachRepo(reposInfo, next)
     ], cb);
@@ -17,8 +17,8 @@ module.exports = (
 
   function getPRsFromChangesForEachRepo(reposBranches, cb) {
     mapSeries(reposBranches, (repoBranch, nextRepo) => {
-      pullRequestsFromChanges(repoBranch, (err, prIds) => {
-        nextRepo(err, { repo: repoBranch.repo, prIds, branch: repoBranch.head });
+      pullRequestsFromChanges({ repo: repoBranch.repo, head: repoBranch.branch }, (err, prIds) => {
+        nextRepo(err, { repo: repoBranch.repo, prIds, branch: repoBranch.branch });
       });
     }, cb);
   }
@@ -53,6 +53,7 @@ module.exports = (
         const issuesReleaseInfo = issuesInfo.map(issueInfo => ({
           number: issueInfo.issue.number,
           title: issueInfo.issue.title,
+          labels: issueInfo.issue.labels,
           participants: issueInfo.participants
         }));
         nextRepo(null, Object.assign({ issues: issuesReleaseInfo }, repoInfo));
