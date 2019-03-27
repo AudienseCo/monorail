@@ -32,6 +32,25 @@ const getReleasePreview = require('../services/getReleasePreview')(
   issueReleaseInfoList
 );
 
+const clock = {
+  now: () => Date.now()
+};
+
+// TODO: figure out from config
+const getReleaseTag = () => clock.now().toString();
+
+const createDeployTemporaryBranch = require('../services/createDeployTemporaryBranch')(github, clock);
+const mergeDeployBranch = require('../services/mergeDeployBranch')(github);
+const deploy = require('../services/deploy')(
+  getReleaseTag,
+  mergeDeployBranch,
+  releaseInfoLabel,
+  releaseNotesFormatter,
+  releaseService
+);
+const cleanUpDeploy = require('../services/cleanUpDeploy')(github);
+
+
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
@@ -39,5 +58,12 @@ module.exports = {
     releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
   slackPreviewRelease: require('./slackPreviewRelease')(getReleasePreview, slack, config.github.repos),
-  getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter)
+  getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter),
+  startDeploy: require('./startDeploy')(
+    createDeployTemporaryBranch,
+    getReleasePreview,
+    deploy,
+    cleanUpDeploy,
+    slack
+  )
 };

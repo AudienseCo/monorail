@@ -98,8 +98,19 @@ module.exports = function(actions) {
   });
 
   app.get('/slack-preview-release', (req, res) => {
-
     actions.slackPreviewRelease((err) => {
+      if (err) {
+        console.error('Error', err);
+        return res.status(400).send(err);
+      }
+      res.status(200).send('OK');
+    });
+
+  });
+
+  app.get('/deploy', (req, res) => {
+    const showPreview = req.query.showPreview || false;
+    actions.startDeploy(config.github.repos, showPreview, (err) => {
       if (err) {
         console.error('Error', err);
         return res.status(400).send(err);

@@ -35,6 +35,31 @@ describe('Github API wrapper', () => {
     it('should have the "addIssueLabels" method', () => {
       github.addIssueLabels.should.be.a.Function();
     });
+
+    it('should have the "compareCommits" method', () => {
+      github.compareCommits.should.be.a.Function();
+    });
+
+    it('should have the "createBranch" method', () => {
+      github.createBranch.should.be.a.Function();
+    });
+
+    it('should have the "getBranch" method', () => {
+      github.getBranch.should.be.a.Function();
+    });
+
+    it('should have the "removeBranch" method', () => {
+      github.removeBranch.should.be.a.Function();
+    });
+
+    it('should have the "removeTag" method', () => {
+      github.removeTag.should.be.a.Function();
+    });
+
+    it('should have the "merge" method', () => {
+      github.merge.should.be.a.Function();
+    });
+
   });
 
   context('Behaviour', () => {
@@ -73,6 +98,20 @@ describe('Github API wrapper', () => {
         },
         repos: {
           compareCommits: (info, cb) => {
+            cb(null, result);
+          },
+          merge: (info, cb) => {
+            cb(null, result);
+          }
+        },
+        gitdata: {
+          getReference: (info, cb) => {
+            cb(null, result);
+          },
+          createReference: (info, cb) => {
+            cb(null, result);
+          },
+          deleteReference: (info, cb) => {
             cb(null, result);
           }
         }
@@ -238,5 +277,95 @@ describe('Github API wrapper', () => {
         done();
       });
     });
+
+    it('create branch', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.gitdata, 'createReference');
+
+      const repo = 'another';
+      const branch = 'master';
+      const sha = '123';
+      github.createBranch(repo, branch, sha, (err, result) => {
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'another',
+          ref: 'refs/heads/master',
+          sha: '123'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('get branch', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.gitdata, 'getReference');
+
+      const repo = 'another';
+      const branch = 'master';
+      github.getBranch(repo, branch, (err, result) => {
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'another',
+          ref: 'heads/master',
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('remove branch', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.gitdata, 'deleteReference');
+
+      const repo = 'another';
+      const branch = 'master';
+      github.removeBranch(repo, branch, (err, result) => {
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'another',
+          ref: 'heads/master',
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('remove tag', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.gitdata, 'deleteReference');
+
+      const repo = 'another';
+      const tag = '1.5';
+      github.removeTag(repo, tag, (err, result) => {
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'another',
+          ref: 'tags/1.5'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('merge branch', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.repos, 'merge');
+
+      const repo = 'another';
+      const base = 'master';
+      const head = 'deploy-123';
+      github.merge(repo, base, head, (err, result) => {
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'another',
+          base: 'master',
+          head: 'deploy-123'
+        }).should.be.ok();
+        done();
+      });
+    });
+
   });
 });
