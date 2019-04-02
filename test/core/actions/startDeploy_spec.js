@@ -151,7 +151,7 @@ describe('start deploy action', () => {
     const githubDummy = createGithubDummy();
     const cleanUpDeploy = createCleanUpDeploy(githubDummy);
     const cleanUpDeploySpy = sinon.spy(cleanUpDeploy);
-    const createDeployTemporaryBranch = (repo, cb) => cb(new Error('dummy error'));
+    const createDeployTemporaryBranch = (repo, devBranch, cb) => cb(new Error('dummy error'));
     const startDeploy = createStartDeployWithStubs({ createDeployTemporaryBranch, cleanUpDeploy: cleanUpDeploySpy });
 
     const repos = ['repo1', 'repo2'];

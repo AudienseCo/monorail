@@ -1,6 +1,7 @@
 'use scrict';
 
 const { mapSeries, waterfall } = require('async');
+const { get } = require('lodash');
 const previewReleaseTemplate = require('./slack-views/preview-release');
 const releaseTemplate = require('./slack-views/release');
 
@@ -41,7 +42,8 @@ module.exports = (
 
     function createTemporaryBranchesForEachRepo(reposInfo, cb) {
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
-        createDeployTemporaryBranch(repoInfo.repo, (err, branch) => {
+        const devBranch = get(repoInfo, 'config.github.devBranch');
+        createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
           nextRepo(err, Object.assign({ branch }, repoInfo));
         });
       }, cb);
