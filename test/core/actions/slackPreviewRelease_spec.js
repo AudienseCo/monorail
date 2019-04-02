@@ -12,6 +12,7 @@ const createPullRequestsFromChanges = require('../../../core/services/pullReques
 const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
 const createDeployInfoFromPullRequests = require('../../../core/services/deployInfoFromPullRequests');
 const createGetReleasePreview = require('../../../core/services/getReleasePreview');
+const createGetRepoConfig = require('../../../core/services/getRepoConfig');
 
 describe('slackPreviewRelease action', () => {
 
@@ -173,7 +174,8 @@ describe('slackPreviewRelease action', () => {
         getIssueLabels: (repo, id, cb) => {
           cb(null, labelsInfo);
         },
-        getIssueComments: (repo, id, cb) => cb(null, [])
+        getIssueComments: (repo, id, cb) => cb(null, []),
+        getContent: (repo, path, cb) => cb(null, { content: 'eyAidGV4dCI6ICJoZWxsbyBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ==' })
       };
 
     }
@@ -187,6 +189,7 @@ describe('slackPreviewRelease action', () => {
     }
 
     function createPrevieReleaseWithStubs({
+      getRepoConfig,
       pullRequestsFromChanges,
       pullRequestDeployInfo,
       deployInfoFromPullRequests,
@@ -198,6 +201,7 @@ describe('slackPreviewRelease action', () => {
     }) {
       const githubDummy = github || createGithubDummy();
       const configDummy = createConfigDummy();
+      const getRepoConfigStub = getRepoConfig || createGetRepoConfig(githubDummy);
       const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, {});
       const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub, configDummy);
@@ -207,7 +211,7 @@ describe('slackPreviewRelease action', () => {
       const getReleasePreviewStub = getReleasePreview || createGetReleasePreview(pullRequestsFromChangesStub, deployInfoFromPullRequestsStub, issueReleaseInfoListStub);
       const slackDummy = slack || createSlackDummy();
 
-      return createPreviewRelease(getReleasePreviewStub, slackDummy, repos);
+      return createPreviewRelease(getRepoConfigStub, getReleasePreviewStub, slackDummy, repos);
     }
 
 

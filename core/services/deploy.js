@@ -10,6 +10,7 @@ module.exports = (getReleaseTag, mergeDeployBranch, releaseInfoLabel, releaseNot
     const devBranch = get(repoInfo, 'config.github.devBranch');
     const deployedLabel = get(repoInfo, 'config.github.deployedLabel');
     const tag = getReleaseTag();
+    //TODO: call build job
     const build = (cb) => cb();
 
     // TODO: map to avoid breaking changes, we can refactor it once removed the old actions
