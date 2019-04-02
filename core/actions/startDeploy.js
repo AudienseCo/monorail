@@ -7,6 +7,7 @@ const releaseTemplate = require('./slack-views/release');
 // TODO: Don't break with error at repo level, use failReason
 
 module.exports = (
+  getRepoConfig,
   createDeployTemporaryBranch,
   getReleasePreview,
   deploy,
@@ -15,7 +16,8 @@ module.exports = (
 ) => {
   return (repos, showPreview, cb) => {
     waterfall([
-      (next)            => createTemporaryBranchesForEachRepo(repos, next),
+      (next)            => getConfigForEachRepo(repos, next),
+      (reposInfo, next) => createTemporaryBranchesForEachRepo(reposInfo, next),
       (reposInfo, next) => getReleasePreview(reposInfo, next),
       (reposInfo, next) => notifyPreviewSlackIfEnabled(showPreview, reposInfo, next),
       (reposInfo, next) => deployEachRepo(reposInfo, next),
@@ -29,9 +31,19 @@ module.exports = (
       cb();
     });
 
-    function createTemporaryBranchesForEachRepo(repos, cb) {
+    function getConfigForEachRepo(repos, cb) {
       mapSeries(repos, (repo, nextRepo) => {
-        createDeployTemporaryBranch(repo, (err, branch) => nextRepo(err, { repo, branch }));
+        getRepoConfig(repo, (err, config) => {
+          nextRepo(err, { repo, config });
+        });
+      }, cb);
+    }
+
+    function createTemporaryBranchesForEachRepo(reposInfo, cb) {
+      mapSeries(reposInfo, (repoInfo, nextRepo) => {
+        createDeployTemporaryBranch(repoInfo.repo, (err, branch) => {
+          nextRepo(err, Object.assign({ branch }, repoInfo));
+        });
       }, cb);
     }
 

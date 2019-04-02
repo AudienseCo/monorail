@@ -39,6 +39,7 @@ const clock = {
 // TODO: figure out from config
 const getReleaseTag = () => clock.now().toString();
 
+const getRepoConfig = require('../services/getRepoConfig')(github);
 const createDeployTemporaryBranch = require('../services/createDeployTemporaryBranch')(github, clock);
 const mergeDeployBranch = require('../services/mergeDeployBranch')(github);
 const deploy = require('../services/deploy')(
@@ -60,6 +61,7 @@ module.exports = {
   slackPreviewRelease: require('./slackPreviewRelease')(getReleasePreview, slack, config.github.repos),
   getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter),
   startDeploy: require('./startDeploy')(
+    getRepoConfig,
     createDeployTemporaryBranch,
     getReleasePreview,
     deploy,

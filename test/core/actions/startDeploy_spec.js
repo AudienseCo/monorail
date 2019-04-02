@@ -5,6 +5,7 @@ const sinon = require('sinon');
 
 const createPullRequestsFromChanges = require('../../../core/services/pullRequestsFromChanges');
 const createCreateDeployTemporaryBranch = require('../../../core/services/createDeployTemporaryBranch');
+const createGetRepoConfig = require('../../../core/services/getRepoConfig');
 const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
 const createDeployInfoFromPullRequests = require('../../../core/services/deployInfoFromPullRequests');
 const createIssueParticipants = require('../../../core/services/issueParticipants');
@@ -25,6 +26,23 @@ describe('start deploy action', () => {
   const clock = {
     now: () => 123
   };
+
+  it('should get the config file from each repo', (done) => {
+    const githubDummy = createGithubDummy();
+    const getRepoConfig = createGetRepoConfig(githubDummy);
+    const getRepoConfigSpy = sinon.spy(getRepoConfig);
+    const startDeploy = createStartDeployWithStubs({ github: githubDummy, getRepoConfig: getRepoConfigSpy });
+
+    const repos = ['repo1', 'repo2'];
+    const showPreview = false;
+    startDeploy(repos, showPreview, (err) => {
+      should.not.exist(err);
+      getRepoConfigSpy.calledTwice.should.be.ok();
+      getRepoConfigSpy.getCall(0).calledWith('repo1').should.be.ok();
+      getRepoConfigSpy.getCall(1).calledWith('repo2').should.be.ok();
+      done();
+    });
+  });
 
   it('should create a temporary branch per repo', (done) => {
     const githubDummy = createGithubDummy();
@@ -192,7 +210,8 @@ describe('start deploy action', () => {
         };
         cb(err, res || defaultRes);
       },
-      merge: (repo, base, head, cb) => cb(err, cb)
+      merge: (repo, base, head, cb) => cb(err, res),
+      getContent: (repo, path, cb) => cb(err, res || { content: 'eyAidGV4dCI6ICJoZWxsbyBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ==' })
     };
   }
 
@@ -206,6 +225,7 @@ describe('start deploy action', () => {
 
   function createStartDeployWithStubs({
     createDeployTemporaryBranch,
+    getRepoConfig,
     pullRequestsFromChanges,
     pullRequestDeployInfo,
     deployInfoFromPullRequests,
@@ -218,6 +238,7 @@ describe('start deploy action', () => {
     github
   }) {
     const githubDummy = github || createGithubDummy();
+    const getRepoConfigStub = getRepoConfig || createGetRepoConfig(githubDummy);
     const createDeployTemporaryBranchStub = createDeployTemporaryBranch || createCreateDeployTemporaryBranch(githubDummy, clock);
     const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, branchesConfig);
     const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
@@ -237,6 +258,7 @@ describe('start deploy action', () => {
     const slackDummy = slack || createSlackDummy();
 
     return createStartDeploy(
+      getRepoConfigStub,
       createDeployTemporaryBranchStub,
       getReleasePreviewStub,
       deployStub,

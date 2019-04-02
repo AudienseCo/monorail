@@ -110,7 +110,8 @@ module.exports = function(actions) {
 
   app.get('/deploy', (req, res) => {
     const showPreview = req.query.showPreview || false;
-    actions.startDeploy(config.github.repos, showPreview, (err) => {
+    const repos = req.query.repos || config.github.repos;
+    actions.startDeploy(repos, showPreview, (err) => {
       if (err) {
         console.error('Error', err);
         return res.status(400).send(err);

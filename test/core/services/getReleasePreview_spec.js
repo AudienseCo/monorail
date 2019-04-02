@@ -12,7 +12,7 @@ const createIssueReleaseInfo = require('../../../core/services/issueReleaseInfo'
 const createIssueReleaseInfoList = require('../../../core/services/issueReleaseInfoList');
 const createGetReleasePreview = require('../../../core/services/getReleasePreview');
 
-describe('start deploy action', () => {
+describe('getReleasePreview service', () => {
   const branchesConfig = { masterBranch: '', devBranch: '' };
 
   it('should get PRs from changes comparing each repo tmp branch with master', (done) => {
