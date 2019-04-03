@@ -11,6 +11,7 @@ const createBoundIssueExtractor = require('../../../core/services/boundIssueExtr
 const createIssueReleaseInfo = require('../../../core/services/issueReleaseInfo');
 const createIssueReleaseInfoList = require('../../../core/services/issueReleaseInfoList');
 const createGetReleasePreview = require('../../../core/services/getReleasePreview');
+const repoConfig = require('../../fixtures/repoConfig.json');
 
 describe('getReleasePreview service', () => {
   const branchesConfig = { masterBranch: '', devBranch: '' };
@@ -22,8 +23,8 @@ describe('getReleasePreview service', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, pullRequestsFromChanges: pullRequestsFromChangesSpy });
 
     const repos = [
-      {repo: 'repo1', branch: 'branch1' },
-      {repo: 'repo2', branch: 'branch2' }
+      {repo: 'repo1', branch: 'branch1', config: getRepoConfig() },
+      {repo: 'repo2', branch: 'branch2', config: getRepoConfig() }
     ];
     getReleasePreview(repos, (err) => {
       should.not.exist(err);
@@ -43,8 +44,8 @@ describe('getReleasePreview service', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, deployInfoFromPullRequests: deployInfoFromPullRequestsSpy });
 
     const repos = [
-      {repo: 'repo1', branch: 'branch1' },
-      {repo: 'repo2', branch: 'branch2' }
+      {repo: 'repo1', branch: 'branch1', config: getRepoConfig() },
+      {repo: 'repo2', branch: 'branch2', config: getRepoConfig() }
     ];
     getReleasePreview(repos, (err) => {
       should.not.exist(err);
@@ -66,8 +67,8 @@ describe('getReleasePreview service', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy, issueReleaseInfoList });
 
     const repos = [
-      {repo: 'repo1', branch: 'branch1' },
-      {repo: 'repo2', branch: 'branch2' }
+      {repo: 'repo1', branch: 'branch1', config: getRepoConfig() },
+      {repo: 'repo2', branch: 'branch2', config: getRepoConfig() }
     ];
     getReleasePreview(repos, (err) => {
       should.not.exist(err);
@@ -87,8 +88,8 @@ describe('getReleasePreview service', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
 
     const repos = [
-      {repo: 'repo1', branch: 'branch1' },
-      {repo: 'repo2', branch: 'branch2' }
+      {repo: 'repo1', branch: 'branch1', config: getRepoConfig() },
+      {repo: 'repo2', branch: 'branch2', config: getRepoConfig() }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -108,8 +109,8 @@ describe('getReleasePreview service', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
 
     const repos = [
-      {repo: 'repo1', branch: 'branch1' },
-      {repo: 'repo2', branch: 'branch2' }
+      {repo: 'repo1', branch: 'branch1', config: getRepoConfig() },
+      {repo: 'repo2', branch: 'branch2', config: getRepoConfig() }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -129,8 +130,8 @@ describe('getReleasePreview service', () => {
     const getReleasePreview = createGetReleasePreviewStubs({ github: githubDummy });
 
     const repos = [
-      {repo: 'repo1', branch: 'branch1' },
-      {repo: 'repo2', branch: 'branch2' }
+      {repo: 'repo1', branch: 'branch1', config: getRepoConfig() },
+      {repo: 'repo2', branch: 'branch2', config: getRepoConfig() }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -145,8 +146,8 @@ describe('getReleasePreview service', () => {
   it('should get the release preview info for each repo', (done) => {
     const getReleasePreview = createGetReleasePreviewStubs({});
     const repos = [
-      {repo: 'repo1', branch: 'branch1' },
-      {repo: 'repo2', branch: 'branch2' }
+      {repo: 'repo1', branch: 'branch1', config: getRepoConfig() },
+      {repo: 'repo2', branch: 'branch2', config: getRepoConfig() }
     ];
     getReleasePreview(repos, (err, reposInfo) => {
       should.not.exist(err);
@@ -161,37 +162,23 @@ describe('getReleasePreview service', () => {
         labels: [],
         participants: ['']
       }]);
-      reposInfo[0].services.should.be.eql([
+      reposInfo[0].deployInfo.jobs.should.be.eql([
         {
-          'node-version': 'v0.10.24',
-          statics: true,
-          deploy: ['tasks']
+          name: 'nodejs v8.6.0',
+          deployTo: ['task-as'],
+          params: {}
         }
       ]);
       done();
     });
   });
 
+  function getRepoConfig() {
+    return repoConfig;
+  }
+
   function createConfigDummy() {
-    const servicesMap = {
-      globalreports: {
-        'node-version': 'v0.10.24',
-        statics: true,
-        deploy: ['globalreports']
-      },
-      'tasks-as': {
-        'node-version': 'v0.10.24',
-        statics: true,
-        deploy: ['tasks']
-      }
-    };
-    return {
-      services: {
-        mapper: service => {
-          return servicesMap[service];
-        }
-      }
-    };
+    return {};
   }
 
   function createGithubDummy(err, res) {
@@ -204,7 +191,7 @@ describe('getReleasePreview service', () => {
         };
         cb(err, res || defaultRes);
       },
-      getIssueLabels: (repo, id, cb) => cb(err, [{ name: 'deploy-to:tasks-as' }]),
+      getIssueLabels: (repo, id, cb) => cb(err, [{ name: 'deploy-to:task-as' }]),
       getPullRequest: (repo, id, cb) => cb(err, { title: 'Foo PR', body: 'Closes #4321' }),
       getIssue: (repo, id, cb) => {
         cb(err, {
@@ -232,7 +219,7 @@ describe('getReleasePreview service', () => {
     const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, branchesConfig);
     const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
     const configDummy = config || createConfigDummy();
-    const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub, configDummy);
+    const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub);
     const issueParticipants = createIssueParticipants(githubDummy, configDummy);
     const issueReleaseInfoStub = issueReleaseInfo || createIssueReleaseInfo(githubDummy, createBoundIssueExtractor(), issueParticipants);
     const issueReleaseInfoListStub = issueReleaseInfoList || createIssueReleaseInfoList(issueReleaseInfoStub);

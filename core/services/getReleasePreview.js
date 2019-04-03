@@ -1,6 +1,7 @@
 'use strict';
 
 const { mapSeries, waterfall } = require('async');
+const { get } = require('lodash');
 
 module.exports = (
   pullRequestsFromChanges,
@@ -15,10 +16,10 @@ module.exports = (
     ], cb);
   };
 
-  function getPRsFromChangesForEachRepo(reposBranches, cb) {
-    mapSeries(reposBranches, (repoBranch, nextRepo) => {
-      pullRequestsFromChanges({ repo: repoBranch.repo, head: repoBranch.branch }, (err, prIds) => {
-        nextRepo(err, { repo: repoBranch.repo, prIds, branch: repoBranch.branch });
+  function getPRsFromChangesForEachRepo(reposInfo, cb) {
+    mapSeries(reposInfo, (repoInfo, nextRepo) => {
+      pullRequestsFromChanges({ repo: repoInfo.repo, head: repoInfo.branch }, (err, prIds) => {
+        nextRepo(err, Object.assign({ prIds }, repoInfo));
       });
     }, cb);
   }
@@ -28,7 +29,8 @@ module.exports = (
       if (repoInfo.prIds.length === 0) {
         return nextRepo(null, Object.assign({ failReason: 'NO_CHANGES' }, repoInfo));
       }
-      deployInfoFromPullRequests(repoInfo.repo, repoInfo.prIds, (err, deployInfo) => {
+      const repoConfig = get(repoInfo, 'config.deploy');
+      deployInfoFromPullRequests(repoInfo.repo, repoInfo.prIds, repoConfig, (err, deployInfo) => {
         let failReason;
         if (err) {
           failReason = err.message;
@@ -36,10 +38,10 @@ module.exports = (
         else if (deployInfo.deployNotes) {
           failReason = 'DEPLOY_NOTES';
         }
-        else if (deployInfo.services.length === 0) {
+        else if (deployInfo.jobs.length === 0) {
           failReason = 'NO_SERVICES';
         }
-        nextRepo(null, Object.assign({ failReason, services: deployInfo.services }, repoInfo));
+        nextRepo(null, Object.assign({ failReason, deployInfo }, repoInfo));
       });
     }, cb);
   }

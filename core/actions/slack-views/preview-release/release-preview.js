@@ -2,7 +2,7 @@
 
 const { user } = require('../../../../config').github;
 
-module.exports = ({ repo, prIds, issues, services }) => {
+module.exports = ({ repo, prIds, issues, deployInfo }) => {
 
   const formatedPRs = prIds.map(prId => {
     return `<https://github.com/${user}/${repo}/issues/${prId}|#${prId}>`;
@@ -12,8 +12,8 @@ module.exports = ({ repo, prIds, issues, services }) => {
     return `<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title}`;
   }).join('\n');
 
-  const formatedServices = services.reduce((res, service) => {
-    res += `*Node version*: ${service.nodeVersion}\n*Services*: ${service.deploy.join(', ')}\n`;
+  const formatedServices = deployInfo.jobs.reduce((res, job) => {
+    res += `*${job.name}*: ${job.deployTo.join(', ')}\n`;
     return res;
   }, '');
 

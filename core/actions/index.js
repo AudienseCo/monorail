@@ -25,7 +25,7 @@ const branchesConfig = {
   devBranch: config.github.devBranch
 };
 const pullRequestsFromChanges = require('../services/pullRequestsFromChanges')(github, branchesConfig);
-const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo, config);
+const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo);
 const getReleasePreview = require('../services/getReleasePreview')(
   pullRequestsFromChanges,
   deployInfoFromPullRequests,

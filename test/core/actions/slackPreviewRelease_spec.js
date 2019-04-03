@@ -13,6 +13,7 @@ const createPullRequestDeployInfo = require('../../../core/services/pullRequestD
 const createDeployInfoFromPullRequests = require('../../../core/services/deployInfoFromPullRequests');
 const createGetReleasePreview = require('../../../core/services/getReleasePreview');
 const createGetRepoConfig = require('../../../core/services/getRepoConfig');
+const repoConfig = require('../../fixtures/repoConfig.json');
 
 describe('slackPreviewRelease action', () => {
 
@@ -106,7 +107,7 @@ describe('slackPreviewRelease action', () => {
     it('should notify the release preview with PRs, issues and deploy info', done => {
       const githubDummy = createGithubDummy();
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:task-as' }]);
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const slackDummy = createSlackDummy();
       const slackSpy = sinon.spy(slackDummy, 'send');
@@ -116,37 +117,20 @@ describe('slackPreviewRelease action', () => {
         should.not.exist(err);
         const expectedMsg = {
           attachments: [ {
-            text: '*Pull Requests*: <https://github.com/AudienseCo/socialbro/issues/1234|#1234>\n\n*Node version*: v0.10.24\n*Services*: tasks\n\n\n*Issues*:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\n',
+            text: '*Pull Requests*: <https://github.com/AudienseCo/socialbro/issues/1234|#1234>\n\n*nodejs v8.6.0*: task-as\n\n\n*Issues*:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\n',
             color: 'good',
             title: 'socialbro',
             title_link: 'https://github.com/AudienseCo/socialbro'
           } ]
         };
+        console.log('slackSpy', slackSpy.getCall(0).args[0].attachments);
         slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
         done();
       });
     });
 
     function createConfigDummy() {
-      const servicesMap = {
-        globalreports: {
-          'nodeVersion': 'v0.10.24',
-          statics: true,
-          deploy: ['globalreports']
-        },
-        'tasks-as': {
-          'nodeVersion': 'v0.10.24',
-          statics: true,
-          deploy: ['tasks']
-        }
-      };
-      return {
-        services: {
-          mapper: service => {
-            return servicesMap[service];
-          }
-        }
-      };
+      return {};
     }
 
 
@@ -188,6 +172,12 @@ describe('slackPreviewRelease action', () => {
       };
     }
 
+    function createGetRepoConfigStub(github) {
+      return (repo, cb) => {
+        cb(null, repoConfig);
+      }
+    }
+
     function createPrevieReleaseWithStubs({
       getRepoConfig,
       pullRequestsFromChanges,
@@ -201,10 +191,10 @@ describe('slackPreviewRelease action', () => {
     }) {
       const githubDummy = github || createGithubDummy();
       const configDummy = createConfigDummy();
-      const getRepoConfigStub = getRepoConfig || createGetRepoConfig(githubDummy);
+      const getRepoConfigStub = getRepoConfig || createGetRepoConfigStub(githubDummy);
       const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, {});
       const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
-      const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub, configDummy);
+      const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub);
       const issueParticipants = createIssueParticipants(githubDummy, configDummy);
       const issueReleaseInfoStub = issueReleaseInfo || createIssueReleaseInfo(githubDummy, createBoundIssueExtractor(), issueParticipants);
       const issueReleaseInfoListStub = issueReleaseInfoList || createIssueReleaseInfoList(issueReleaseInfoStub);
