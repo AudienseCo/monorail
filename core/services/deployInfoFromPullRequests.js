@@ -4,6 +4,7 @@ const { reduce } = require('async');
 const { get, union, assign, assignWith, find } = require('lodash');
 
 // TODO: get deploy notes label from config
+// TODO: get deploy-to: labels prefix from config
 // TODO: ensure that the ci job exists
 // TODO: ensure that the same service isn't deployed several times with different jobs
 module.exports = (pullRequestDeployInfo) => {
@@ -36,7 +37,7 @@ module.exports = (pullRequestDeployInfo) => {
     return services.reduce((jobs, service) => {
       const serviceConfig = get(repoConfig, `services.${service}`);
       if (!serviceConfig) return jobs;
-      const jobConfig = find(jobs, { name: serviceConfig.CIJob });
+      const jobConfig = find(jobs, { name: serviceConfig.ciJob });
       if (jobConfig) {
         jobConfig.deployTo = union(jobConfig.deployTo, serviceConfig.deployTo);
         assignWith(jobConfig.params, serviceConfig.params, (jobParam, serviceParam) => {
@@ -45,7 +46,7 @@ module.exports = (pullRequestDeployInfo) => {
       }
       else {
         jobs.push({
-          name: serviceConfig.CIJob,
+          name: serviceConfig.ciJob,
           deployTo: union([], serviceConfig.deployTo),
           params: assign({}, serviceConfig.params)
         });

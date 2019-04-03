@@ -6,7 +6,7 @@
     "deployNotesLabel": "deploy notes"
   },
   "deploy": {
-    "CIServices": {
+    "ciServices": {
       "jenkins": {
         "driver": "jenkins",
         "settings": {
@@ -17,13 +17,16 @@
         }
       }
     },
-    "CIJobs": {
+    "ciJobs": {
       "nodejs v8.6.0": {
-        "CIService": "jenkins",
+        "ciService": "jenkins",
         "jobName": "monorail-tarball-ecs",
         "servicesParam": {
           "paramName": "where_to_deploy",
           "separator": ","
+        },
+        "sourceVersionParam": {
+          "paramName": "branch"
         },
         "defaultParams": {
           "token": "job token",
@@ -35,11 +38,14 @@
         }
       },
       "nodejs v10.0.0": {
-        "CIService": "jenkins",
+        "ciService": "jenkins",
         "jobName": "monorail-tarball-ecs",
         "servicesParam": {
           "paramName": "where_to_deploy",
           "separator": ","
+        },
+        "sourceVersionParam": {
+          "paramName": "branch"
         },
         "defaultParams": {
           "token": "job token",
@@ -51,11 +57,14 @@
         }
       },
       "spark audiense-insights": {
-        "CIService": "jenkins",
+        "ciService": "jenkins",
         "jobName": "data-pipeline-spark-build-deploy-service",
         "servicesParam": {
           "paramName": "???",
           "separator": "???"
+        },
+        "sourceVersionParam": {
+          "paramName": "source_version"
         },
         "defaultParams": {
           "token": "job token",
@@ -68,11 +77,14 @@
         }
       },
       "lambda": {
-        "CIService": "jenkins",
+        "ciService": "jenkins",
         "jobName": "lambda-deploy-service",
         "servicesParam": {
           "paramName": "function_name???",
           "separator": ";"
+        },
+        "sourceVersionParam": {
+          "paramName": "source_version"
         },
         "defaultParams": {
           "token": "job token",
@@ -87,7 +99,7 @@
     },
     "services": {
       "globalreports": {
-        "CIJob": "nodejs v8.6.0",
+        "ciJob": "nodejs v8.6.0",
         "deployTo": [
           "globalreports-as"
         ],
@@ -95,7 +107,7 @@
         }
       },
       "task-as": {
-        "CIJob": "nodejs v8.6.0",
+        "ciJob": "nodejs v8.6.0",
         "deployTo": [
           "task-as"
         ],
@@ -103,7 +115,7 @@
         }
       },
       "dashboard": {
-        "CIJob": "nodejs v10.0.0",
+        "ciJob": "nodejs v10.0.0",
         "deployTo": [
           "dashboard-as",
           "task-as"
@@ -114,7 +126,7 @@
         }
       },
       "audiense-insights": {
-        "CIJob": "spark audiense-insights",
+        "ciJob": "spark audiense-insights",
         "deployTo": [
           "????"
         ],
@@ -122,7 +134,7 @@
         }
       },
       "lambda-whatever": {
-        "CIJob": "lamdba",
+        "ciJob": "lamdba",
         "deployTo": [
           "????"
         ],
