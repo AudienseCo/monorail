@@ -3,6 +3,8 @@
 const should = require('should');
 const sinon = require('sinon');
 const createBuild = require('../../../core/services/build');
+const createCallCIDriver = require('../../../core/services/callCIDriver');
+
 const repoConfig = require('../../fixtures/repoConfig.json');
 
 describe('Build service', () => {
@@ -30,7 +32,11 @@ describe('Build service', () => {
         ]
       }
     };
-    const callCIDriver = (ciServiceConfig, params, cb) => cb();
+
+    const ciDrivers = {
+      jenkins: (settings, params, cb) => cb()
+    };
+    const callCIDriver = createCallCIDriver(ciDrivers);
     const callCIDriverSpy = sinon.spy(callCIDriver);
     const build = createBuild(callCIDriverSpy);
 

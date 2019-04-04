@@ -19,6 +19,7 @@ module.exports = (callCIDriver) => {
 
       const params = combineParams(job, ciJobConfig, branch);
       callCIDriver(ciServiceConfig, params, nextJob);
+      // TODO: return job execution result
     }, cb);
   }
 

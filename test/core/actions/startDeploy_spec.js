@@ -253,7 +253,8 @@ describe('start deploy action', () => {
     const releaseNotesFormatter = createReleaseNotesFormatter();
     const releaseService = createReleaseService(githubDummy);
     const getReleaseTag = () => '';
-    const deployStub = deploy || createDeploy(getReleaseTag, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService);
+    const build = (branch, jobs, deployConfig,  cb) => {}
+    const deployStub = deploy || createDeploy(getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService);
     const cleanUpDeployStub = cleanUpDeploy || createCleanUpDeploy(githubDummy);
     const slackDummy = slack || createSlackDummy();
 

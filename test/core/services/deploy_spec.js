@@ -7,6 +7,7 @@ const createReleaseService = require('../../../core/services/releaseService');
 const createMergeDeployBranch = require('../../../core/services/mergeDeployBranch');
 const createBuild = require('../../../core/services/build');
 const createDeploy = require('../../../core/services/deploy');
+const createCallCIDriver = require('../../../core/services/callCIDriver');
 const repoConfig = require('../../fixtures/repoConfig.json');
 
 describe('deploy service', () => {
@@ -16,7 +17,10 @@ describe('deploy service', () => {
     const releaseInfoLabel = createReleaseInfoLabel(githubDummy);
     const releaseNotesFormatter = createReleaseNotesFormatter();
     const releaseService = createReleaseService(githubDummy);
-    const callCIDriver = (ciServiceConfig, params, cb) => cb();
+    const ciDrivers = {
+      jenkins: (settings, params, cb) => cb()
+    };
+    const callCIDriver = createCallCIDriver(ciDrivers);
     const build = createBuild(callCIDriver);
     const getReleaseTag = () => '1.5';
     const deploy = createDeploy(getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService);

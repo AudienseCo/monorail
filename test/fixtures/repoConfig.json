@@ -11,9 +11,9 @@
         "driver": "jenkins",
         "settings": {
           "url": "",
-          "user": "systems_worker",
-          "token": "API token",
-          "cause": "Build triggered with love by Monorail"
+          "username": "",
+          "password": "",
+          "pollingInterval": 1000
         }
       }
     },
