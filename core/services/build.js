@@ -1,7 +1,7 @@
 'use strict';
 
 const { eachSeries } = require('async');
-const { get, assignWith, cloneDeep, isNil } = require('lodash');
+const { get, assignWith, cloneDeep, isNil, defaultsDeep } = require('lodash');
 
 module.exports = (callCIDriver, localConfig) => {
   return (branch, jobs, deployConfig,  cb) => {
@@ -15,7 +15,7 @@ module.exports = (callCIDriver, localConfig) => {
       if (!ciJobConfig) return nextJob();
 
       const settings = combineSettings(ciJobConfig.ciService, ciServicesConfig, localConfig);
-      const params = combineParams(job, ciJobConfig, branch);
+      const params = combineParams(job, branch, ciJobConfig, localConfig);
 
       callCIDriver(ciJobConfig.ciService, settings, params, nextJob);
       // TODO: return job execution result
@@ -25,26 +25,27 @@ module.exports = (callCIDriver, localConfig) => {
   function combineSettings(ciService, ciServicesConfig, localConfig) {
     const repoSettings = get(ciServicesConfig, `${ciService}.settings`);
     const localSettings = get(localConfig, `deploy.ciServices.${ciService}.settings`);
-    const settings = applyDefaults(repoSettings, localSettings);
+    const settings = defaultsDeep({}, repoSettings, localSettings);
     return settings;
   }
 
-  function combineParams(job, ciJobConfig, branch) {
-    // TODO: combine default params with monorail config
-    const params = applyDefaults(job.params, ciJobConfig.defaultParams);
+  function combineParams(job, branch, repoCIJobConfig, localConfig) {
+    const localCIJobConfig = get(localConfig, `deploy.ciJobs.['${job.name}']`);
+    const finalCIJobConfig = defaultsDeep({}, repoCIJobConfig, localCIJobConfig);
+    const params = applyBooleanDefaults(job.params, finalCIJobConfig.defaultParams);
 
-    if (ciJobConfig.servicesParam) {
-      params[ciJobConfig.servicesParam.paramName] = job.deployTo.join(ciJobConfig.servicesParam.separator);
+    if (finalCIJobConfig.servicesParam) {
+      params[finalCIJobConfig.servicesParam.paramName] = job.deployTo.join(finalCIJobConfig.servicesParam.separator);
     }
 
-    if (ciJobConfig.sourceVersionParam) {
-      params[ciJobConfig.sourceVersionParam.paramName] = branch;
+    if (finalCIJobConfig.sourceVersionParam) {
+      params[finalCIJobConfig.sourceVersionParam.paramName] = branch;
     }
 
     return params
   }
 
-  function applyDefaults(originalObj, defaultObj) {
+  function applyBooleanDefaults(originalObj, defaultObj) {
     const finalObj = cloneDeep(defaultObj);
     return assignWith(finalObj, originalObj, (defaultProp, originalProp) => {
       return isNil(originalProp) ? defaultProp : originalProp;
