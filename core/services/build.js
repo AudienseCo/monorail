@@ -14,19 +14,19 @@ module.exports = (callCIDriver, localConfig) => {
       const ciJobConfig = get(ciJobsConfig, job.name);
       if (!ciJobConfig) return nextJob();
 
-      const ciServiceConfig = get(ciServicesConfig, ciJobConfig.ciService);
-      if (!ciServiceConfig) return nextJob();
-
-      const settings = combineSettings(job, ciServiceConfig, localConfig);
+      const settings = combineSettings(ciJobConfig.ciService, ciServicesConfig, localConfig);
       const params = combineParams(job, ciJobConfig, branch);
 
-      callCIDriver(settings, params, nextJob);
+      callCIDriver(ciJobConfig.ciService, settings, params, nextJob);
       // TODO: return job execution result
     }, cb);
   }
 
-  function combineSettings(job, ciServiceConfig, localConfig) {
-    return ciServiceConfig;
+  function combineSettings(ciService, ciServicesConfig, localConfig) {
+    const repoSettings = get(ciServicesConfig, `${ciService}.settings`);
+    const localSettings = get(localConfig, `deploy.ciServices.${ciService}.settings`);
+    const settings = applyDefaults(repoSettings, localSettings);
+    return settings;
   }
 
   function combineParams(job, ciJobConfig, branch) {
@@ -46,7 +46,7 @@ module.exports = (callCIDriver, localConfig) => {
 
   function applyDefaults(originalObj, defaultObj) {
     const finalObj = cloneDeep(originalObj);
-    return assignWith(finalObj, defaultObj, (originalProp, defaultProp) => {
+    return assignWith(defaultObj, finalObj, (defaultProp, originalProp) => {
       return isNil(originalProp) ? defaultProp : originalProp;
     });
   }

@@ -42,8 +42,9 @@ describe('Build service', () => {
     build(branch, jobs, deployConfig, (err) => {
       should.not.exist(err);
       callCIDriverSpy.calledTwice.should.be.ok();
-      callCIDriverSpy.firstCall.args[0].should.be.eql(deployConfig.ciServices.jenkins);
-      callCIDriverSpy.firstCall.args[1].should.be.eql({
+      callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
+      callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
+      callCIDriverSpy.firstCall.args[2].should.be.eql({
         token: 'other token',
         branch: 'deploy-branch1',
         node_version: 'v8.6.0',
@@ -52,8 +53,9 @@ describe('Build service', () => {
         statics: false,
         where_to_deploy: 'task-as,globalreports-as'
       });
-      callCIDriverSpy.secondCall.args[0].should.be.eql(deployConfig.ciServices.jenkins);
-      callCIDriverSpy.secondCall.args[1].should.be.eql({
+      callCIDriverSpy.secondCall.args[0].should.be.eql('jenkins');
+      callCIDriverSpy.secondCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
+      callCIDriverSpy.secondCall.args[2].should.be.eql({
         token: '',
         branch: 'deploy-branch1',
         node_version: 'v10.0.0',
@@ -98,13 +100,19 @@ describe('Build service', () => {
       }
     ];
     const deployConfig = cloneDeep(repoConfig.deploy);
-    // delete deployConfig.ciServices.jenkins;
+    delete deployConfig.ciServices.jenkins;
 
     build(branch, jobs, deployConfig, (err) => {
       should.not.exist(err);
       callCIDriverSpy.calledTwice.should.be.ok();
-      callCIDriverSpy.firstCall.args[0].should.be.eql(deployConfig.ciServices.jenkins);
+      callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
       callCIDriverSpy.firstCall.args[1].should.be.eql({
+        url: 'other url',
+        username: 'other user',
+        password: "other pw",
+        pollingInterval: 1000
+      });
+      callCIDriverSpy.firstCall.args[2].should.be.eql({
         token: 'job token',
         branch: 'deploy-branch1',
         node_version: 'v8.6.0',
@@ -112,16 +120,6 @@ describe('Build service', () => {
         static_files_version: '',
         statics: false,
         where_to_deploy: 'task-as,globalreports-as'
-      });
-      callCIDriverSpy.secondCall.args[0].should.be.eql(deployConfig.ciServices.jenkins);
-      callCIDriverSpy.secondCall.args[1].should.be.eql({
-        token: 'job token',
-        branch: 'deploy-branch1',
-        node_version: 'v10.0.0',
-        grunt: true,
-        static_files_version: '',
-        statics: true,
-        where_to_deploy: 'dashboard-as,task-as'
       });
       done();
     });
@@ -132,7 +130,10 @@ describe('Build service', () => {
     if (jenkinsSettings) {
       dummyConfig.deploy = {
         ciServices: {
-          jenkings: jenkinsSettings
+          jenkins: {
+            driver: 'jenkins',
+            settings: jenkinsSettings
+          }
         }
       };
     }

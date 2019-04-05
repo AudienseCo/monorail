@@ -13,7 +13,8 @@ describe('callCIDriver service', () => {
     const callCIDriver = createCallCIDriver(ciDrivers);
     const jenkinsSpy = sinon.spy(ciDrivers, 'jenkins');
 
-    const ciServiceConfig = repoConfig.deploy.ciServices.jenkins;
+    const driverName = 'jenkins';
+    const settings = repoConfig.deploy.ciServices.jenkins.settings;
     const params = {
       token: 'job token',
       branch: 'deploy-branch',
@@ -23,9 +24,9 @@ describe('callCIDriver service', () => {
       statics: false,
       where_to_deploy: 'task-as,globalreports-as'
     };
-    callCIDriver(ciServiceConfig, params, (err) => {
+    callCIDriver(driverName, settings, params, (err) => {
       should.not.exist(err);
-      jenkinsSpy.withArgs(ciServiceConfig.settings, params).calledOnce.should.be.ok();
+      jenkinsSpy.withArgs(settings, params).calledOnce.should.be.ok();
       done();
     });
   });

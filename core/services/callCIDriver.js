@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = (ciDrivers) => {
-  return (ciServiceConfig, params, cb) => {
-    const ciDriver = ciDrivers[ciServiceConfig.driver];
+  return (driverName, settings, params, cb) => {
+    const ciDriver = ciDrivers[driverName];
     if (!ciDriver) return cb(new Error('invalid CI driver'));
-    ciDriver(ciServiceConfig.settings, params, cb);
+    ciDriver(settings, params, cb);
   };
 };
