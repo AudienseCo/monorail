@@ -24,7 +24,7 @@ module.exports = (callCIDriver, localConfig) => {
 
   function combineSettings(ciService, ciServicesConfig, localConfig) {
     const repoSettings = get(ciServicesConfig, `${ciService}.settings`);
-    const localSettings = get(localConfig, `deploy.ciServices.${ciService}.settings`);
+    const localSettings = get(localConfig, `deploy.ciServices.['${ciService}'].settings`);
     const settings = defaultsDeep({}, repoSettings, localSettings);
     return settings;
   }
