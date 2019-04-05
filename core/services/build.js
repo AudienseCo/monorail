@@ -45,8 +45,8 @@ module.exports = (callCIDriver, localConfig) => {
   }
 
   function applyDefaults(originalObj, defaultObj) {
-    const finalObj = cloneDeep(originalObj);
-    return assignWith(defaultObj, finalObj, (defaultProp, originalProp) => {
+    const finalObj = cloneDeep(defaultObj);
+    return assignWith(finalObj, originalObj, (defaultProp, originalProp) => {
       return isNil(originalProp) ? defaultProp : originalProp;
     });
   }
