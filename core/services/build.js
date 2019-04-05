@@ -1,9 +1,9 @@
 'use strict';
 
 const { eachSeries } = require('async');
-const { get, assignWith } = require('lodash');
+const { get, assignWith, cloneDeep, isNil } = require('lodash');
 
-module.exports = (callCIDriver) => {
+module.exports = (callCIDriver, localConfig) => {
   return (branch, jobs, deployConfig,  cb) => {
 
     const ciJobsConfig = deployConfig.ciJobs;
@@ -17,10 +17,16 @@ module.exports = (callCIDriver) => {
       const ciServiceConfig = get(ciServicesConfig, ciJobConfig.ciService);
       if (!ciServiceConfig) return nextJob();
 
+      const settings = combineSettings(job, ciServiceConfig, localConfig);
       const params = combineParams(job, ciJobConfig, branch);
-      callCIDriver(ciServiceConfig, params, nextJob);
+
+      callCIDriver(settings, params, nextJob);
       // TODO: return job execution result
     }, cb);
+  }
+
+  function combineSettings(job, ciServiceConfig, localConfig) {
+    return ciServiceConfig;
   }
 
   function combineParams(job, ciJobConfig, branch) {
@@ -38,9 +44,10 @@ module.exports = (callCIDriver) => {
     return params
   }
 
-  function applyDefaults(targetObj, defaultObj) {
-    return assignWith({}, targetObj, defaultObj, (targetProp, defaultProp) => {
-      return targetProp || defaultProp;
+  function applyDefaults(originalObj, defaultObj) {
+    const finalObj = cloneDeep(originalObj);
+    return assignWith(finalObj, defaultObj, (originalProp, defaultProp) => {
+      return isNil(originalProp) ? defaultProp : originalProp;
     });
   }
 }

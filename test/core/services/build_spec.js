@@ -15,7 +15,71 @@ describe('Build service', () => {
     };
     const callCIDriver = createCallCIDriver(ciDrivers);
     const callCIDriverSpy = sinon.spy(callCIDriver);
-    const build = createBuild(callCIDriverSpy);
+    const dummyConfig = createDummyConfig({});
+    const build = createBuild(callCIDriverSpy, dummyConfig);
+
+    const branch = 'deploy-branch1';
+    const jobs = [
+      {
+        name: 'nodejs v8.6.0',
+        deployTo: ['task-as', 'globalreports-as'],
+        params: {
+          grunt: true,
+          static_files_version: 'other',
+          token: 'other token'
+        }
+      },
+      {
+        name: 'nodejs v10.0.0',
+        deployTo: ['dashboard-as', 'task-as'],
+        params: {
+          token: '',
+          statics: true
+        }
+      }
+    ];
+    const deployConfig = cloneDeep(repoConfig.deploy);
+    build(branch, jobs, deployConfig, (err) => {
+      should.not.exist(err);
+      callCIDriverSpy.calledTwice.should.be.ok();
+      callCIDriverSpy.firstCall.args[0].should.be.eql(deployConfig.ciServices.jenkins);
+      callCIDriverSpy.firstCall.args[1].should.be.eql({
+        token: 'other token',
+        branch: 'deploy-branch1',
+        node_version: 'v8.6.0',
+        grunt: true,
+        static_files_version: 'other',
+        statics: false,
+        where_to_deploy: 'task-as,globalreports-as'
+      });
+      callCIDriverSpy.secondCall.args[0].should.be.eql(deployConfig.ciServices.jenkins);
+      callCIDriverSpy.secondCall.args[1].should.be.eql({
+        token: '',
+        branch: 'deploy-branch1',
+        node_version: 'v10.0.0',
+        grunt: false,
+        static_files_version: '',
+        statics: true,
+        where_to_deploy: 'dashboard-as,task-as'
+      });
+      done();
+    });
+  });
+
+  it('call the jenkins build driver getting CI service settings from local config', (done) => {
+    const ciDrivers = {
+      jenkins: (settings, params, cb) => cb()
+    };
+    const callCIDriver = createCallCIDriver(ciDrivers);
+    const callCIDriverSpy = sinon.spy(callCIDriver);
+    const jenkinsSettings = {
+      url: 'other url',
+      username: 'other user',
+      password: "other pw",
+      pollingInterval: 1000
+    };
+    const dummyConfig = createDummyConfig({ jenkinsSettings });
+    const build = createBuild(callCIDriverSpy, dummyConfig);
 
     const branch = 'deploy-branch1';
     const jobs = [
@@ -34,6 +98,8 @@ describe('Build service', () => {
       }
     ];
     const deployConfig = cloneDeep(repoConfig.deploy);
+    // delete deployConfig.ciServices.jenkins;
+
     build(branch, jobs, deployConfig, (err) => {
       should.not.exist(err);
       callCIDriverSpy.calledTwice.should.be.ok();
@@ -60,4 +126,16 @@ describe('Build service', () => {
       done();
     });
   });
+
+  function createDummyConfig({ jenkinsSettings }) {
+    const dummyConfig = {};
+    if (jenkinsSettings) {
+      dummyConfig.deploy = {
+        ciServices: {
+          jenkings: jenkinsSettings
+        }
+      };
+    }
+    return dummyConfig;
+  }
 });
