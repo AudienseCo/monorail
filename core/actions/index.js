@@ -36,12 +36,12 @@ const clock = {
   now: () => Date.now()
 };
 
-// TODO: figure out from config
+// TODO: figure out getReleaseTag from config
 const getReleaseTag = () => clock.now().toString();
 
 const ciDrivers = require('../../lib/ciDrivers');
 const callCIDriver = require('../services/callCIDriver')(ciDrivers);
-const build = require('../services/build')(callCIDriver);
+const build = require('../services/build')(callCIDriver, config);
 const getRepoConfig = require('../services/getRepoConfig')(github);
 const createDeployTemporaryBranch = require('../services/createDeployTemporaryBranch')(github, clock);
 const mergeDeployBranch = require('../services/mergeDeployBranch')(github);

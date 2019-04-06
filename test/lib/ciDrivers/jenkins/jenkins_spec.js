@@ -38,12 +38,12 @@ describe('jenkins API wrapper', () => {
         password: 'supercrypticme',
         pollingInterval: 1
       };
+      const jobName = 'job name';
       const params = {
-        name: 'job name',
         token: 'job token',
         param1: 'value1'
       };
-      jenkins(settings, params, (err, success) => {
+      jenkins(settings, jobName, params, (err, success) => {
         should.not.exist(err);
 
         constructorSpy.withArgs({

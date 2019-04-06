@@ -10,9 +10,7 @@ const repoConfig = require('../../fixtures/repoConfig.json');
 
 describe('Build service', () => {
   it('call the jenkins build driver', (done) => {
-    const ciDrivers = {
-      jenkins: (settings, params, cb) => cb()
-    };
+    const ciDrivers = createCIDriversDummy();
     const callCIDriver = createCallCIDriver(ciDrivers);
     const callCIDriverSpy = sinon.spy(callCIDriver);
     const dummyConfig = createDummyConfig({});
@@ -44,7 +42,8 @@ describe('Build service', () => {
       callCIDriverSpy.calledTwice.should.be.ok();
       callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
       callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
-      callCIDriverSpy.firstCall.args[2].should.be.eql({
+      callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
+      callCIDriverSpy.firstCall.args[3].should.be.eql({
         token: 'other token',
         branch: 'deploy-branch1',
         node_version: 'v8.6.0',
@@ -55,7 +54,8 @@ describe('Build service', () => {
       });
       callCIDriverSpy.secondCall.args[0].should.be.eql('jenkins');
       callCIDriverSpy.secondCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
-      callCIDriverSpy.secondCall.args[2].should.be.eql({
+      callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
+      callCIDriverSpy.secondCall.args[3].should.be.eql({
         token: '',
         branch: 'deploy-branch1',
         node_version: 'v10.0.0',
@@ -69,9 +69,7 @@ describe('Build service', () => {
   });
 
   it('call the jenkins build driver getting CI service settings from local config', (done) => {
-    const ciDrivers = {
-      jenkins: (settings, params, cb) => cb()
-    };
+    const ciDrivers = createCIDriversDummy();
     const callCIDriver = createCallCIDriver(ciDrivers);
     const callCIDriverSpy = sinon.spy(callCIDriver);
     const jenkinsSettings = {
@@ -112,7 +110,8 @@ describe('Build service', () => {
         password: "other pw",
         pollingInterval: 1000
       });
-      callCIDriverSpy.firstCall.args[2].should.be.eql({
+      callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
+      callCIDriverSpy.firstCall.args[3].should.be.eql({
         token: 'job token',
         branch: 'deploy-branch1',
         node_version: 'v8.6.0',
@@ -126,9 +125,7 @@ describe('Build service', () => {
   });
 
   it('call the jenkins build driver getting params from local config', (done) => {
-    const ciDrivers = {
-      jenkins: (settings, params, cb) => cb()
-    };
+    const ciDrivers = createCIDriversDummy();
     const callCIDriver = createCallCIDriver(ciDrivers);
     const callCIDriverSpy = sinon.spy(callCIDriver);
     const dummyCIJobConfig = {
@@ -181,7 +178,8 @@ describe('Build service', () => {
       callCIDriverSpy.calledTwice.should.be.ok();
       callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
       callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
-      callCIDriverSpy.firstCall.args[2].should.be.eql({
+      callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
+      callCIDriverSpy.firstCall.args[3].should.be.eql({
         token: 'other token',
         branch: 'deploy-branch1',
         node_version: 'v8.6.0',
@@ -193,7 +191,8 @@ describe('Build service', () => {
       });
       callCIDriverSpy.secondCall.args[0].should.be.eql('jenkins');
       callCIDriverSpy.secondCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
-      callCIDriverSpy.secondCall.args[2].should.be.eql({
+      callCIDriverSpy.secondCall.args[2].should.be.eql('monorail-tarball-ecs');
+      callCIDriverSpy.secondCall.args[3].should.be.eql({
         token: '',
         branch: 'deploy-branch1',
         node_version: 'v10.0.0',
@@ -205,6 +204,12 @@ describe('Build service', () => {
       done();
     });
   });
+
+  function createCIDriversDummy() {
+    return {
+      jenkins: (settings, jobName, params, cb) => cb()
+    };
+  }
 
   function createDummyConfig({ jenkinsSettings, dummyCIJobConfig }) {
     const dummyConfig = {};

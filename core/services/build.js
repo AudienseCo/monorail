@@ -17,7 +17,7 @@ module.exports = (callCIDriver, localConfig) => {
       const settings = combineSettings(ciJobConfig.ciService, ciServicesConfig, localConfig);
       const params = combineParams(job, branch, ciJobConfig, localConfig);
 
-      callCIDriver(ciJobConfig.ciService, settings, params, nextJob);
+      callCIDriver(ciJobConfig.ciService, settings, ciJobConfig.jobName, params, nextJob);
       // TODO: return job execution result
     }, cb);
   }
@@ -25,6 +25,7 @@ module.exports = (callCIDriver, localConfig) => {
   function combineSettings(ciService, ciServicesConfig, localConfig) {
     const repoSettings = get(ciServicesConfig, `${ciService}.settings`);
     const localSettings = get(localConfig, `deploy.ciServices.['${ciService}'].settings`);
+
     const settings = defaultsDeep({}, repoSettings, localSettings);
     return settings;
   }
