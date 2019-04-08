@@ -3,8 +3,6 @@
 const { mapSeries, waterfall } = require('async');
 const { get } = require('lodash');
 
-// TODO: Don't break with error at repo level, use failReason
-
 module.exports = (
   getRepoConfig,
   createDeployTemporaryBranch,
@@ -33,6 +31,10 @@ module.exports = (
     function getConfigForEachRepo(repos, cb) {
       mapSeries(repos, (repo, nextRepo) => {
         getRepoConfig(repo, (err, config) => {
+          if (err) {
+            console.error('Error getting repo config', repo, err);
+            return nextRepo(null, { repo, failReason: err.message });
+          }
           nextRepo(err, { repo, config });
         });
       }, cb);
@@ -40,9 +42,15 @@ module.exports = (
 
     function createTemporaryBranchesForEachRepo(reposInfo, cb) {
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
+        if (repoInfo.failReason) return nextRepo(null, repoInfo);
+        // TODO: combine with local config
         const devBranch = get(repoInfo, 'config.github.devBranch');
         createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
-          nextRepo(err, Object.assign({ branch }, repoInfo));
+          if (err) {
+            console.error('Error creating temporary branch', repoInfo.repo, err);
+            return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+          }
+          nextRepo(null, Object.assign({ branch }, repoInfo));
         });
       }, cb);
     }
@@ -56,11 +64,17 @@ module.exports = (
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) {
           cleanUpDeploy(repoInfo, err => {
-            if (err) console.error(err);
-            nextRepo(null, repoInfo)
+            if (err) console.error('Error cleaning up deploy', repoInfo.repo, err);
+            nextRepo(null, repoInfo);
           });
         }
-        else deploy(repoInfo, nextRepo);
+        else deploy(repoInfo, (err, repoInfo) => {
+          if (err) {
+            console.error('Error deploying', repoInfo.repo, err);
+            return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+          }
+          nextRepo(null, repoInfo);
+        });
       }, cb);
     }
 

@@ -156,7 +156,7 @@ describe('start deploy action', () => {
     const showPreview = false;
     startDeploy(repos, showPreview, (err) => {
       should.not.exist(err);
-      cleanUpDeploySpy.calledOnce.should.be.ok();
+      cleanUpDeploySpy.calledTwice.should.be.ok();
       done();
     });
   });

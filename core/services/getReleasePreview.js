@@ -19,13 +19,18 @@ module.exports = (
   function getPRsFromChangesForEachRepo(reposInfo, cb) {
     mapSeries(reposInfo, (repoInfo, nextRepo) => {
       pullRequestsFromChanges({ repo: repoInfo.repo, head: repoInfo.branch }, (err, prIds) => {
-        nextRepo(err, Object.assign({ prIds }, repoInfo));
+        if (err) {
+          console.error('Error pull requests from changes', repoInfo.repo, err);
+          return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+        }
+        nextRepo(null, Object.assign({ prIds }, repoInfo));
       });
     }, cb);
   }
 
   function getDeployInfoForEachRepo(reposInfo, cb) {
     mapSeries(reposInfo, (repoInfo, nextRepo) => {
+      if (repoInfo.failReason) return nextRepo(null, repoInfo);
       if (repoInfo.prIds.length === 0) {
         return nextRepo(null, Object.assign({ failReason: 'NO_CHANGES' }, repoInfo));
       }
@@ -33,6 +38,7 @@ module.exports = (
       deployInfoFromPullRequests(repoInfo.repo, repoInfo.prIds, repoConfig, (err, deployInfo) => {
         let failReason;
         if (err) {
+          console.error('Error getting deploy info form PRs', repoInfo.repo, err);
           failReason = err.message;
         }
         else if (deployInfo.deployNotes) {
@@ -50,6 +56,7 @@ module.exports = (
     mapSeries(reposInfo, (repoInfo, nextRepo) => {
       issueReleaseInfoList.get(repoInfo.repo, repoInfo.prIds, (err, issuesInfo) => {
         if (err) {
+          console.error('Error getting issues to release', repoInfo.repo, err);
           return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
         }
         const issuesReleaseInfo = issuesInfo.map(issueInfo => ({
