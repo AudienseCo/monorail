@@ -59,7 +59,7 @@ describe('Release Slack Notification Template', () => {
         user: 'AudienseCo'
       },
       slack: {
-        github_users: {
+        githubUsers: {
           'username1': 'slack_username1',
           'username3': 'slack_username3'
         }

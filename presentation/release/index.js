@@ -7,7 +7,7 @@ const releaseMsg = require('./release');
 module.exports = (config) => {
   return (releaseInfo) => {
     const user = get(config, 'github.user');
-    const githubToSlakUsernames = get(config, 'slack.github_users');
+    const githubToSlakUsernames = get(config, 'slack.githubUsers');
 
     const attachments = releaseInfo.map(repoInfo => {
       const attachment = repoInfo.failReason
