@@ -55,7 +55,7 @@ module.exports = (
         const issuesReleaseInfo = issuesInfo.map(issueInfo => ({
           number: issueInfo.issue.number,
           title: issueInfo.issue.title,
-          labels: issueInfo.issue.labels,
+          labels: issueInfo.issue.labels.map(label => label.name),
           participants: issueInfo.participants
         }));
         nextRepo(null, Object.assign({ issues: issuesReleaseInfo }, repoInfo));

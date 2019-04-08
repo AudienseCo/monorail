@@ -214,7 +214,13 @@ describe('start deploy action', () => {
       removeTag: (repo, tag, cb) => cb(err, res),
       getIssueLabels: (repo, id, cb) => cb(err, [{ name: 'deploy-to:tasks-as' }]),
       getPullRequest: (repo, id, cb) => cb(err, { title: 'Foo PR', body: 'Closes #4321' }),
-      getIssue: (repo, id, cb) => cb(err, { number: 4321, title: 'Bar issue', body: '', user: { login: '' } }),
+      getIssue: (repo, id, cb) => cb(err, {
+        number: 4321,
+        title: 'Bar issue',
+        body: '',
+        labels: [],
+        user: { login: '' }
+      }),
       getIssueComments: (repo, id, cb) => cb(null, []),
       addIssueLabels: (repo, issueNumber, labels, cb) => cb(err, res),
       createRelease: (info, cb) => {

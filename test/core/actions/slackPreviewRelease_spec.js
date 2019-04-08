@@ -95,7 +95,7 @@ describe('slackPreviewRelease action', () => {
             number: 4321,
             title: 'Bar issue',
             participants: [''],
-            labels: undefined
+            labels: []
           }
         ]);
         firstRepo.deployInfo.should.be.eql({
@@ -127,7 +127,13 @@ describe('slackPreviewRelease action', () => {
           cb(null, prInfo) || { title: 'Foo PR', body: 'Closes #4321' };
         },
         getIssue: (repo, id, cb) => {
-          const defaultIssueInfo = { number: 4321, title: 'Bar issue', body: '', user: { login: '' } };
+          const defaultIssueInfo = {
+            number: 4321,
+            title: 'Bar issue',
+            body: '',
+            labels: [],
+            user: { login: '' }
+          };
           cb(null, issueInfo || defaultIssueInfo);
         },
         compareCommits: (info, cb) => {
