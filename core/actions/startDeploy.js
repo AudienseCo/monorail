@@ -11,9 +11,7 @@ module.exports = (
   getReleasePreview,
   deploy,
   cleanUpDeploy,
-  previewReleaseTemplate,
-  releaseTemplate,
-  slack
+  notify
 ) => {
   return (repos, showPreview, cb) => {
     waterfall([
@@ -51,8 +49,7 @@ module.exports = (
 
     function notifyPreviewSlackIfEnabled(showPreview, reposInfo, cb) {
       if (!showPreview) return cb(null, reposInfo);
-      const msg = previewReleaseTemplate(reposInfo);
-      slack.send(msg, err => cb(err, reposInfo));
+      notify(reposInfo, 'preview', err => cb(err, reposInfo));
     }
 
     function deployEachRepo(reposInfo, cb) {
@@ -68,9 +65,7 @@ module.exports = (
     }
 
     function notifyRelease(reposInfo, cb) {
-      // TODO: notify to general channel filtered by notify-staff
-      const msg = releaseTemplate(reposInfo);
-      slack.send(msg, err => cb(err, reposInfo));
+      notify(reposInfo, 'release', err => cb(err, reposInfo));
     }
 
   };

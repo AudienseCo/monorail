@@ -118,30 +118,28 @@ describe('start deploy action', () => {
   });
 
   it('should not send a preview to slack if param showPreview is false', (done) => {
-    const slackDummy = createSlackDummy();
-    const slackSpy = sinon.spy(slackDummy, 'send');
-    const startDeploy = createStartDeployWithStubs({ slack: slackDummy });
+    const notifyStub = createNotifyStub();
+    const startDeploy = createStartDeployWithStubs({ notify: notifyStub });
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
     startDeploy(repos, showPreview, (err) => {
       should.not.exist(err);
-      slackSpy.calledOnce.should.be.ok();
+      notifyStub.calledOnce.should.be.ok();
       done();
     });
   });
 
 
   it('should send a preview to slack if param showPreview is true', (done) => {
-    const slackDummy = createSlackDummy();
-    const slackSpy = sinon.spy(slackDummy, 'send');
-    const startDeploy = createStartDeployWithStubs({ slack: slackDummy });
+    const notifyStub = createNotifyStub();
+    const startDeploy = createStartDeployWithStubs({ notify: notifyStub });
 
     const repos = ['repo1', 'repo2'];
     const showPreview = true;
     startDeploy(repos, showPreview, (err) => {
       should.not.exist(err);
-      slackSpy.calledTwice.should.be.ok();
+      notifyStub.calledTwice.should.be.ok();
       done();
     });
   });
@@ -164,14 +162,14 @@ describe('start deploy action', () => {
   });
 
   it('it should notify release', (done) => {
-    const releaseTemplateStub = sinon.stub();
-    const startDeploy = createStartDeployWithStubs({ releaseTemplate: releaseTemplateStub });
+    const notifyStub = createNotifyStub();
+    const startDeploy = createStartDeployWithStubs({ notify: notifyStub });
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
     startDeploy(repos, showPreview, (err) => {
       should.not.exist(err);
-      const firstRepo = releaseTemplateStub.firstCall.args[0][0];
+      const firstRepo = notifyStub.firstCall.args[0][0];
       firstRepo.failReason.should.be.eql('NO_SERVICES');
       done();
     });
@@ -238,6 +236,11 @@ describe('start deploy action', () => {
     };
   }
 
+  function createNotifyStub() {
+    const notify = (reposInfo, notificationName, cb) => cb();
+    return sinon.spy(notify);
+  }
+
   function createStartDeployWithStubs({
     createDeployTemporaryBranch,
     getRepoConfig,
@@ -249,9 +252,7 @@ describe('start deploy action', () => {
     getReleasePreview,
     deploy,
     cleanUpDeploy,
-    previewReleaseTemplate,
-    releaseTemplate,
-    slack,
+    notify,
     github
   }) {
     const githubDummy = github || createGithubDummy();
@@ -273,9 +274,7 @@ describe('start deploy action', () => {
     const build = (branch, jobs, deployConfig,  cb) => {}
     const deployStub = deploy || createDeploy(getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService);
     const cleanUpDeployStub = cleanUpDeploy || createCleanUpDeploy(githubDummy);
-    const slackDummy = slack || createSlackDummy();
-    const previewReleaseTemplateStub = previewReleaseTemplate || sinon.stub();
-    const releaseTemplateStub = releaseTemplate || sinon.stub();
+    const notifyStub = notify || createNotifyStub();
 
     return createStartDeploy(
       getRepoConfigStub,
@@ -283,9 +282,7 @@ describe('start deploy action', () => {
       getReleasePreviewStub,
       deployStub,
       cleanUpDeployStub,
-      previewReleaseTemplateStub,
-      releaseTemplateStub,
-      slackDummy
+      notifyStub
     );
   }
 

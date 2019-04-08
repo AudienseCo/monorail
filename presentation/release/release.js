@@ -1,18 +1,21 @@
 'use strict';
 
-const { get } = require('lodash') ;
+const { get, intersection } = require('lodash') ;
 
-module.exports = ({ repo, tag, issues }, user, githubToSlakUsernames) => {
+module.exports = ({ repo, tag, issues }, filterLabels, user, githubToSlakUsernames) => {
 
   const formatParticipant = (participant) => {
     const slackUsername = get(githubToSlakUsernames, participant, participant);
     return `@${slackUsername}`;
   };
 
-  const formatedIssues = issues.map(issue => {
-    const formatedParticipants = issue.participants.map(formatParticipant).join(', ');
-    return `<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title} ${formatedParticipants}`;
-  }).join('\n');
+  const formatedIssues = issues.reduce((acc, issue) => {
+    if (intersection(issue.labels, filterLabels).length === filterLabels.length) {
+      const formatedParticipants = issue.participants.map(formatParticipant).join(', ');
+      acc.push(`<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title} ${formatedParticipants}`);
+    }
+    return acc;
+  }, []).join('\n');
 
   const text =
 `*<https://github.com/${user}/${repo}/releases/tag/${tag}|${tag} Release>*

@@ -35,17 +35,13 @@ describe('slackPreviewRelease action', () => {
         commits: []
       };
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewReleaseTemplateStub = sinon.stub();
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy, previewReleaseTemplate: previewReleaseTemplateStub });
-
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const reposInfo = previewReleaseTemplateStub.firstCall.args[0];
+        const reposInfo = notifyStub.firstCall.args[0];
         reposInfo[0].failReason.should.be.eql('NO_CHANGES');
-        slackSpy.calledOnce.should.be.true();
         done();
       });
     });
@@ -55,16 +51,13 @@ describe('slackPreviewRelease action', () => {
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
       stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy notes' }]);
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewReleaseTemplateStub = sinon.stub();
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy, previewReleaseTemplate: previewReleaseTemplateStub });
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const reposInfo = previewReleaseTemplateStub.firstCall.args[0];
+        const reposInfo = notifyStub.firstCall.args[0];
         reposInfo[0].failReason.should.be.eql('DEPLOY_NOTES');
-        slackSpy.calledOnce.should.be.true();
         done();
       });
     });
@@ -74,16 +67,13 @@ describe('slackPreviewRelease action', () => {
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
       stub.onFirstCall().callsArgWith(2, null, []);
       stub.onSecondCall().callsArgWith(2, null, []);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewReleaseTemplateStub = sinon.stub();
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy, previewReleaseTemplate: previewReleaseTemplateStub });
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const reposInfo = previewReleaseTemplateStub.firstCall.args[0];
+        const reposInfo = notifyStub.firstCall.args[0];
         reposInfo[0].failReason.should.be.eql('NO_SERVICES');
-        slackSpy.calledOnce.should.be.true();
         done();
       });
     });
@@ -93,14 +83,12 @@ describe('slackPreviewRelease action', () => {
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
       stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:task-as' }]);
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewReleaseTemplateStub = sinon.stub();
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy, previewReleaseTemplate: previewReleaseTemplateStub });
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const firstRepo = previewReleaseTemplateStub.firstCall.args[0][0];
+        const firstRepo = notifyStub.firstCall.args[0][0];
         firstRepo.repo.should.be.eql('socialbro');
         firstRepo.issues.should.be.eql([
           {
@@ -124,7 +112,6 @@ describe('slackPreviewRelease action', () => {
         });
         firstRepo.prIds.should.be.eql(['1234']);
         should.exist(firstRepo.config);
-        slackSpy.calledOnce.should.be.true();
         done();
       });
     });
@@ -178,6 +165,11 @@ describe('slackPreviewRelease action', () => {
       }
     }
 
+    function createNotifyStub() {
+      const notify = (reposInfo, notificationName, cb) => cb();
+      return sinon.spy(notify);
+    }
+
     function createPrevieReleaseWithStubs({
       getRepoConfig,
       pullRequestsFromChanges,
@@ -186,8 +178,7 @@ describe('slackPreviewRelease action', () => {
       issueReleaseInfo,
       issueReleaseInfoList,
       getReleasePreview,
-      previewReleaseTemplate,
-      slack,
+      notify,
       github
     }) {
       const githubDummy = github || createGithubDummy();
@@ -200,10 +191,9 @@ describe('slackPreviewRelease action', () => {
       const issueReleaseInfoStub = issueReleaseInfo || createIssueReleaseInfo(githubDummy, createBoundIssueExtractor(), issueParticipants);
       const issueReleaseInfoListStub = issueReleaseInfoList || createIssueReleaseInfoList(issueReleaseInfoStub);
       const getReleasePreviewStub = getReleasePreview || createGetReleasePreview(pullRequestsFromChangesStub, deployInfoFromPullRequestsStub, issueReleaseInfoListStub);
-      const slackDummy = slack || createSlackDummy();
-      const previewReleaseTemplateStub = previewReleaseTemplate || sinon.stub();
+      const notifyStub = notify || createNotifyStub();
 
-      return createPreviewRelease(getRepoConfigStub, getReleasePreviewStub, previewReleaseTemplateStub, slackDummy, repos);
+      return createPreviewRelease(getRepoConfigStub, getReleasePreviewStub, notifyStub, repos);
     }
 
 

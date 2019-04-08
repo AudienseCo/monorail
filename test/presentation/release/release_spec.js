@@ -1,7 +1,7 @@
 'use scrict';
 
 require('should');
-const createReleaseTemplate = require('../../../../../presentation/release');
+const createReleaseTemplate = require('../../../presentation/release');
 
 describe('Release Slack Notification Template', () => {
 
@@ -24,7 +24,8 @@ describe('Release Slack Notification Template', () => {
       repo: 'repo4',
       failReason: 'another error'
     }];
-    const msg = releaseTemplate(releaseInfo);
+    const filterLabels = [];
+    const msg = releaseTemplate(releaseInfo, filterLabels);
     msg.should.be.eql({
       attachments: [{
         text: 'Monorail will not deploy anything because there is no pull request linked to services to deploy.',
@@ -82,13 +83,65 @@ describe('Release Slack Notification Template', () => {
         }]
       }
     }];
-    const msg = releaseTemplate(releaseInfo);
+    const filterLabels = [];
+    const msg = releaseTemplate(releaseInfo, filterLabels);
     msg.should.be.eql({
       attachments: [{
         text:
 `*<https://github.com/AudienseCo/repo1/releases/tag/123456789|123456789 Release>*
 
 <https://github.com/AudienseCo/repo1/issues/123|#123> issue title @slack_username1, @username2, @slack_username3
+
+`,
+        color: 'good',
+        title: 'repo1',
+        title_link: 'https://github.com/AudienseCo/repo1'
+      }]
+    });
+  });
+
+  it('should filter by labels', () => {
+    const releaseTemplate = createReleaseTemplate({
+      github: {
+        user: 'AudienseCo'
+      },
+      slack: {
+        githubUsers: {
+          'username1': 'slack_username1',
+          'username3': 'slack_username3'
+        }
+      }
+    });
+
+    const releaseInfo = [{
+      repo: 'repo1',
+      tag: '123456789',
+      issues: [{
+        number: '1',
+        title: 'issue title 1',
+        participants: ['username1', 'username2', 'username3'],
+        labels: ['label1']
+      },{
+        number: '2',
+        title: 'issue title 2',
+        participants: ['username1', 'username2', 'username3'],
+        labels: ['notify-staff']
+      }],
+      deployInfo: {
+        jobs: [{
+          name: 'nodejs v10',
+          deployTo: ['dashboard', 'tasks']
+        }]
+      }
+    }];
+    const filterLabels = ['notify-staff'];
+    const msg = releaseTemplate(releaseInfo, filterLabels);
+    msg.should.be.eql({
+      attachments: [{
+        text:
+`*<https://github.com/AudienseCo/repo1/releases/tag/123456789|123456789 Release>*
+
+<https://github.com/AudienseCo/repo1/issues/2|#2> issue title 2 @slack_username1, @username2, @slack_username3
 
 `,
         color: 'good',

@@ -1,7 +1,7 @@
 'use scrict';
 
 require('should');
-const createPreviewReleaseTemplate = require('../../../../../presentation/preview-release');
+const createPreviewReleaseTemplate = require('../../../presentation/preview-release');
 const previewReleaseTemplate = createPreviewReleaseTemplate({ github: { user: 'AudienseCo' } });
 
 describe('Preview Release Slack Notification Template', () => {
@@ -22,7 +22,8 @@ describe('Preview Release Slack Notification Template', () => {
       repo: 'repo4',
       failReason: 'another error'
     }];
-    const msg = previewReleaseTemplate(releaseInfo);
+    const filterLabels = [];
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
     msg.should.be.eql({
       attachments: [{
         text: 'Monorail will not deploy anything in the next 10 minutes because there is no pull request linked to services to deploy.',
@@ -68,7 +69,8 @@ describe('Preview Release Slack Notification Template', () => {
         }]
       }
     }];
-    const msg = previewReleaseTemplate(releaseInfo);
+    const filterLabels = [];
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
     msg.should.be.eql({
       attachments: [{
         text:
@@ -80,6 +82,50 @@ describe('Preview Release Slack Notification Template', () => {
 
 
 *Issues*:\n<https://github.com/AudienseCo/repo1/issues/123|#123> issue title
+
+`,
+        color: 'good',
+        title: 'repo1',
+        title_link: 'https://github.com/AudienseCo/repo1'
+      }]
+    });
+  });
+
+  it('should filter issues by label correctly', () => {
+    const releaseInfo = [{
+      repo: 'repo1',
+      prIds: ['10', '20', '30'],
+      issues: [{
+        number: '1',
+        title: 'issue title 1',
+        participants: ['username1', 'username2'],
+        labels: []
+      },{
+        number: '2',
+        title: 'issue title 2',
+        participants: ['username1', 'username2'],
+        labels: ['notify-staff']
+      }],
+      deployInfo: {
+        jobs: [{
+          name: 'nodejs v10',
+          deployTo: ['dashboard', 'tasks']
+        }]
+      }
+    }];
+    const filterLabels = ['notify-staff'];
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
+    msg.should.be.eql({
+      attachments: [{
+        text:
+`*Pull Requests*: <https://github.com/AudienseCo/repo1/issues/10|#10>
+<https://github.com/AudienseCo/repo1/issues/20|#20>
+<https://github.com/AudienseCo/repo1/issues/30|#30>
+
+*nodejs v10*: dashboard, tasks
+
+
+*Issues*:\n<https://github.com/AudienseCo/repo1/issues/2|#2> issue title 2
 
 `,
         color: 'good',
