@@ -15,7 +15,11 @@ module.exports = function createPreviewRelease(getRepoConfig, getReleasePreview,
   function getConfigForEachRepo(repos, cb) {
     mapSeries(repos, (repo, nextRepo) => {
       getRepoConfig(repo, (err, config) => {
-        nextRepo(err, { repo, config });
+        if (err) {
+          console.error('Error getting repo config', repo, err);
+          return nextRepo(null, { repo, failReason: err.message });
+        }
+        nextRepo(null, { repo, config });
       });
     }, cb);
   }
