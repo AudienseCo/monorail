@@ -3,7 +3,6 @@
 const { reduce } = require('async');
 const { get, union, assign, assignWith, find } = require('lodash');
 
-// TODO: get deploy notes label from config
 // TODO: get deploy-to: labels prefix from config
 // TODO: ensure that the ci job exists
 // TODO: ensure that the same service isn't deployed several times with different jobs
