@@ -9,7 +9,8 @@ module.exports = ({ repo, prIds, issues, deployInfo }) => {
   }).join('\n');
 
   const formatedIssues = issues.map(issue => {
-    return `<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title}`;
+    const formatedParticipants = issue.participants.map(p => `@${p}`).join(', ');
+    return `<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title} ${formatedParticipants}`;
   }).join('\n');
 
   const formatedServices = deployInfo.jobs.reduce((res, job) => {

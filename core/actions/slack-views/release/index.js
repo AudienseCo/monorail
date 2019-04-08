@@ -1,6 +1,6 @@
 'use strict';
 
-const ERROR_TEMPLATES = require('../errors');
+const ERROR_TEMPLATES = require('./errors');
 const releaseMsg = require('./release');
 const { user } = require('../../../../config').github;
 
