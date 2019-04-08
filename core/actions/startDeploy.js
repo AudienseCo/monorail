@@ -69,7 +69,6 @@ module.exports = (
 
     function notifyRelease(reposInfo, cb) {
       // TODO: notify to general channel filtered by notify-staff
-      // TODO: improve the release template to show the release ver and participants
       const msg = releaseTemplate(reposInfo);
       slack.send(msg, err => cb(err, reposInfo));
     }

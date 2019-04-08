@@ -1,27 +1,22 @@
 'use strict';
 
-module.exports = ({ repo, prIds, issues, deployInfo }, user) => {
+const { get } = require('lodash') ;
 
-  const formatedPRs = prIds.map(prId => {
-    return `<https://github.com/${user}/${repo}/issues/${prId}|#${prId}>`;
-  }).join('\n');
+module.exports = ({ repo, tag, issues }, user, githubToSlakUsernames) => {
+
+  const formatParticipant = (participant) => {
+    const slackUsername = get(githubToSlakUsernames, participant, participant);
+    return `@${slackUsername}`;
+  };
 
   const formatedIssues = issues.map(issue => {
-    const formatedParticipants = issue.participants.map(p => `@${p}`).join(', ');
+    const formatedParticipants = issue.participants.map(formatParticipant).join(', ');
     return `<https://github.com/${user}/${repo}/issues/${issue.number}|#${issue.number}> ${issue.title} ${formatedParticipants}`;
   }).join('\n');
 
-  const formatedServices = deployInfo.jobs.reduce((res, job) => {
-    res += `*${job.name}*: ${job.deployTo.join(', ')}\n`;
-    return res;
-  }, '');
-
   const text =
-`*Pull Requests*: ${formatedPRs}
+`*<https://github.com/${user}/${repo}/releases/tag/${tag}|${tag} Release>*
 
-${formatedServices}
-
-*Issues*:
 ${formatedIssues}
 
 `;

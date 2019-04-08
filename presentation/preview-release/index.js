@@ -1,11 +1,13 @@
 'use strict';
 
+const { get } = require('lodash') ;
 const ERROR_TEMPLATES = require('./errors');
 const releasePreviewMsg = require('./release-preview');
 
 module.exports = module.exports = (config) => {
   return (releasePreview) => {
-    const { user } = config.github;
+    const user = get(config, 'github.user');
+
     const attachments = releasePreview.map(repoPreview => {
       const attachment = repoPreview.failReason
         ? ERROR_TEMPLATES[repoPreview.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR

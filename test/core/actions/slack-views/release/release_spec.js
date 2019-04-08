@@ -2,11 +2,12 @@
 
 require('should');
 const createReleaseTemplate = require('../../../../../presentation/release');
-const releaseTemplate = createReleaseTemplate({ github: { user: 'AudienseCo' } });
 
 describe('Release Slack Notification Template', () => {
 
   it('should generate error templates correctly', () => {
+    const releaseTemplate = createReleaseTemplate({ github: { user: 'AudienseCo' } });
+
     const releaseInfo = [{
       repo: 'repo1',
       failReason: 'NO_SERVICES'
@@ -53,13 +54,25 @@ describe('Release Slack Notification Template', () => {
   });
 
   it('should generate release template correctly', () => {
+    const releaseTemplate = createReleaseTemplate({
+      github: {
+        user: 'AudienseCo'
+      },
+      slack: {
+        github_users: {
+          'username1': 'slack_username1',
+          'username3': 'slack_username3'
+        }
+      }
+    });
+
     const releaseInfo = [{
       repo: 'repo1',
-      prIds: ['10', '20', '30'],
+      tag: '123456789',
       issues: [{
         number: '123',
         title: 'issue title',
-        participants: ['username1', 'username2'],
+        participants: ['username1', 'username2', 'username3'],
         labels: []
       }],
       deployInfo: {
@@ -73,12 +86,9 @@ describe('Release Slack Notification Template', () => {
     msg.should.be.eql({
       attachments: [{
         text:
-`*Pull Requests*: <https://github.com/AudienseCo/repo1/issues/10|#10>
-<https://github.com/AudienseCo/repo1/issues/20|#20>
-<https://github.com/AudienseCo/repo1/issues/30|#30>
+`*<https://github.com/AudienseCo/repo1/releases/tag/123456789|123456789 Release>*
 
-*nodejs v10*: dashboard, tasks\n\n\n*Issues*:
-<https://github.com/AudienseCo/repo1/issues/123|#123> issue title @username1, @username2
+<https://github.com/AudienseCo/repo1/issues/123|#123> issue title @slack_username1, @username2, @slack_username3
 
 `,
         color: 'good',
