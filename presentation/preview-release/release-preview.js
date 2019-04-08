@@ -1,8 +1,6 @@
 'use strict';
 
-const { user } = require('../../../../config').github;
-
-module.exports = ({ repo, prIds, issues, deployInfo }) => {
+module.exports = ({ repo, prIds, issues, deployInfo }, user) => {
 
   const formatedPRs = prIds.map(prId => {
     return `<https://github.com/${user}/${repo}/issues/${prId}|#${prId}>`;
@@ -17,7 +15,8 @@ module.exports = ({ repo, prIds, issues, deployInfo }) => {
     return res;
   }, '');
 
-  const text = `*Pull Requests*: ${formatedPRs}
+  const text =
+`*Pull Requests*: ${formatedPRs}
 
 ${formatedServices}
 

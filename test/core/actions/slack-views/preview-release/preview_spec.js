@@ -1,7 +1,8 @@
 'use scrict';
 
 require('should');
-const previewReleaseTemplate = require('../../../../../core/actions/slack-views/preview-release');
+const createPreviewReleaseTemplate = require('../../../../../presentation/preview-release');
+const previewReleaseTemplate = createPreviewReleaseTemplate({ github: { user: 'AudienseCo' } });
 
 describe('Preview Release Slack Notification Template', () => {
   it('should generate error templates correctly', () => {

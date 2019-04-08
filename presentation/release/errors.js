@@ -2,7 +2,7 @@
 
 module.exports = {
   NO_CHANGES: {
-    text: 'Monorail will not deploy anything because there is no pull request linked to services to deploy.',
+    text: 'Monorail will not deploy anything as there are no changes since the last deploy.',
     color: '#439FE0'
   },
   DEPLOY_NOTES: {
@@ -10,7 +10,7 @@ module.exports = {
     color: 'danger'
   },
   NO_SERVICES: {
-    text: 'Monorail will not deploy anything because the list of services is empty.',
+    text: 'Monorail will not deploy anything because there is no pull request linked to services to deploy.',
     color: 'warning'
   },
   UNkNOWN_ERROR: {

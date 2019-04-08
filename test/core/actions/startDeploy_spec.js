@@ -163,6 +163,21 @@ describe('start deploy action', () => {
     });
   });
 
+  it('it should notify release', (done) => {
+    const releaseTemplateStub = sinon.stub();
+    const startDeploy = createStartDeployWithStubs({ releaseTemplate: releaseTemplateStub });
+
+    const repos = ['repo1', 'repo2'];
+    const showPreview = false;
+    startDeploy(repos, showPreview, (err) => {
+      should.not.exist(err);
+      const firstRepo = releaseTemplateStub.firstCall.args[0][0];
+      firstRepo.failReason.should.be.eql('NO_SERVICES');
+      done();
+    });
+  });
+
+
   function createConfigDummy() {
     const servicesMap = {
       globalreports: {
@@ -234,6 +249,8 @@ describe('start deploy action', () => {
     getReleasePreview,
     deploy,
     cleanUpDeploy,
+    previewReleaseTemplate,
+    releaseTemplate,
     slack,
     github
   }) {
@@ -257,6 +274,8 @@ describe('start deploy action', () => {
     const deployStub = deploy || createDeploy(getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService);
     const cleanUpDeployStub = cleanUpDeploy || createCleanUpDeploy(githubDummy);
     const slackDummy = slack || createSlackDummy();
+    const previewReleaseTemplateStub = previewReleaseTemplate || sinon.stub();
+    const releaseTemplateStub = releaseTemplate || sinon.stub();
 
     return createStartDeploy(
       getRepoConfigStub,
@@ -264,6 +283,8 @@ describe('start deploy action', () => {
       getReleasePreviewStub,
       deployStub,
       cleanUpDeployStub,
+      previewReleaseTemplateStub,
+      releaseTemplateStub,
       slackDummy
     );
   }

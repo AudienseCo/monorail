@@ -2,8 +2,6 @@
 
 const { mapSeries, waterfall } = require('async');
 const { get } = require('lodash');
-const previewReleaseTemplate = require('./slack-views/preview-release');
-const releaseTemplate = require('./slack-views/release');
 
 // TODO: Don't break with error at repo level, use failReason
 
@@ -13,6 +11,8 @@ module.exports = (
   getReleasePreview,
   deploy,
   cleanUpDeploy,
+  previewReleaseTemplate,
+  releaseTemplate,
   slack
 ) => {
   return (repos, showPreview, cb) => {

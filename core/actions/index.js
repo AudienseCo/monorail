@@ -32,6 +32,9 @@ const getReleasePreview = require('../services/getReleasePreview')(
   issueReleaseInfoList
 );
 
+const previewReleaseTemplate = require('../../presentation/preview-release')(config);
+const releaseTemplate = require('../../presentation/release')(config);
+
 const clock = {
   now: () => Date.now()
 };
@@ -65,6 +68,7 @@ module.exports = {
   slackPreviewRelease: require('./slackPreviewRelease')(
     getRepoConfig,
     getReleasePreview,
+    previewReleaseTemplate,
     slack,
     config.github.repos
   ),
@@ -75,6 +79,8 @@ module.exports = {
     getReleasePreview,
     deploy,
     cleanUpDeploy,
+    previewReleaseTemplate,
+    releaseTemplate,
     slack
   )
 };
