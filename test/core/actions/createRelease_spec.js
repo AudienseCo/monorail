@@ -197,7 +197,7 @@ describe('Create release action', () => {
         spy.calledWith({
           tag_name: 'v1.2.3',
           name: 'v1.2.3 Release',
-          body: '#1234 Bar issue. cc ana, joe',
+          body: '#1234 Bar issue. cc @ana, @joe',
           repo
         }).should.be.ok();
         done();

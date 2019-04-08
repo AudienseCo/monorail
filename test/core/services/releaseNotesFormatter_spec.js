@@ -31,7 +31,7 @@ describe('releaseNotesFormatter service', () => {
         participants: []
       }
     ];
-    const expected = '#1 Foo issue. cc Ana, Carlos\n#2 Bar issue';
+    const expected = '#1 Foo issue. cc @Ana, @Carlos\n#2 Bar issue';
 
     releaseNotesFormatter.format(relaseInfoList).should.be.eql(expected);
   });
