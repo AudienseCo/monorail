@@ -102,6 +102,9 @@ describe('Github API wrapper', () => {
           },
           merge: (info, cb) => {
             cb(null, result);
+          },
+          getContent: (info, cb) => {
+            cb(null, result);
           }
         },
         gitdata: {
@@ -362,6 +365,24 @@ describe('Github API wrapper', () => {
           repo: 'another',
           base: 'master',
           head: 'deploy-123'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('get content', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.repos, 'getContent');
+
+      const repo = 'another';
+      const path = '.monorail';
+      const head = 'deploy-123';
+      github.getContent(repo, path, (err, result) => {
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'another',
+          path: '.monorail',
         }).should.be.ok();
         done();
       });

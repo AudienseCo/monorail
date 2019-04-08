@@ -25,24 +25,32 @@ const branchesConfig = {
   devBranch: config.github.devBranch
 };
 const pullRequestsFromChanges = require('../services/pullRequestsFromChanges')(github, branchesConfig);
-const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo, config);
+const deployInfoFromPullRequests = require('../services/deployInfoFromPullRequests')(pullRequestDeployInfo);
 const getReleasePreview = require('../services/getReleasePreview')(
   pullRequestsFromChanges,
   deployInfoFromPullRequests,
   issueReleaseInfoList
 );
 
+const templates = require('../../presentation')(config);
+const notify = require('../services/notify')(templates, slack, config);
+
 const clock = {
   now: () => Date.now()
 };
 
-// TODO: figure out from config
+// TODO: figure out getReleaseTag from config
 const getReleaseTag = () => clock.now().toString();
 
+const ciDrivers = require('../../lib/ciDrivers');
+const callCIDriver = require('../services/callCIDriver')(ciDrivers);
+const build = require('../services/build')(callCIDriver, config);
+const getRepoConfig = require('../services/getRepoConfig')(github);
 const createDeployTemporaryBranch = require('../services/createDeployTemporaryBranch')(github, clock);
 const mergeDeployBranch = require('../services/mergeDeployBranch')(github);
 const deploy = require('../services/deploy')(
   getReleaseTag,
+  build,
   mergeDeployBranch,
   releaseInfoLabel,
   releaseNotesFormatter,
@@ -57,13 +65,19 @@ module.exports = {
   createRelease: require('./createRelease')(issueReleaseInfoList, releaseInfoLabel,
     releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
-  slackPreviewRelease: require('./slackPreviewRelease')(getReleasePreview, slack, config.github.repos),
+  slackPreviewRelease: require('./slackPreviewRelease')(
+    getRepoConfig,
+    getReleasePreview,
+    notify,
+    config.github.repos
+  ),
   getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter),
   startDeploy: require('./startDeploy')(
+    getRepoConfig,
     createDeployTemporaryBranch,
     getReleasePreview,
     deploy,
     cleanUpDeploy,
-    slack
+    notify
   )
 };

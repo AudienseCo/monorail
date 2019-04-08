@@ -1,16 +1,15 @@
 'use strict';
 
 const { series } = require('async');
+const { get } = require('lodash');
 
-module.exports = (getReleaseTag, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService) => {
+module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService) => {
   return (repoInfo, cb) => {
 
-    // TODO: get it from config
-    const masterBranch = 'master';
-    const devBranch = 'dev';
-    const deployedLabel = 'deployed';
+    const masterBranch = get(repoInfo, 'config.github.masterBranch');
+    const devBranch = get(repoInfo, 'config.github.devBranch');
+    const deployedLabel = get(repoInfo, 'config.github.deployedLabel');
     const tag = getReleaseTag();
-    const build = (cb) => cb();
 
     // TODO: map to avoid breaking changes, we can refactor it once removed the old actions
     const releaseInfoList = repoInfo.issues.map(issue => {
@@ -21,9 +20,12 @@ module.exports = (getReleaseTag, mergeDeployBranch, releaseInfoLabel, releaseNot
     });
 
     series([
-      (next) => build(next),
+      (next) => build(repoInfo.branch, repoInfo.deployInfo.jobs, repoInfo.config.deploy, next),
       (next) => mergeDeployBranch(repoInfo.repo, masterBranch, devBranch, repoInfo.branch, next),
-      (next) => releaseInfoLabel.addLabels(repoInfo.repo, releaseInfoList, [deployedLabel], next),
+      (next) => {
+        if (!deployedLabel) return next();
+        releaseInfoLabel.addLabels(repoInfo.repo, releaseInfoList, [deployedLabel], next);
+      },
       (next) => {
         const body = releaseNotesFormatter.format(releaseInfoList);
         releaseService.create(repoInfo.repo, tag, body, next);

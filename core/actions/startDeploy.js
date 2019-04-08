@@ -1,21 +1,22 @@
 'use scrict';
 
 const { mapSeries, waterfall } = require('async');
-const previewReleaseTemplate = require('./slack-views/preview-release');
-const releaseTemplate = require('./slack-views/release');
+const { get } = require('lodash');
 
 // TODO: Don't break with error at repo level, use failReason
 
 module.exports = (
+  getRepoConfig,
   createDeployTemporaryBranch,
   getReleasePreview,
   deploy,
   cleanUpDeploy,
-  slack
+  notify
 ) => {
   return (repos, showPreview, cb) => {
     waterfall([
-      (next)            => createTemporaryBranchesForEachRepo(repos, next),
+      (next)            => getConfigForEachRepo(repos, next),
+      (reposInfo, next) => createTemporaryBranchesForEachRepo(reposInfo, next),
       (reposInfo, next) => getReleasePreview(reposInfo, next),
       (reposInfo, next) => notifyPreviewSlackIfEnabled(showPreview, reposInfo, next),
       (reposInfo, next) => deployEachRepo(reposInfo, next),
@@ -29,16 +30,26 @@ module.exports = (
       cb();
     });
 
-    function createTemporaryBranchesForEachRepo(repos, cb) {
+    function getConfigForEachRepo(repos, cb) {
       mapSeries(repos, (repo, nextRepo) => {
-        createDeployTemporaryBranch(repo, (err, branch) => nextRepo(err, { repo, branch }));
+        getRepoConfig(repo, (err, config) => {
+          nextRepo(err, { repo, config });
+        });
+      }, cb);
+    }
+
+    function createTemporaryBranchesForEachRepo(reposInfo, cb) {
+      mapSeries(reposInfo, (repoInfo, nextRepo) => {
+        const devBranch = get(repoInfo, 'config.github.devBranch');
+        createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
+          nextRepo(err, Object.assign({ branch }, repoInfo));
+        });
       }, cb);
     }
 
     function notifyPreviewSlackIfEnabled(showPreview, reposInfo, cb) {
       if (!showPreview) return cb(null, reposInfo);
-      const msg = previewReleaseTemplate(reposInfo);
-      slack.send(msg, err => cb(err, reposInfo));
+      notify(reposInfo, 'preview', err => cb(err, reposInfo));
     }
 
     function deployEachRepo(reposInfo, cb) {
@@ -54,10 +65,7 @@ module.exports = (
     }
 
     function notifyRelease(reposInfo, cb) {
-      // TODO: notify to general channel filtered by notify-staff
-      // TODO: improve the release template to show the release ver and participants
-      const msg = releaseTemplate(reposInfo);
-      slack.send(msg, err => cb(err, reposInfo));
+      notify(reposInfo, 'release', err => cb(err, reposInfo));
     }
 
   };

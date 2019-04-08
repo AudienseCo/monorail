@@ -2,11 +2,8 @@
 
 const { waterfall } = require('async');
 
-//TODO: take from config
-const devBranch = 'dev';
-
 module.exports = (github, clock) => {
-  return (repo, cb) => {
+  return (repo, devBranch, cb) => {
     waterfall([
       (next) => {
         github.getBranch(repo, devBranch, (err, data) => {

@@ -1,0 +1,147 @@
+{
+  "github": {
+    "masterBranch": "master",
+    "devBranch": "dev",
+    "deployedLabel": "deployed",
+    "deployNotesLabel": "deploy notes"
+  },
+  "deploy": {
+    "ciServices": {
+      "jenkins": {
+        "driver": "jenkins",
+        "settings": {
+          "url": "",
+          "username": "",
+          "password": "",
+          "pollingInterval": 1000
+        }
+      }
+    },
+    "ciJobs": {
+      "nodejs v8.6.0": {
+        "ciService": "jenkins",
+        "jobName": "monorail-tarball-ecs",
+        "servicesParam": {
+          "paramName": "where_to_deploy",
+          "separator": ","
+        },
+        "sourceVersionParam": {
+          "paramName": "branch"
+        },
+        "defaultParams": {
+          "token": "job token",
+          "branch": "dev",
+          "node_version": "v8.6.0",
+          "grunt": false,
+          "static_files_version": "",
+          "statics": false
+        }
+      },
+      "nodejs v10.0.0": {
+        "ciService": "jenkins",
+        "jobName": "monorail-tarball-ecs",
+        "servicesParam": {
+          "paramName": "where_to_deploy",
+          "separator": ","
+        },
+        "sourceVersionParam": {
+          "paramName": "branch"
+        },
+        "defaultParams": {
+          "token": "job token",
+          "branch": "dev",
+          "node_version": "v10.0.0",
+          "grunt": false,
+          "static_files_version": "",
+          "statics": false
+        }
+      },
+      "spark audiense-insights": {
+        "ciService": "jenkins",
+        "jobName": "data-pipeline-spark-build-deploy-service",
+        "servicesParam": {
+          "paramName": "???",
+          "separator": "???"
+        },
+        "sourceVersionParam": {
+          "paramName": "source_version"
+        },
+        "defaultParams": {
+          "token": "job token",
+          "source_version": "dev",
+          "sbt_folder": "spark/audiense-insights",
+          "jar_path": "target/scala-2.11/AudienseInsights.jar",
+          "output_key_s3": "binaries/AudienseInsights.jar",
+          "service_name": "audienseinsights",
+          "action": "deploy"
+        }
+      },
+      "lambda": {
+        "ciService": "jenkins",
+        "jobName": "lambda-deploy-service",
+        "servicesParam": {
+          "paramName": "function_name???",
+          "separator": ";"
+        },
+        "sourceVersionParam": {
+          "paramName": "source_version"
+        },
+        "defaultParams": {
+          "token": "job token",
+          "source_version": "dev",
+          "environment": "prod",
+          "alias_name": "",
+          "apex_project_path": "lambda",
+          "launched_by": "",
+          "action": "deploy"
+        }
+      }
+    },
+    "services": {
+      "globalreports": {
+        "ciJob": "nodejs v8.6.0",
+        "deployTo": [
+          "globalreports-as"
+        ],
+        "params": {
+        }
+      },
+      "task-as": {
+        "ciJob": "nodejs v8.6.0",
+        "deployTo": [
+          "task-as"
+        ],
+        "params": {
+        }
+      },
+      "dashboard": {
+        "ciJob": "nodejs v10.0.0",
+        "deployTo": [
+          "dashboard-as",
+          "task-as"
+        ],
+        "params": {
+          "grunt": true,
+          "statics": true
+        }
+      },
+      "audiense-insights": {
+        "ciJob": "spark audiense-insights",
+        "deployTo": [
+          "????"
+        ],
+        "params": {
+        }
+      },
+      "lambda-whatever": {
+        "ciJob": "lamdba",
+        "deployTo": [
+          "????"
+        ],
+        "params": {
+        }
+      }
+    }
+  }
+}
+

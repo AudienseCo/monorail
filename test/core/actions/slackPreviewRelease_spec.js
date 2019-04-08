@@ -12,6 +12,7 @@ const createPullRequestsFromChanges = require('../../../core/services/pullReques
 const createPullRequestDeployInfo = require('../../../core/services/pullRequestDeployInfo');
 const createDeployInfoFromPullRequests = require('../../../core/services/deployInfoFromPullRequests');
 const createGetReleasePreview = require('../../../core/services/getReleasePreview');
+const repoConfig = require('../../fixtures/repoConfig.json');
 
 describe('slackPreviewRelease action', () => {
 
@@ -34,22 +35,13 @@ describe('slackPreviewRelease action', () => {
         commits: []
       };
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy });
-
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const expectedMsg = {
-          attachments: [ {
-            text: 'Monorail will not deploy anything in the next 10 minutes as there are no changes to deploy.',
-            color: '#439FE0',
-            title: 'socialbro',
-            title_link: 'https://github.com/AudienseCo/socialbro'
-          } ]
-        };
-        slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
+        const reposInfo = notifyStub.firstCall.args[0];
+        reposInfo[0].failReason.should.be.eql('NO_CHANGES');
         done();
       });
     });
@@ -59,21 +51,13 @@ describe('slackPreviewRelease action', () => {
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
       stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy notes' }]);
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy });
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const expectedMsg = {
-          attachments: [ {
-            text: 'Monorail will not deploy anything in the next 10 minutes as there are deployNotes.',
-            color: 'danger',
-            title: 'socialbro',
-            title_link: 'https://github.com/AudienseCo/socialbro'
-          } ]
-        };
-        slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
+        const reposInfo = notifyStub.firstCall.args[0];
+        reposInfo[0].failReason.should.be.eql('DEPLOY_NOTES');
         done();
       });
     });
@@ -83,21 +67,13 @@ describe('slackPreviewRelease action', () => {
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
       stub.onFirstCall().callsArgWith(2, null, []);
       stub.onSecondCall().callsArgWith(2, null, []);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy });
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const expectedMsg = {
-          attachments: [ {
-            text: 'Monorail will not deploy anything in the next 10 minutes because the list of services is empty.',
-            color: 'warning',
-            title: 'socialbro',
-            title_link: 'https://github.com/AudienseCo/socialbro'
-          } ]
-        };
-        slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
+        const reposInfo = notifyStub.firstCall.args[0];
+        reposInfo[0].failReason.should.be.eql('NO_SERVICES');
         done();
       });
     });
@@ -105,47 +81,43 @@ describe('slackPreviewRelease action', () => {
     it('should notify the release preview with PRs, issues and deploy info', done => {
       const githubDummy = createGithubDummy();
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:tasks-as' }]);
+      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:task-as' }]);
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
-      const slackDummy = createSlackDummy();
-      const slackSpy = sinon.spy(slackDummy, 'send');
-      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, slack: slackDummy });
+      const notifyStub = createNotifyStub();
+      const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
 
       previewRelease((err) => {
         should.not.exist(err);
-        const expectedMsg = {
-          attachments: [ {
-            text: '*Pull Requests*: <https://github.com/AudienseCo/socialbro/issues/1234|#1234>\n\n*Node version*: v0.10.24\n*Services*: tasks\n\n\n*Issues*:\n<https://github.com/AudienseCo/socialbro/issues/4321|#4321> Bar issue\n\n',
-            color: 'good',
-            title: 'socialbro',
-            title_link: 'https://github.com/AudienseCo/socialbro'
-          } ]
-        };
-        slackSpy.withArgs(expectedMsg).calledOnce.should.be.true();
+        const firstRepo = notifyStub.firstCall.args[0][0];
+        firstRepo.repo.should.be.eql('socialbro');
+        firstRepo.issues.should.be.eql([
+          {
+            number: 4321,
+            title: 'Bar issue',
+            participants: [''],
+            labels: []
+          }
+        ]);
+        firstRepo.deployInfo.should.be.eql({
+          deployNotes: false,
+          jobs: [
+            {
+              name: 'nodejs v8.6.0',
+              deployTo: [
+                'task-as'
+              ],
+              params: {}
+            }
+          ]
+        });
+        firstRepo.prIds.should.be.eql(['1234']);
+        should.exist(firstRepo.config);
         done();
       });
     });
 
     function createConfigDummy() {
-      const servicesMap = {
-        globalreports: {
-          'nodeVersion': 'v0.10.24',
-          statics: true,
-          deploy: ['globalreports']
-        },
-        'tasks-as': {
-          'nodeVersion': 'v0.10.24',
-          statics: true,
-          deploy: ['tasks']
-        }
-      };
-      return {
-        services: {
-          mapper: service => {
-            return servicesMap[service];
-          }
-        }
-      };
+      return {};
     }
 
 
@@ -155,7 +127,13 @@ describe('slackPreviewRelease action', () => {
           cb(null, prInfo) || { title: 'Foo PR', body: 'Closes #4321' };
         },
         getIssue: (repo, id, cb) => {
-          const defaultIssueInfo = { number: 4321, title: 'Bar issue', body: '', user: { login: '' } };
+          const defaultIssueInfo = {
+            number: 4321,
+            title: 'Bar issue',
+            body: '',
+            labels: [],
+            user: { login: '' }
+          };
           cb(null, issueInfo || defaultIssueInfo);
         },
         compareCommits: (info, cb) => {
@@ -173,7 +151,8 @@ describe('slackPreviewRelease action', () => {
         getIssueLabels: (repo, id, cb) => {
           cb(null, labelsInfo);
         },
-        getIssueComments: (repo, id, cb) => cb(null, [])
+        getIssueComments: (repo, id, cb) => cb(null, []),
+        getContent: (repo, path, cb) => cb(null, { content: 'eyAidGV4dCI6ICJoZWxsbyBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ==' })
       };
 
     }
@@ -186,28 +165,41 @@ describe('slackPreviewRelease action', () => {
       };
     }
 
+    function createGetRepoConfigStub(github) {
+      return (repo, cb) => {
+        cb(null, repoConfig);
+      }
+    }
+
+    function createNotifyStub() {
+      const notify = (reposInfo, notificationName, cb) => cb();
+      return sinon.spy(notify);
+    }
+
     function createPrevieReleaseWithStubs({
+      getRepoConfig,
       pullRequestsFromChanges,
       pullRequestDeployInfo,
       deployInfoFromPullRequests,
       issueReleaseInfo,
       issueReleaseInfoList,
       getReleasePreview,
-      slack,
+      notify,
       github
     }) {
       const githubDummy = github || createGithubDummy();
       const configDummy = createConfigDummy();
+      const getRepoConfigStub = getRepoConfig || createGetRepoConfigStub(githubDummy);
       const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, {});
       const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
-      const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub, configDummy);
+      const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub);
       const issueParticipants = createIssueParticipants(githubDummy, configDummy);
       const issueReleaseInfoStub = issueReleaseInfo || createIssueReleaseInfo(githubDummy, createBoundIssueExtractor(), issueParticipants);
       const issueReleaseInfoListStub = issueReleaseInfoList || createIssueReleaseInfoList(issueReleaseInfoStub);
       const getReleasePreviewStub = getReleasePreview || createGetReleasePreview(pullRequestsFromChangesStub, deployInfoFromPullRequestsStub, issueReleaseInfoListStub);
-      const slackDummy = slack || createSlackDummy();
+      const notifyStub = notify || createNotifyStub();
 
-      return createPreviewRelease(getReleasePreviewStub, slackDummy, repos);
+      return createPreviewRelease(getRepoConfigStub, getReleasePreviewStub, notifyStub, repos);
     }
 
 

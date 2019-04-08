@@ -1,10 +1,15 @@
 'use strict';
 
 const { reduce } = require('async');
+const { get, union, assign, assignWith, find } = require('lodash');
 
-module.exports = (pullRequestDeployInfo, config) => {
+// TODO: get deploy notes label from config
+// TODO: get deploy-to: labels prefix from config
+// TODO: ensure that the ci job exists
+// TODO: ensure that the same service isn't deployed several times with different jobs
+module.exports = (pullRequestDeployInfo) => {
 
-  return (repo, pullRequestList, cb) => {
+  return (repo, pullRequestList, repoConfig, cb) => {
     const initial = {
       deployNotes: false,
       services: []
@@ -13,35 +18,41 @@ module.exports = (pullRequestDeployInfo, config) => {
     reduce(pullRequestList, initial, (acc, id, next) => {
       pullRequestDeployInfo.get(repo, id, (err, prInfo) => {
         if (err) return next(err);
-        const prServices = map(prInfo.services, config);
-        const services = Array.from(new Set(acc.services.concat(prServices)));
         const newState = {
           deployNotes: acc.deployNotes || prInfo.deployNotes,
-          services: services
+          services: union(acc.services, prInfo.services)
         };
         next(null, newState);
-
       });
     }, (err, result) => {
-      if (err) cb(err);
-      else cb(null, groupByService(result, config));
+      if (err) return cb(err);
+      cb(null, {
+        deployNotes: result.deployNotes,
+        jobs: groupServicesByJob(repoConfig, result.services)
+      });
     });
   };
 
-  function map(services, config) {
-    const mapper = config.services ? config.services.mapper : null;
-
-    if (mapper) return services.map(mapper);
-    else return services;
-  }
-
-  function groupByService(data, config) {
-    const reducer = config.services ? config.services.reducer : null;
-
-    if (reducer && data.services.length) {
-      return Object.assign({}, data, { services: data.services.reduce(reducer, null) });
-    }
-    else return data;
+  function groupServicesByJob(repoConfig, services, cb) {
+    return services.reduce((jobs, service) => {
+      const serviceConfig = get(repoConfig, `services.${service}`);
+      if (!serviceConfig) return jobs;
+      const jobConfig = find(jobs, { name: serviceConfig.ciJob });
+      if (jobConfig) {
+        jobConfig.deployTo = union(jobConfig.deployTo, serviceConfig.deployTo);
+        assignWith(jobConfig.params, serviceConfig.params, (jobParam, serviceParam) => {
+          return serviceParam || jobParam;
+        });
+      }
+      else {
+        jobs.push({
+          name: serviceConfig.ciJob,
+          deployTo: union([], serviceConfig.deployTo),
+          params: assign({}, serviceConfig.params)
+        });
+      }
+      return jobs;
+    }, []);
   }
 
 };

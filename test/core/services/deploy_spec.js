@@ -5,17 +5,25 @@ const createReleaseInfoLabel = require('../../../core/services/releaseInfoLabel'
 const createReleaseNotesFormatter = require('../../../core/services/releaseNotesFormatter');
 const createReleaseService = require('../../../core/services/releaseService');
 const createMergeDeployBranch = require('../../../core/services/mergeDeployBranch');
+const createBuild = require('../../../core/services/build');
 const createDeploy = require('../../../core/services/deploy');
+const createCallCIDriver = require('../../../core/services/callCIDriver');
+const repoConfig = require('../../fixtures/repoConfig.json');
 
 describe('deploy service', () => {
-  it('foo', (done) => {
+  it('should deploy', (done) => {
     const githubDummy = createGithubDummy();
     const mergeDeployBranch = createMergeDeployBranch(githubDummy);
     const releaseInfoLabel = createReleaseInfoLabel(githubDummy);
     const releaseNotesFormatter = createReleaseNotesFormatter();
     const releaseService = createReleaseService(githubDummy);
+    const ciDrivers = {
+      jenkins: (settings, jobName, params, cb) => cb()
+    };
+    const callCIDriver = createCallCIDriver(ciDrivers);
+    const build = createBuild(callCIDriver);
     const getReleaseTag = () => '1.5';
-    const deploy = createDeploy(getReleaseTag, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService);
+    const deploy = createDeploy(getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService);
 
     const repoInfo = {
       repo: '123',
@@ -24,7 +32,26 @@ describe('deploy service', () => {
         title: 'title',
         labels: [],
         participants: ['user1']
-      }]
+      }],
+      deployInfo: {
+        deployNotes: false,
+        jobs: [
+          {
+            name: 'nodejs v8.6.0',
+            deployTo: ['task-as', 'globalreports-as'],
+            params: {}
+          },
+          {
+            name: 'nodejs v10.0.0',
+            deployTo: ['dashboard-as', 'task-as'],
+            params: {
+              grunt: true,
+              statics: true
+            }
+          }
+        ]
+      },
+      config: repoConfig
     };
     deploy(repoInfo, (err, repoInfo) => {
       should.not.exists(err);
