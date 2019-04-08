@@ -90,7 +90,7 @@ describe('Release Slack Notification Template', () => {
         text:
 `*<https://github.com/AudienseCo/repo1/releases/tag/123456789|123456789 Release>*
 
-<https://github.com/AudienseCo/repo1/issues/123|#123> issue title @slack_username1, @username2, @slack_username3
+<https://github.com/AudienseCo/repo1/issues/123|#123> issue title <@slack_username1>, <@username2>, <@slack_username3>
 
 `,
         color: 'good',
@@ -141,7 +141,7 @@ describe('Release Slack Notification Template', () => {
         text:
 `*<https://github.com/AudienseCo/repo1/releases/tag/123456789|123456789 Release>*
 
-<https://github.com/AudienseCo/repo1/issues/2|#2> issue title 2 @slack_username1, @username2, @slack_username3
+<https://github.com/AudienseCo/repo1/issues/2|#2> issue title 2 <@slack_username1>, <@username2>, <@slack_username3>
 
 `,
         color: 'good',

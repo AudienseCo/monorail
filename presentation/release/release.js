@@ -6,7 +6,7 @@ module.exports = ({ repo, tag, issues }, filterLabels, user, githubToSlakUsernam
 
   const formatParticipant = (participant) => {
     const slackUsername = get(githubToSlakUsernames, participant, participant);
-    return `@${slackUsername}`;
+    return `<@${slackUsername}>`;
   };
 
   const formatedIssues = issues.reduce((acc, issue) => {
