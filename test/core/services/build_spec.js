@@ -207,7 +207,7 @@ describe('Build service', () => {
 
   function createCIDriversDummy() {
     return {
-      jenkins: (settings, jobName, params, cb) => cb()
+      jenkins: (settings, jobName, params, cb) => cb(null, true)
     };
   }
 

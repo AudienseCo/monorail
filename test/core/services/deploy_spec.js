@@ -18,7 +18,7 @@ describe('deploy service', () => {
     const releaseNotesFormatter = createReleaseNotesFormatter();
     const releaseService = createReleaseService(githubDummy);
     const ciDrivers = {
-      jenkins: (settings, jobName, params, cb) => cb()
+      jenkins: (settings, jobName, params, cb) => cb(null, true)
     };
     const callCIDriver = createCallCIDriver(ciDrivers);
     const build = createBuild(callCIDriver);
