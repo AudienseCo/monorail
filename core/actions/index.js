@@ -35,12 +35,8 @@ const getReleasePreview = require('../services/getReleasePreview')(
 const templates = require('../../presentation')(config);
 const notify = require('../services/notify')(templates, slack, config);
 
-const clock = {
-  now: () => Date.now()
-};
-
-// TODO: figure out getReleaseTag from config
-const getReleaseTag = () => clock.now().toString();
+const clock = require('../../lib/clock')();
+const getReleaseTag = require('../services/getReleaseTag')(clock);
 
 const ciDrivers = require('../../lib/ciDrivers');
 const callCIDriver = require('../services/callCIDriver')(ciDrivers);
