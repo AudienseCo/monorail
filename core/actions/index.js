@@ -32,8 +32,8 @@ const getReleasePreview = require('../services/getReleasePreview')(
   issueReleaseInfoList
 );
 
-const templates = require('../../presentation')(config);
-const notify = require('../services/notify')(templates, slack, config);
+const slackTemplates = require('../../presentation/slack')(config);
+const notify = require('../services/notify')(slackTemplates, slack, config);
 
 const clock = require('../../lib/clock')();
 const getReleaseTag = require('../services/getReleaseTag')(clock);
