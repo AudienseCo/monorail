@@ -1,7 +1,5 @@
 'use strict';
 
-// TODO: move to presentation layer?
-
 module.exports = function releaseNotesFormatter() {
 
   function compose(releaseIssueInfo) {
