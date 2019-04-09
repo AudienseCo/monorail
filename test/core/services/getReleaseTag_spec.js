@@ -8,7 +8,7 @@ describe('getReleaseTag service', () => {
     const clockDummy = createClockDummy(new Date('05 October 2011 14:48 UTC'));
     const getReleaseTag = createGetReleaseTag(clockDummy);
     const tag = getReleaseTag();
-    tag.should.be.eql('2011-10-05T14:48:00.000Z');
+    tag.should.be.eql('v2011.10.05T14.48.00.000Z');
   });
 
   function createClockDummy(date) {

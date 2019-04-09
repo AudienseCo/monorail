@@ -2,6 +2,10 @@
 
 module.exports = (clock) => {
   return () => {
-    return clock.toISOString();
+    const date = clock
+      .toISOString()
+      .replace(/\-/g, '.')
+      .replace(/\:/g, '.');
+    return `v${date}`;
   };
 };

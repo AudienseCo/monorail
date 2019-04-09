@@ -52,9 +52,9 @@ describe('deploy service', () => {
       },
       config: repoConfig
     };
-    deploy(repoInfo, (err, repoInfo) => {
+    deploy(repoInfo, (err, tag) => {
       should.not.exists(err);
-      repoInfo.tag.should.be.eql('1.5');
+      tag.should.be.eql('1.5');
       done();
     });
   });

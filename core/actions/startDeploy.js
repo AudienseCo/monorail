@@ -21,7 +21,7 @@ module.exports = (
       (reposInfo, next) => notifyRelease(reposInfo, next),
     ], (err, reposInfo) => {
       if (err) {
-        console.error('Error deploying', reposInfo, err);
+        console.error('Error deploying all repos', reposInfo, err);
         mapSeries(reposInfo, cleanUpDeploy, cb);
         return;
       }
@@ -33,7 +33,7 @@ module.exports = (
         getRepoConfig(repo, (err, config) => {
           if (err) {
             console.error('Error getting repo config', repo, err);
-            return nextRepo(null, { repo, failReason: err.message });
+            return nextRepo(null, { repo, failReason: 'INVALID_REPO_CONFIG' });
           }
           nextRepo(err, { repo, config });
         });
@@ -48,9 +48,9 @@ module.exports = (
         createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
           if (err) {
             console.error('Error creating temporary branch', repoInfo.repo, err);
-            return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+            return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'BRANCH_CREATION_FAILED' }));
           }
-          nextRepo(null, Object.assign({ branch }, repoInfo));
+          nextRepo(null, Object.assign({}, repoInfo, { branch }));
         });
       }, cb);
     }
@@ -68,12 +68,13 @@ module.exports = (
             nextRepo(null, repoInfo);
           });
         }
-        else deploy(repoInfo, (err, repoInfo) => {
+        else deploy(repoInfo, (err, tag) => {
+          // TODO: deserves a refactor
           if (err) {
             console.error('Error deploying', repoInfo.repo, err);
-            return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+            return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'REPO_DEPLOY_FAILED' }));
           }
-          nextRepo(null, repoInfo);
+          nextRepo(null, Object.assign({}, repoInfo, { tag }));
         });
       }, cb);
     }

@@ -13,6 +13,7 @@ module.exports = () => {
     }).join('\n');
 
     const formatedServices = deployInfo.jobs.map(job => {
+      // TODO: combine with default params
       const formatedParams = map(job.params, (value, key) => `${key}: ${value}`).join('\n');
       return [
         `### Deploy job: ${job.name}`,

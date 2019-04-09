@@ -18,7 +18,7 @@ module.exports = ({ repo, tag, issues }, filterLabels, user, githubToSlakUsernam
   }, []).join('\n');
 
   const text =
-`*<https://github.com/${user}/${repo}/releases/tag/${tag}|${tag} Release>*
+`*<https://github.com/${user}/${repo}/releases/tag/${tag}|Release ${tag}>*
 
 ${formatedIssues}
 

@@ -175,6 +175,21 @@ describe('start deploy action', () => {
     });
   });
 
+  it('it should set the deploy failure as failReason', (done) => {
+    const notifyStub = createNotifyStub();
+    const deployStub = (repoInfo, cb) => cb(new Error('dummy error'));
+    const getReleasePreviewStub = (repoInfo, cb) => cb(null, [{ repo: 'repo1'}, { repo: 'repo2' }]);
+    const startDeploy = createStartDeployWithStubs({ deploy: deployStub, notify: notifyStub, getReleasePreview: getReleasePreviewStub });
+
+    const repos = ['repo1', 'repo2'];
+    const showPreview = false;
+    startDeploy(repos, showPreview, (err) => {
+      should.not.exist(err);
+      const firstRepo = notifyStub.firstCall.args[0][0];
+      firstRepo.failReason.should.be.eql('REPO_DEPLOY_FAILED');
+      done();
+    });
+  });
 
   function createConfigDummy() {
     const servicesMap = {

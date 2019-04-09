@@ -17,7 +17,7 @@ module.exports = function createPreviewRelease(getRepoConfig, getReleasePreview,
       getRepoConfig(repo, (err, config) => {
         if (err) {
           console.error('Error getting repo config', repo, err);
-          return nextRepo(null, { repo, failReason: err.message });
+          return nextRepo(null, { repo, failReason: 'INVALID_REPO_CONFIG' });
         }
         nextRepo(null, { repo, config });
       });

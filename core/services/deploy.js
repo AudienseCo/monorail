@@ -12,7 +12,10 @@ module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, rel
     const tag = getReleaseTag();
 
     // TODO: map to avoid breaking changes, we can refactor it once removed the old actions
-    const releaseInfoList = repoInfo.issues.map(issue => {
+    const releaseInfoList = repoInfo.issues.map(_issue => {
+      const issue = Object.assign({}, _issue, {
+        labels: _issue.labels.map(l => ({ name: l }))
+      });
       return {
         issue,
         participants: issue.participants
@@ -27,9 +30,9 @@ module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, rel
         releaseInfoLabel.addLabels(repoInfo.repo, releaseInfoList, [deployedLabel], next);
       },
       (next) => {
-        const body = releaseNotesTemplate(repoInfo);
+        const body = releaseNotesTemplate(Object.assign({}, repoInfo, { tag }));
         releaseService.create(repoInfo.repo, tag, body, next);
       }
-    ], (err) => cb(err, Object.assign({ tag }, repoInfo)));
+    ], (err) => cb(err, tag));
   };
 }
