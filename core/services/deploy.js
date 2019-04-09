@@ -3,7 +3,7 @@
 const { series } = require('async');
 const { get } = require('lodash');
 
-module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesFormatter, releaseService) => {
+module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, releaseNotesTemplate, releaseService) => {
   return (repoInfo, cb) => {
 
     const masterBranch = get(repoInfo, 'config.github.masterBranch');
@@ -27,7 +27,7 @@ module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, rel
         releaseInfoLabel.addLabels(repoInfo.repo, releaseInfoList, [deployedLabel], next);
       },
       (next) => {
-        const body = releaseNotesFormatter.format(releaseInfoList);
+        const body = releaseNotesTemplate(repoInfo);
         releaseService.create(repoInfo.repo, tag, body, next);
       }
     ], (err) => cb(err, Object.assign({ tag }, repoInfo)));

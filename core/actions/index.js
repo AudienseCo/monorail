@@ -38,6 +38,7 @@ const notify = require('../services/notify')(slackTemplates, slack, config);
 const clock = require('../../lib/clock')();
 const getReleaseTag = require('../services/getReleaseTag')(clock);
 
+const releaseNotesTemplate = require('../../presentation/github/releaseNotes')();
 const ciDrivers = require('../../lib/ciDrivers');
 const callCIDriver = require('../services/callCIDriver')(ciDrivers);
 const build = require('../services/build')(callCIDriver, config);
@@ -49,7 +50,7 @@ const deploy = require('../services/deploy')(
   build,
   mergeDeployBranch,
   releaseInfoLabel,
-  releaseNotesFormatter,
+  releaseNotesTemplate,
   releaseService
 );
 const cleanUpDeploy = require('../services/cleanUpDeploy')(github);

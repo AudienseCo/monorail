@@ -2,7 +2,6 @@
 
 const should = require('should');
 const createReleaseInfoLabel = require('../../../core/services/releaseInfoLabel');
-const createReleaseNotesFormatter = require('../../../core/services/releaseNotesFormatter');
 const createReleaseService = require('../../../core/services/releaseService');
 const createMergeDeployBranch = require('../../../core/services/mergeDeployBranch');
 const createBuild = require('../../../core/services/build');
@@ -15,7 +14,7 @@ describe('deploy service', () => {
     const githubDummy = createGithubDummy();
     const mergeDeployBranch = createMergeDeployBranch(githubDummy);
     const releaseInfoLabel = createReleaseInfoLabel(githubDummy);
-    const releaseNotesFormatter = createReleaseNotesFormatter();
+    const releaseNotesFormatter = (repoInfo) => '';
     const releaseService = createReleaseService(githubDummy);
     const ciDrivers = {
       jenkins: (settings, jobName, params, cb) => cb(null, true)
