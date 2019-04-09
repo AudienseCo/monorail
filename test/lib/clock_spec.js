@@ -3,8 +3,6 @@
 require('should');
 const clock = require('../../lib/clock')();
 
-console.log(clock)
-
 describe('Clock', () => {
   context('Interface', () => {
     it('should have the "now" method', () => {
