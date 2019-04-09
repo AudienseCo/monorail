@@ -22,6 +22,9 @@ module.exports = module.exports = (config) => {
     }, []);
 
     if (attachments.length > 0) {
+      attachments.unshift({
+        text: 'PRs, services and issues that would be deployed with the next release...'
+      });
       return {
         attachments
       };

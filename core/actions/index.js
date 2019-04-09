@@ -32,16 +32,13 @@ const getReleasePreview = require('../services/getReleasePreview')(
   issueReleaseInfoList
 );
 
-const templates = require('../../presentation')(config);
-const notify = require('../services/notify')(templates, slack, config);
+const slackTemplates = require('../../presentation/slack')(config);
+const notify = require('../services/notify')(slackTemplates, slack, config);
 
-const clock = {
-  now: () => Date.now()
-};
+const clock = require('../../lib/clock')();
+const getReleaseTag = require('../services/getReleaseTag')(clock);
 
-// TODO: figure out getReleaseTag from config
-const getReleaseTag = () => clock.now().toString();
-
+const releaseNotesTemplate = require('../../presentation/github/releaseNotes')();
 const ciDrivers = require('../../lib/ciDrivers');
 const callCIDriver = require('../services/callCIDriver')(ciDrivers);
 const build = require('../services/build')(callCIDriver, config);
@@ -53,7 +50,7 @@ const deploy = require('../services/deploy')(
   build,
   mergeDeployBranch,
   releaseInfoLabel,
-  releaseNotesFormatter,
+  releaseNotesTemplate,
   releaseService
 );
 const cleanUpDeploy = require('../services/cleanUpDeploy')(github);

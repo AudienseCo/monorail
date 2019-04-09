@@ -6,7 +6,7 @@ module.exports = ({ repo, prIds, issues, deployInfo }, filterLabels, user) => {
 
   const formatedPRs = prIds.map(prId => {
     return `<https://github.com/${user}/${repo}/issues/${prId}|#${prId}>`;
-  }).join('\n');
+  }).join(', ');
 
   const formatedIssues = issues.reduce((acc, issue) => {
     if (intersection(issue.labels, filterLabels).length === filterLabels.length) {
@@ -16,13 +16,10 @@ module.exports = ({ repo, prIds, issues, deployInfo }, filterLabels, user) => {
   }, []).join('\n');
   if (formatedIssues.length === 0) return;
 
-  const formatedServices = deployInfo.jobs.reduce((res, job) => {
-    res += `*${job.name}*: ${job.deployTo.join(', ')}\n`;
-    return res;
-  }, '');
+  const formatedServices = deployInfo.jobs.map(job => `*${job.name}*: ${job.deployTo.join(', ')}`).join('\n');
 
   const text =
-`*Pull Requests*: ${formatedPRs}
+  `*Pull Requests*: ${formatedPRs}
 
 ${formatedServices}
 

@@ -13,6 +13,7 @@ module.exports = (templates, slack, config) => {
     eachSeries(notificationSettings, (channelInfo, next) => {
       const msg = template(reposInfo, channelInfo.labels);
       if (!msg) return next();
+      // TODO: don't publish errors to #general channel either repos with no issues
       slack.send(channelInfo.channel, msg, next);
     }, cb);
   };

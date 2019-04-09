@@ -21,9 +21,9 @@ module.exports = (
       pullRequestsFromChanges({ repo: repoInfo.repo, head: repoInfo.branch }, (err, prIds) => {
         if (err) {
           console.error('Error pull requests from changes', repoInfo.repo, err);
-          return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+          return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'PRS_RETRIEVING_FAILURE' }));
         }
-        nextRepo(null, Object.assign({ prIds }, repoInfo));
+        nextRepo(null, Object.assign({}, repoInfo, { prIds }));
       });
     }, cb);
   }
@@ -32,7 +32,7 @@ module.exports = (
     mapSeries(reposInfo, (repoInfo, nextRepo) => {
       if (repoInfo.failReason) return nextRepo(null, repoInfo);
       if (repoInfo.prIds.length === 0) {
-        return nextRepo(null, Object.assign({ failReason: 'NO_CHANGES' }, repoInfo));
+        return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'NO_CHANGES' }));
       }
       const repoConfig = get(repoInfo, 'config.deploy');
       deployInfoFromPullRequests(repoInfo.repo, repoInfo.prIds, repoConfig, (err, deployInfo) => {
@@ -47,7 +47,7 @@ module.exports = (
         else if (deployInfo.jobs.length === 0) {
           failReason = 'NO_SERVICES';
         }
-        nextRepo(null, Object.assign({ failReason, deployInfo }, repoInfo));
+        nextRepo(null, Object.assign({}, repoInfo, { failReason, deployInfo }));
       });
     }, cb);
   }
@@ -57,7 +57,7 @@ module.exports = (
       issueReleaseInfoList.get(repoInfo.repo, repoInfo.prIds, (err, issuesInfo) => {
         if (err) {
           console.error('Error getting issues to release', repoInfo.repo, err);
-          return nextRepo(null, Object.assign({ failReason: err.message }, repoInfo));
+          return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'ISSUES_RETRIEVING_FAILURE' }));
         }
         const issuesReleaseInfo = issuesInfo.map(issueInfo => ({
           number: issueInfo.issue.number,
@@ -65,7 +65,7 @@ module.exports = (
           labels: issueInfo.issue.labels.map(label => label.name),
           participants: issueInfo.participants
         }));
-        nextRepo(null, Object.assign({ issues: issuesReleaseInfo }, repoInfo));
+        nextRepo(null, Object.assign({}, repoInfo, { issues: issuesReleaseInfo }));
       });
     }, cb);
   }

@@ -1,8 +1,7 @@
 'use strict';
 
 require('should');
-const presentation = require('../../presentation')();
-
+const presentation = require('../../../presentation/slack')();
 
 describe('Presentation layer builder', () => {
   context('Interface', () => {

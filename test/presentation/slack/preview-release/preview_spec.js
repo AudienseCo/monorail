@@ -1,7 +1,7 @@
 'use scrict';
 
 require('should');
-const createPreviewReleaseTemplate = require('../../../presentation/preview-release');
+const createPreviewReleaseTemplate = require('../../../../presentation/slack/preview-release');
 const previewReleaseTemplate = createPreviewReleaseTemplate({ github: { user: 'AudienseCo' } });
 
 describe('Preview Release Slack Notification Template', () => {
@@ -26,6 +26,8 @@ describe('Preview Release Slack Notification Template', () => {
     const msg = previewReleaseTemplate(releaseInfo, filterLabels);
     msg.should.be.eql({
       attachments: [{
+        text: 'PRs, services and issues that would be deployed with the next release...'
+      },{
         text: 'Monorail will not deploy anything in the next 10 minutes because there is no pull request linked to services to deploy.',
         color: 'warning',
         title: 'repo1',
@@ -73,13 +75,12 @@ describe('Preview Release Slack Notification Template', () => {
     const msg = previewReleaseTemplate(releaseInfo, filterLabels);
     msg.should.be.eql({
       attachments: [{
+        text: 'PRs, services and issues that would be deployed with the next release...'
+      },{
         text:
-`*Pull Requests*: <https://github.com/AudienseCo/repo1/issues/10|#10>
-<https://github.com/AudienseCo/repo1/issues/20|#20>
-<https://github.com/AudienseCo/repo1/issues/30|#30>
+`*Pull Requests*: <https://github.com/AudienseCo/repo1/issues/10|#10>, <https://github.com/AudienseCo/repo1/issues/20|#20>, <https://github.com/AudienseCo/repo1/issues/30|#30>
 
 *nodejs v10*: dashboard, tasks
-
 
 *Issues*:\n<https://github.com/AudienseCo/repo1/issues/123|#123> issue title
 
@@ -117,13 +118,12 @@ describe('Preview Release Slack Notification Template', () => {
     const msg = previewReleaseTemplate(releaseInfo, filterLabels);
     msg.should.be.eql({
       attachments: [{
+        text: 'PRs, services and issues that would be deployed with the next release...'
+      },{
         text:
-`*Pull Requests*: <https://github.com/AudienseCo/repo1/issues/10|#10>
-<https://github.com/AudienseCo/repo1/issues/20|#20>
-<https://github.com/AudienseCo/repo1/issues/30|#30>
+`*Pull Requests*: <https://github.com/AudienseCo/repo1/issues/10|#10>, <https://github.com/AudienseCo/repo1/issues/20|#20>, <https://github.com/AudienseCo/repo1/issues/30|#30>
 
 *nodejs v10*: dashboard, tasks
-
 
 *Issues*:\n<https://github.com/AudienseCo/repo1/issues/2|#2> issue title 2
 
