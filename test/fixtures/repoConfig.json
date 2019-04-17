@@ -7,7 +7,7 @@
   },
   "deploy": {
     "ciServices": {
-      "jenkins": {
+      "jenkins_deploy": {
         "driver": "jenkins",
         "settings": {
           "url": "",
@@ -19,7 +19,7 @@
     },
     "ciJobs": {
       "nodejs v8.6.0": {
-        "ciService": "jenkins",
+        "ciService": "jenkins_deploy",
         "jobName": "monorail-tarball-ecs",
         "servicesParam": {
           "paramName": "where_to_deploy",
@@ -38,7 +38,7 @@
         }
       },
       "nodejs v10.0.0": {
-        "ciService": "jenkins",
+        "ciService": "jenkins_deploy",
         "jobName": "monorail-tarball-ecs",
         "servicesParam": {
           "paramName": "where_to_deploy",
@@ -57,7 +57,7 @@
         }
       },
       "spark audiense-insights": {
-        "ciService": "jenkins",
+        "ciService": "jenkins_deploy",
         "jobName": "data-pipeline-spark-build-deploy-service",
         "servicesParam": {
           "paramName": "???",
@@ -77,7 +77,7 @@
         }
       },
       "lambda": {
-        "ciService": "jenkins",
+        "ciService": "jenkins_deploy",
         "jobName": "lambda-deploy-service",
         "servicesParam": {
           "paramName": "function_name???",

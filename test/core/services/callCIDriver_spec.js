@@ -27,7 +27,7 @@ describe('callCIDriver service', () => {
     const jenkinsSpy = sinon.spy(ciDrivers, 'jenkins');
 
     const driverName = 'jenkins';
-    const settings = repoConfig.deploy.ciServices.jenkins.settings;
+    const settings = repoConfig.deploy.ciServices.jenkins_deploy.settings;
     const jobName = 'nodejs v8.6.0';
     const params = {
       token: 'job token',
