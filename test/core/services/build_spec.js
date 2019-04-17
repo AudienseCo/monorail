@@ -41,7 +41,7 @@ describe('Build service', () => {
       should.not.exist(err);
       callCIDriverSpy.calledTwice.should.be.ok();
       callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
-      callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
+      callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins_deploy.settings);
       callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
       callCIDriverSpy.firstCall.args[3].should.be.eql({
         token: 'other token',
@@ -53,7 +53,7 @@ describe('Build service', () => {
         where_to_deploy: 'task-as,globalreports-as'
       });
       callCIDriverSpy.secondCall.args[0].should.be.eql('jenkins');
-      callCIDriverSpy.secondCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
+      callCIDriverSpy.secondCall.args[1].should.be.eql(deployConfig.ciServices.jenkins_deploy.settings);
       callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
       callCIDriverSpy.secondCall.args[3].should.be.eql({
         token: '',
@@ -98,7 +98,7 @@ describe('Build service', () => {
       }
     ];
     const deployConfig = cloneDeep(repoConfig.deploy);
-    delete deployConfig.ciServices.jenkins;
+    delete deployConfig.ciServices.jenkins_deploy;
 
     build(branch, jobs, deployConfig, (err) => {
       should.not.exist(err);
@@ -129,7 +129,7 @@ describe('Build service', () => {
     const callCIDriver = createCallCIDriver(ciDrivers);
     const callCIDriverSpy = sinon.spy(callCIDriver);
     const dummyCIJobConfig = {
-      "ciService": "jenkins",
+      "ciService": "jenkins_deploy",
       "jobName": "monorail-tarball-ecs",
       "servicesParam": {
         "paramName": "other_where_to_deploy",
@@ -172,12 +172,12 @@ describe('Build service', () => {
       }
     ];
     const deployConfig = cloneDeep(repoConfig.deploy);
-    delete deployConfig.ciJobs['nodejs v8.6.0'].servicesParam;
+    delete deployConfig.ciJobs;
     build(branch, jobs, deployConfig, (err) => {
       should.not.exist(err);
-      callCIDriverSpy.calledTwice.should.be.ok();
+      callCIDriverSpy.calledOnce.should.be.ok();
       callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
-      callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
+      callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins_deploy.settings);
       callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
       callCIDriverSpy.firstCall.args[3].should.be.eql({
         token: 'other token',
@@ -188,18 +188,6 @@ describe('Build service', () => {
         statics: false,
         other_where_to_deploy: 'task-as|globalreports-as',
         'new param': 'value'
-      });
-      callCIDriverSpy.secondCall.args[0].should.be.eql('jenkins');
-      callCIDriverSpy.secondCall.args[1].should.be.eql(deployConfig.ciServices.jenkins.settings);
-      callCIDriverSpy.secondCall.args[2].should.be.eql('monorail-tarball-ecs');
-      callCIDriverSpy.secondCall.args[3].should.be.eql({
-        token: '',
-        branch: 'deploy-branch1',
-        node_version: 'v10.0.0',
-        grunt: false,
-        static_files_version: '',
-        statics: true,
-        where_to_deploy: 'dashboard-as,task-as'
       });
       done();
     });
@@ -216,7 +204,7 @@ describe('Build service', () => {
     if (jenkinsSettings) {
       dummyConfig.deploy = {
         ciServices: {
-          jenkins: {
+          jenkins_deploy: {
             driver: 'jenkins',
             settings: jenkinsSettings
           }
