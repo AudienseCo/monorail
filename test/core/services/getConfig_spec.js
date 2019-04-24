@@ -347,18 +347,6 @@ describe('getConfig service', () => {
 
   });
 
-  xit('should return an error if fails compiling the repo config with the local config', (done) => {
-    const getRepoConfigDummy = (repo, cb) => cb(null, {});
-    const localConfigDummy = {};
-    const getConfig = createGetConfig(getRepoConfigDummy, localConfigDummy);
-
-    const repo = '123';
-    getConfig(repo, (err) => {
-      should.exist(err);
-      done();
-    });
-  });
-
   function getLocalConfig() {
     return {
       "github": {
