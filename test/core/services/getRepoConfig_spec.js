@@ -21,7 +21,6 @@ describe('getRepoConfig service', () => {
     const githubDummy = createGithubDummy(null, {
       content: 'byBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ=='
     });
-    const githubSpy = sinon.spy(githubDummy, 'getContent');
     const getRepoConfig = createGetRepoConfig(githubDummy);
     const repo = '123';
 

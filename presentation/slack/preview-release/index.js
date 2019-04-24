@@ -4,7 +4,6 @@ const { get } = require('lodash') ;
 const ERROR_TEMPLATES = require('./errors');
 const releasePreviewMsg = require('./release-preview');
 
-// TODO: clean-up a bit an solve some duplications with release template
 module.exports = module.exports = (config) => {
   return (releasePreview, filterLabels) => {
     const user = get(config, 'github.user');

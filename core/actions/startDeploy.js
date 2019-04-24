@@ -4,7 +4,7 @@ const { mapSeries, waterfall } = require('async');
 const { get } = require('lodash');
 
 module.exports = (
-  getRepoConfig,
+  getConfig,
   createDeployTemporaryBranch,
   getReleasePreview,
   deploy,
@@ -30,7 +30,7 @@ module.exports = (
 
     function getConfigForEachRepo(repos, cb) {
       mapSeries(repos, (repo, nextRepo) => {
-        getRepoConfig(repo, (err, config) => {
+        getConfig(repo, (err, config) => {
           if (err) {
             console.error('Error getting repo config', repo, err);
             return nextRepo(null, { repo, failReason: 'INVALID_REPO_CONFIG' });
@@ -43,7 +43,6 @@ module.exports = (
     function createTemporaryBranchesForEachRepo(reposInfo, cb) {
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) return nextRepo(null, repoInfo);
-        // TODO: combine with local config
         const devBranch = get(repoInfo, 'config.github.devBranch');
         createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
           if (err) {

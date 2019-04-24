@@ -3,53 +3,50 @@
 const { eachSeries } = require('async');
 const { get, assignWith, cloneDeep, isNil, defaultsDeep } = require('lodash');
 
-module.exports = (callCIDriver, localConfig) => {
+module.exports = (callCIDriver) => {
   return (branch, jobs, deployConfig,  cb) => {
 
     eachSeries(jobs, (job, nextJob) => {
-      // TODO: ensure we check for ci jobs, services and drivers references in the preview step
 
-      const ciServiceName = getCIServiceName(job, deployConfig, localConfig);
+      const ciServiceName = get(deployConfig, `ciJobs['${job.name}'].ciService`);
       if (!ciServiceName) {
         console.error(`Not valid config for job: ${job.name}`)
         return nextJob();
       }
 
-      const finalCIService = combineCIServiceConfigs(ciServiceName, deployConfig, localConfig);
-      const finalCIJob = combineCIJobConfigs(job, branch, deployConfig, localConfig);
-      callCIDriver(finalCIService.driver, finalCIService.settings, finalCIJob.jobName, finalCIJob.params, nextJob);
+      const ciService = get(deployConfig, `ciServices['${ciServiceName}']`);
+      if (!ciService) {
+        console.error(`Not valid config for ciService: ${ciServiceName}`)
+        return nextJob();
+      }
+
+      const finalCIJob = combineCIJobConfigs(job, branch, deployConfig);
+      if (!finalCIJob) {
+        console.error(`Not valid config for ciJob: ${job.name}`)
+        return nextJob();
+      }
+
+      callCIDriver(ciService.driver, ciService.settings, finalCIJob.jobName, finalCIJob.params, nextJob);
     }, cb);
   }
 
-  function getCIServiceName(job, repoDeployConfig, localConfig) {
-    const repoCIServiceName = get(repoDeployConfig, `ciJobs['${job.name}'].ciService`);
-    const localCIServiceName = get(localConfig, `deploy.ciJobs['${job.name}'].ciService`);
-    return repoCIServiceName || localCIServiceName;
-  }
-
-  function combineCIServiceConfigs(ciService, repoDeployConfig, localConfig) {
-    const repoSettings = get(repoDeployConfig, `ciServices['${ciService}']`);
-    const localSettings = get(localConfig, `deploy.ciServices['${ciService}']`);
-    return defaultsDeep({}, repoSettings, localSettings);
-  }
-
-  function combineCIJobConfigs(job, branch, repoDeployConfig, localConfig) {
+  function combineCIJobConfigs(job, branch, repoDeployConfig) {
     const repoCIJobConfig = get(repoDeployConfig, `ciJobs['${job.name}']`);
-    const localCIJobConfig = get(localConfig, `deploy.ciJobs['${job.name}']`);
-    const finalCIJobConfig = defaultsDeep({}, repoCIJobConfig, localCIJobConfig);
-    const params = applyBooleanDefaults(job.params, finalCIJobConfig.defaultParams);
+    if (!repoCIJobConfig) return;
 
-    if (finalCIJobConfig.servicesParam) {
-      params[finalCIJobConfig.servicesParam.paramName] = job.deployTo.join(finalCIJobConfig.servicesParam.separator);
+    const params = applyBooleanDefaults(job.params, repoCIJobConfig.defaultParams);
+
+    if (repoCIJobConfig.servicesParam) {
+      params[repoCIJobConfig.servicesParam.paramName] = job.deployTo.join(repoCIJobConfig.servicesParam.separator);
     }
 
-    if (finalCIJobConfig.sourceVersionParam) {
-      params[finalCIJobConfig.sourceVersionParam.paramName] = branch;
+    if (repoCIJobConfig.sourceVersionParam) {
+      params[repoCIJobConfig.sourceVersionParam.paramName] = branch;
     }
 
     return {
       params,
-      jobName: finalCIJobConfig.jobName
+      jobName: repoCIJobConfig.jobName
     };
   }
 
