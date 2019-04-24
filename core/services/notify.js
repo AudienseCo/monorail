@@ -14,6 +14,7 @@ module.exports = (templates, slack, config) => {
       const msg = template(reposInfo, channelInfo.labels);
       if (!msg) return next();
       // TODO: don't publish errors to #general channel either repos with no issues
+      // TODO: publish verbose errors in another channel
       slack.send(channelInfo.channel, msg, next);
     }, cb);
   };

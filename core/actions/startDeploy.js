@@ -43,7 +43,6 @@ module.exports = (
     function createTemporaryBranchesForEachRepo(reposInfo, cb) {
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) return nextRepo(null, repoInfo);
-        // TODO: combine with local config
         const devBranch = get(repoInfo, 'config.github.devBranch');
         createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
           if (err) {
