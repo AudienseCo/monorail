@@ -132,14 +132,6 @@
         ],
         "params": {
         }
-      },
-      "lambda-whatever": {
-        "ciJob": "lamdba",
-        "deployTo": [
-          "????"
-        ],
-        "params": {
-        }
       }
     }
   }
