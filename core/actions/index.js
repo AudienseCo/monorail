@@ -43,6 +43,7 @@ const ciDrivers = require('../../lib/ciDrivers');
 const callCIDriver = require('../services/callCIDriver')(ciDrivers);
 const build = require('../services/build')(callCIDriver, config);
 const getRepoConfig = require('../services/getRepoConfig')(github);
+const getConfig = require('../services/getConfig')(getRepoConfig, config, ciDrivers);
 const createDeployTemporaryBranch = require('../services/createDeployTemporaryBranch')(github, clock);
 const mergeDeployBranch = require('../services/mergeDeployBranch')(github);
 const deploy = require('../services/deploy')(
@@ -63,14 +64,14 @@ module.exports = {
     releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
   slackPreviewRelease: require('./slackPreviewRelease')(
-    getRepoConfig,
+    getConfig,
     getReleasePreview,
     notify,
     config.github.repos
   ),
   getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter),
   startDeploy: require('./startDeploy')(
-    getRepoConfig,
+    getConfig,
     createDeployTemporaryBranch,
     getReleasePreview,
     deploy,

@@ -2,7 +2,7 @@
 
 const { waterfall, mapSeries } = require('async');
 
-module.exports = function createPreviewRelease(getRepoConfig, getReleasePreview, notify, repos) {
+module.exports = function createPreviewRelease(getConfig, getReleasePreview, notify, repos) {
 
   return (cb) => {
     waterfall([
@@ -14,7 +14,7 @@ module.exports = function createPreviewRelease(getRepoConfig, getReleasePreview,
 
   function getConfigForEachRepo(repos, cb) {
     mapSeries(repos, (repo, nextRepo) => {
-      getRepoConfig(repo, (err, config) => {
+      getConfig(repo, (err, config) => {
         if (err) {
           console.error('Error getting repo config', repo, err);
           return nextRepo(null, { repo, failReason: 'INVALID_REPO_CONFIG' });
