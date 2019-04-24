@@ -80,7 +80,6 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
       'servicesParam.separator',
       'sourceVersionParam.paramName'
     ];
-    // TODO: ensure defaultParams is optional where used
     verifySettings(`${ciJob} ciJob`, ciJob, expectedSettings);
 
     if (!get(ciServices, ciJob.ciService)) {
@@ -103,7 +102,6 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
       'ciJob',
       'deployTo'
     ];
-    // TODO: ensure params is optional where used
     verifySettings(`${service} service`, service, expectedSettings);
 
     if (!get(ciJobs, service.ciJob)) {

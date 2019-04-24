@@ -67,6 +67,36 @@ describe('Build service', () => {
     });
   });
 
+  it('params and defaultParams are optional', (done) => {
+    const ciDrivers = createCIDriversDummy();
+    const callCIDriver = createCallCIDriver(ciDrivers);
+    const callCIDriverSpy = sinon.spy(callCIDriver);
+    const build = createBuild(callCIDriverSpy);
+
+    const branch = 'deploy-branch1';
+    const jobs = [
+      {
+        name: 'nodejs v8.6.0',
+        deployTo: ['task-as', 'globalreports-as']
+      }
+    ];
+    const deployConfig = cloneDeep(repoConfig.deploy);
+    delete deployConfig.ciJobs['nodejs v8.6.0'].defaultParams;
+
+    build(branch, jobs, deployConfig, (err) => {
+      should.not.exist(err);
+      callCIDriverSpy.calledOnce.should.be.ok();
+      callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
+      callCIDriverSpy.firstCall.args[1].should.be.eql(deployConfig.ciServices.jenkins_deploy.settings);
+      callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
+      callCIDriverSpy.firstCall.args[3].should.be.eql({
+        branch: 'deploy-branch1',
+        where_to_deploy: 'task-as,globalreports-as'
+      });
+      done();
+    });
+  });
+
   function createCIDriversDummy() {
     return {
       jenkins: (settings, jobName, params, cb) => cb(null, true)
