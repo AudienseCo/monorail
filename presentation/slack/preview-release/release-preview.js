@@ -14,7 +14,7 @@ module.exports = ({ repo, prIds, issues, deployInfo }, filterLabels, user) => {
     }
     return acc;
   }, []).join('\n');
-  if (formatedIssues.length === 0) return;
+  if (!formatedIssues) return;
 
   const formatedServices = deployInfo.jobs.map(job => `*${job.name}*: ${job.deployTo.join(', ')}`).join('\n');
 
