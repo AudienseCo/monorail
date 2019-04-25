@@ -111,15 +111,15 @@ module.exports = function(actions) {
   app.get('/deploy', (req, res) => {
     const showPreview = req.query.showPreview || false;
     const repos = req.query.repos || config.github.repos;
-    res.status(202).send('Acepted');
+    console.info('Deploy started');
     actions.startDeploy(repos, showPreview, (err) => {
       if (err) {
         console.error('Error', err);
-        return res.status(400).send(err);
       }
       console.info('Deploy finished');
     });
 
+    res.status(202).send('Acepted');
   });
 
 
