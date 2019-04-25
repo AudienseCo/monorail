@@ -119,7 +119,7 @@ module.exports = function(actions) {
       console.info('Deploy finished');
     });
 
-    res.status(202).send('Acepted');
+    res.status(202).send('Accepted');
   });
 
 
