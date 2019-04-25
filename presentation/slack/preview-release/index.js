@@ -9,6 +9,7 @@ module.exports = module.exports = (config) => {
     const user = get(config, 'github.user');
 
     const attachments = releasePreview.reduce((acc, repoPreview) => {
+      if (isFailedReleaseAndFilteredChannel(repoPreview.failReason, filterLabels)) return acc;
       const attachment = repoPreview.failReason
         ? ERROR_TEMPLATES[repoPreview.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
         : releasePreviewMsg(repoPreview, filterLabels, user);
@@ -29,4 +30,8 @@ module.exports = module.exports = (config) => {
       };
     }
   };
+
+  function isFailedReleaseAndFilteredChannel(failReason, filterLabels) {
+    return failReason && filterLabels && filterLabels.length > 0;
+  }
 };

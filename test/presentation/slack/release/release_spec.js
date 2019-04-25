@@ -1,6 +1,6 @@
 'use scrict';
 
-require('should');
+const should = require('should');
 const createReleaseTemplate = require('../../../../presentation/slack/release');
 
 describe('Release Slack Notification Template', () => {
@@ -149,6 +149,84 @@ describe('Release Slack Notification Template', () => {
         title_link: 'https://github.com/AudienseCo/repo1'
       }]
     });
+  });
+
+  it('should generate empty msg if there are no issues', () => {
+    const releaseTemplate = createReleaseTemplate({
+      github: {
+        user: 'AudienseCo'
+      },
+      slack: {
+        githubUsers: {
+          'username1': 'slack_username1',
+          'username3': 'slack_username3'
+        }
+      }
+    });
+
+    const releaseInfo = [{
+      repo: 'repo1',
+      tag: '123456789',
+      issues: [{
+        number: '1',
+        title: 'issue title 1',
+        participants: ['username1', 'username2', 'username3'],
+        labels: ['label1']
+      },{
+        number: '2',
+        title: 'issue title 2',
+        participants: ['username1', 'username2', 'username3'],
+        labels: []
+      }],
+      deployInfo: {
+        jobs: [{
+          name: 'nodejs v10',
+          deployTo: ['dashboard', 'tasks']
+        }]
+      }
+    }];
+    const filterLabels = ['notify-staff'];
+    const msg = releaseTemplate(releaseInfo, filterLabels);
+    should.not.exist(msg);
+  });
+
+  it('should generate empty msg if all releases failed', () => {
+    const releaseTemplate = createReleaseTemplate({
+      github: {
+        user: 'AudienseCo'
+      },
+      slack: {
+        githubUsers: {
+          'username1': 'slack_username1',
+          'username3': 'slack_username3'
+        }
+      }
+    });
+
+    const releaseInfo = [{
+      repo: 'repo1',
+      tag: '123456789',
+      issues: [{
+        number: '1',
+        title: 'issue title 1',
+        participants: ['username1', 'username2', 'username3'],
+        labels: []
+      }],
+      deployInfo: {
+        jobs: [{
+          name: 'nodejs v10',
+          deployTo: ['dashboard', 'tasks']
+        }]
+      }
+    },{
+      repo: 'repo2',
+      tag: '123456789',
+      failedReason: 'failed',
+      issues: []
+    }];
+    const filterLabels = ['notify-staff'];
+    const msg = releaseTemplate(releaseInfo, filterLabels);
+    should.not.exist(msg);
   });
 
 });
