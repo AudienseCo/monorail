@@ -9,7 +9,7 @@ const createDeployNotesService = require('../../../../../core/services/checkers/
 describe('Deploy notes subscriber', () => {
   function createDeployNotesCheckerDummy(result) {
     return {
-      checkPullRequest: (prInfo, cb) => {
+      checkPullRequest: (repo, prInfo, cb) => {
         cb(null, result);
       }
     };
