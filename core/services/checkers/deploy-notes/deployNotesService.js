@@ -7,7 +7,7 @@ module.exports = function createDeployNotesService(deployNotesChecker, github) {
   that.updatePullRequestCommit = (repo, prInfo) => {
     async.waterfall([
       function check(next) {
-        deployNotesChecker.checkPullRequest(prInfo, next);
+        deployNotesChecker.checkPullRequest(repo, prInfo, next);
       },
       function getPR(status, next) {
         github.getPullRequest(repo, prInfo.number, (err, pr) => {

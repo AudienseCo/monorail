@@ -17,7 +17,6 @@ module.exports = function createDeployNotesService(deployLabelsChecker, github) 
       function update(status, pr, next) {
         status.sha = pr.head.sha;
         status.repo = repo;
-        console.log('Updating Commit Status', status);
         github.updateCommitStatus(status, (err, result) => {
           if (err) console.log('Update commit state error', err);
           else console.log('Updated commit state');
