@@ -49,6 +49,7 @@ module.exports = function(eventEmitter, secret) {
       res.status(200).send('ok');
     }
     catch (ex) {
+      console.log('ghwebook public endpoint error', ex);
       res.status(500).send(ex);
     }
 
