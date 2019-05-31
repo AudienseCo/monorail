@@ -5,6 +5,35 @@ const createPreviewReleaseTemplate = require('../../../../presentation/slack/pre
 const previewReleaseTemplate = createPreviewReleaseTemplate({ github: { user: 'AudienseCo' } });
 
 describe('Preview Release Slack Notification Template', () => {
+  it('should generate templates for the same error and different repos correctly', () => {
+    const releaseInfo = [{
+      repo: 'repo3',
+      failReason: 'NO_CHANGES'
+    },
+    {
+      repo: 'repo4',
+      failReason: 'NO_CHANGES'
+    }];
+    const filterLabels = [];
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
+    msg.should.be.eql({
+      attachments: [{
+        text: 'PRs, services and issues that would be deployed with the next release...'
+      },{
+        text: 'Monorail will not deploy anything in the next 10 minutes as there have not been changes since the last deploy.',
+        color: '#439FE0',
+        title: 'repo3',
+        title_link: 'https://github.com/AudienseCo/repo3'
+      },
+      {
+        text: 'Monorail will not deploy anything in the next 10 minutes as there have not been changes since the last deploy.',
+        color: '#439FE0',
+        title: 'repo4',
+        title_link: 'https://github.com/AudienseCo/repo4'
+      }]
+    });
+  });
+
   it('should generate error templates correctly', () => {
     const releaseInfo = [{
       repo: 'repo1',

@@ -14,9 +14,10 @@ module.exports = module.exports = (config) => {
         ? ERROR_TEMPLATES[repoPreview.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
         : releasePreviewMsg(repoPreview, filterLabels, user);
       if (attachment) {
-        attachment.title = repoPreview.repo;
-        attachment.title_link = `https://github.com/${user}/${repoPreview.repo}`;
-        acc.push(attachment);
+        acc.push(Object.assign({}, attachment, {
+          title: repoPreview.repo,
+          title_link: `https://github.com/${user}/${repoPreview.repo}`
+        }));
       }
       return acc;
     }, []);
