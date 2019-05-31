@@ -16,9 +16,10 @@ module.exports = (config) => {
         ? ERROR_TEMPLATES[repoInfo.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
         : releaseMsg(repoInfo, filterLabels, user, githubToSlakUsernames);
       if (attachment) {
-        attachment.title = repoInfo.repo;
-        attachment.title_link = `https://github.com/${user}/${repoInfo.repo}`;
-        acc.push(attachment);
+        acc.push(Object.assign({}, attachment, {
+          title: repoInfo.repo,
+          title_link: `https://github.com/${user}/${repoInfo.repo}`
+        }));
       }
       return acc;
     }, []);
