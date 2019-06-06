@@ -35,7 +35,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       getRepoConfigSpy.calledTwice.should.be.ok();
       getRepoConfigSpy.getCall(0).calledWith('repo1').should.be.ok();
@@ -52,7 +52,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       createDeployTemporaryBranchSpy.calledTwice.should.be.ok();
       createDeployTemporaryBranchSpy.getCall(0).calledWith('repo1').should.be.ok();
@@ -69,7 +69,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       pullRequestsFromChangesSpy.calledTwice.should.be.ok();
       pullRequestsFromChangesSpy.getCall(0).calledWith({ repo: 'repo1', head: 'deploy-123' }).should.be.ok();
@@ -88,7 +88,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       deployInfoFromPullRequestsSpy.calledTwice.should.be.ok();
       deployInfoFromPullRequestsSpy.getCall(0).calledWith('repo1', [ '890' ]).should.be.ok();
@@ -108,7 +108,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       issueReleaseInfoListSpy.calledTwice.should.be.ok();
       issueReleaseInfoListSpy.getCall(0).calledWith('repo1', [ '890' ]).should.be.ok();
@@ -123,7 +123,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       notifyStub.calledOnce.should.be.ok();
       done();
@@ -137,7 +137,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = true;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       notifyStub.calledTwice.should.be.ok();
       done();
@@ -154,7 +154,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       cleanUpDeploySpy.calledTwice.should.be.ok();
       done();
@@ -167,7 +167,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       const firstRepo = notifyStub.firstCall.args[0][0];
       firstRepo.failReason.should.be.eql('NO_SERVICES');
@@ -183,7 +183,7 @@ describe('start deploy action', () => {
 
     const repos = ['repo1', 'repo2'];
     const showPreview = false;
-    startDeploy(repos, showPreview, (err) => {
+    startDeploy({ repos, showPreview }, (err) => {
       should.not.exist(err);
       const firstRepo = notifyStub.firstCall.args[0][0];
       firstRepo.failReason.should.be.eql('REPO_DEPLOY_FAILED');
@@ -258,7 +258,7 @@ describe('start deploy action', () => {
   }
 
   function createNotifyStub() {
-    const notify = (reposInfo, notificationName, cb) => cb();
+    const notify = (reposInfo, notificationName, verbose, cb) => cb();
     return sinon.spy(notify);
   }
 

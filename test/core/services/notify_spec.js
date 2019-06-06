@@ -11,7 +11,8 @@ describe('notify service', () => {
 
     const reposInfo = [];
     const notificationName = 'non existing name';
-    notify(reposInfo, notificationName, (err) => {
+    const verbose = true;
+    notify(reposInfo, notificationName, verbose, (err) => {
       should.exist(err);
       err.message.should.be.eql('No template defined for this notification name');
       done();
@@ -23,7 +24,8 @@ describe('notify service', () => {
 
     const reposInfo = [];
     const notificationName = 'preview';
-    notify(reposInfo, notificationName, (err) => {
+    const verbose = true;
+    notify(reposInfo, notificationName, verbose, (err) => {
       should.exist(err);
       err.message.should.be.eql('There are no settings for this notification name');
       done();
@@ -37,7 +39,8 @@ describe('notify service', () => {
 
     const reposInfo = [];
     const notificationName = 'preview';
-    notify(reposInfo, notificationName, (err) => {
+    const verbose = true;
+    notify(reposInfo, notificationName, verbose, (err) => {
       should.not.exist(err);
       slackSpy.calledTwice.should.be.ok();
       slackSpy.firstCall.args[0].should.be.eql('preview-channel1');
@@ -58,7 +61,8 @@ describe('notify service', () => {
 
     const reposInfo = [];
     const notificationName = 'preview';
-    notify(reposInfo, notificationName, (err) => {
+    const verbose = true;
+    notify(reposInfo, notificationName, verbose, (err) => {
       should.not.exist(err);
       slackSpy.calledOnce.should.be.ok();
       slackSpy.firstCall.args[0].should.be.eql('preview-channel2');

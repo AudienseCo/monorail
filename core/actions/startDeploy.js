@@ -11,12 +11,12 @@ module.exports = (
   cleanUpDeploy,
   notify
 ) => {
-  return (repos, showPreview, cb) => {
+  return ({ repos, showPreview, verbose = false }, cb) => {
     waterfall([
       (next)            => getConfigForEachRepo(repos, next),
       (reposInfo, next) => createTemporaryBranchesForEachRepo(reposInfo, next),
       (reposInfo, next) => getReleasePreview(reposInfo, next),
-      (reposInfo, next) => notifyPreviewSlackIfEnabled(showPreview, reposInfo, next),
+      (reposInfo, next) => notifyPreviewSlackIfEnabled(showPreview, reposInfo, verbose, next),
       (reposInfo, next) => deployEachRepo(reposInfo, next),
       (reposInfo, next) => notifyRelease(reposInfo, next),
     ], (err, reposInfo) => {
@@ -54,9 +54,9 @@ module.exports = (
       }, cb);
     }
 
-    function notifyPreviewSlackIfEnabled(showPreview, reposInfo, cb) {
+    function notifyPreviewSlackIfEnabled(showPreview, reposInfo, verbose, cb) {
       if (!showPreview) return cb(null, reposInfo);
-      notify(reposInfo, 'preview', err => cb(err, reposInfo));
+      notify(reposInfo, 'preview', verbose, err => cb(err, reposInfo));
     }
 
     function deployEachRepo(reposInfo, cb) {
@@ -79,7 +79,7 @@ module.exports = (
     }
 
     function notifyRelease(reposInfo, cb) {
-      notify(reposInfo, 'release', err => cb(err, reposInfo));
+      notify(reposInfo, 'release', verbose, err => cb(err, reposInfo));
     }
 
   };

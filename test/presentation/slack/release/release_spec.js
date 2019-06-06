@@ -25,7 +25,8 @@ describe('Release Slack Notification Template', () => {
       failReason: 'another error'
     }];
     const filterLabels = [];
-    const msg = releaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = releaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
         text: 'Monorail will not deploy anything because there is no pull request linked to services to deploy.',
@@ -84,7 +85,8 @@ describe('Release Slack Notification Template', () => {
       }
     }];
     const filterLabels = [];
-    const msg = releaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = releaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
         text:
@@ -135,7 +137,8 @@ describe('Release Slack Notification Template', () => {
       }
     }];
     const filterLabels = ['notify-staff'];
-    const msg = releaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = releaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
         text:
@@ -186,7 +189,8 @@ describe('Release Slack Notification Template', () => {
       }
     }];
     const filterLabels = ['notify-staff'];
-    const msg = releaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = releaseTemplate(releaseInfo, filterLabels, verbose);
     should.not.exist(msg);
   });
 
@@ -225,7 +229,33 @@ describe('Release Slack Notification Template', () => {
       issues: []
     }];
     const filterLabels = ['notify-staff'];
-    const msg = releaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = releaseTemplate(releaseInfo, filterLabels, verbose);
+    should.not.exist(msg);
+  });
+
+  it('should not generate template if there are no changes for any repo and verbose is false', () => {
+    const releaseTemplate = createReleaseTemplate({ github: { user: 'AudienseCo' } });
+
+    const releaseInfo = [{
+      repo: 'repo1',
+      failReason: 'NO_CHANGES'
+    },
+    {
+      repo: 'repo2',
+      failReason: 'NO_CHANGES'
+    },
+    {
+      repo: 'repo3',
+      failReason: 'NO_CHANGES'
+    },
+    {
+      repo: 'repo4',
+      failReason: 'NO_CHANGES'
+    }];
+    const filterLabels = [];
+    const verbose = false;
+    const msg = releaseTemplate(releaseInfo, filterLabels, verbose);
     should.not.exist(msg);
   });
 

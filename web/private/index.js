@@ -98,7 +98,8 @@ module.exports = function(actions) {
   });
 
   app.get('/slack-preview-release', (req, res) => {
-    actions.slackPreviewRelease((err) => {
+    const verbose = req.query.verbose || false;
+    actions.slackPreviewRelease({ verbose }, (err) => {
       if (err) {
         console.error('Error', err);
         return res.status(400).send(err);
@@ -111,8 +112,9 @@ module.exports = function(actions) {
   app.get('/deploy', (req, res) => {
     const showPreview = req.query.showPreview || false;
     const repos = req.query.repos || config.github.repos;
+    const verbose = req.query.verbose || false;
     console.info('Deploy started');
-    actions.startDeploy(repos, showPreview, (err) => {
+    actions.startDeploy({ repos, showPreview, verbose }, (err) => {
       if (err) {
         console.error('Error', err);
       }

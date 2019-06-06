@@ -1,6 +1,6 @@
 'use scrict';
 
-require('should');
+const should = require('should');
 const createPreviewReleaseTemplate = require('../../../../presentation/slack/preview-release');
 const previewReleaseTemplate = createPreviewReleaseTemplate({ github: { user: 'AudienseCo' } });
 
@@ -15,7 +15,8 @@ describe('Preview Release Slack Notification Template', () => {
       failReason: 'NO_CHANGES'
     }];
     const filterLabels = [];
-    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
         text: 'PRs, services and issues that would be deployed with the next release...'
@@ -52,7 +53,8 @@ describe('Preview Release Slack Notification Template', () => {
       failReason: 'another error'
     }];
     const filterLabels = [];
-    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
         text: 'PRs, services and issues that would be deployed with the next release...'
@@ -101,7 +103,8 @@ describe('Preview Release Slack Notification Template', () => {
       }
     }];
     const filterLabels = [];
-    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
         text: 'PRs, services and issues that would be deployed with the next release...'
@@ -144,7 +147,8 @@ describe('Preview Release Slack Notification Template', () => {
       }
     }];
     const filterLabels = ['notify-staff'];
-    const msg = previewReleaseTemplate(releaseInfo, filterLabels);
+    const verbose = true;
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
         text: 'PRs, services and issues that would be deployed with the next release...'
@@ -163,5 +167,29 @@ describe('Preview Release Slack Notification Template', () => {
       }]
     });
   });
+
+  it('should not generate template if there are no changes for any repo and verbose is false', () => {
+    const releaseInfo = [{
+      repo: 'repo1',
+      failReason: 'NO_CHANGES'
+    },
+    {
+      repo: 'repo2',
+      failReason: 'NO_CHANGES'
+    },
+    {
+      repo: 'repo3',
+      failReason: 'NO_CHANGES'
+    },
+    {
+      repo: 'repo4',
+      failReason: 'NO_CHANGES'
+    }];
+    const filterLabels = [];
+    const verbose = false;
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels, verbose);
+    should.not.exist(msg);
+  });
+
 
 });
