@@ -4,11 +4,11 @@ const { waterfall, mapSeries } = require('async');
 
 module.exports = function createPreviewRelease(getConfig, getReleasePreview, notify, repos) {
 
-  return (cb) => {
+  return ({ verbose = false }, cb) => {
     waterfall([
       (next)            => getConfigForEachRepo(repos, next),
       (reposInfo, next) => getReleasePreview(reposInfo, next),
-      (reposInfo, next) => notifyPreviewInSlack(reposInfo, next)
+      (reposInfo, next) => notifyPreviewInSlack(reposInfo, verbose, next)
     ], cb);
   };
 
@@ -24,7 +24,7 @@ module.exports = function createPreviewRelease(getConfig, getReleasePreview, not
     }, cb);
   }
 
-  function notifyPreviewInSlack(reposInfo, cb) {
-    notify(reposInfo, 'preview', cb);
+  function notifyPreviewInSlack(reposInfo, verbose, cb) {
+    notify(reposInfo, 'preview', verbose, cb);
   }
 };

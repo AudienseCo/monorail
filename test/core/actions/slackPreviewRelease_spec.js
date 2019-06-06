@@ -37,8 +37,8 @@ describe('slackPreviewRelease action', () => {
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-
-      previewRelease((err) => {
+      const options = {};
+      previewRelease(options, (err) => {
         should.not.exist(err);
         const reposInfo = notifyStub.firstCall.args[0];
         reposInfo[0].failReason.should.be.eql('NO_CHANGES');
@@ -53,8 +53,8 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-
-      previewRelease((err) => {
+      const options = {};
+      previewRelease(options, (err) => {
         should.not.exist(err);
         const reposInfo = notifyStub.firstCall.args[0];
         reposInfo[0].failReason.should.be.eql('DEPLOY_NOTES');
@@ -69,8 +69,8 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(2, null, []);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-
-      previewRelease((err) => {
+      const options = {};
+      previewRelease(options, (err) => {
         should.not.exist(err);
         const reposInfo = notifyStub.firstCall.args[0];
         reposInfo[0].failReason.should.be.eql('NO_SERVICES');
@@ -85,8 +85,8 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-
-      previewRelease((err) => {
+      const options = {};
+      previewRelease(options, (err) => {
         should.not.exist(err);
         const firstRepo = notifyStub.firstCall.args[0][0];
         firstRepo.repo.should.be.eql('socialbro');
@@ -172,7 +172,7 @@ describe('slackPreviewRelease action', () => {
     }
 
     function createNotifyStub() {
-      const notify = (reposInfo, notificationName, cb) => cb();
+      const notify = (reposInfo, notificationName, verbose, cb) => cb();
       return sinon.spy(notify);
     }
 
