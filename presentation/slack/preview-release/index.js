@@ -5,11 +5,13 @@ const ERROR_TEMPLATES = require('./errors');
 const releasePreviewMsg = require('./release-preview');
 
 module.exports = module.exports = (config) => {
-  return (releasePreview, filterLabels) => {
+  return (releasePreview, filterLabels, verbose) => {
     const user = get(config, 'github.user');
 
     const attachments = releasePreview.reduce((acc, repoPreview) => {
       if (isFailedReleaseAndFilteredChannel(repoPreview.failReason, filterLabels)) return acc;
+      if (thereIsNoChangesAndInSilentMode(repoPreview.failReason, verbose)) return acc;
+
       const attachment = repoPreview.failReason
         ? ERROR_TEMPLATES[repoPreview.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
         : releasePreviewMsg(repoPreview, filterLabels, user);
@@ -21,7 +23,6 @@ module.exports = module.exports = (config) => {
       }
       return acc;
     }, []);
-
     if (attachments.length > 0) {
       attachments.unshift({
         text: 'PRs, services and issues that would be deployed with the next release...'
@@ -34,5 +35,9 @@ module.exports = module.exports = (config) => {
 
   function isFailedReleaseAndFilteredChannel(failReason, filterLabels) {
     return failReason && filterLabels && filterLabels.length > 0;
+  }
+
+  function thereIsNoChangesAndInSilentMode(failReason, verbose) {
+    return failReason === 'NO_CHANGES' && !verbose;
   }
 };
