@@ -17,30 +17,6 @@ module.exports = function(actions) {
     res.status(200).send('pong!');
   });
 
-  app.post('/create-release', (req, res) => {
-    if (!req.body.tag)
-      return res.status(400).send({ error: 'You must include the "tag" parameter' });
-
-    if (!req.body.pr)
-      return res.status(400).send({ error: 'You must include the "pr" parameter' });
-
-    const tagName           = req.body.tag;
-    const pullRequestIdsStr = req.body.pr;
-    const pullRequestIds    = pullRequestIdsStr.split(',');
-    const repo              = req.body.repo || config.github.repo;
-
-    actions.createRelease(repo, tagName, pullRequestIds, (err, result) => {
-      if (err) return res.status(400).send(err);
-
-      const info = {
-        body: result
-      };
-
-      res.status(200).send(info);
-    });
-
-  });
-
   app.get('/preview-release', (req, res) => {
     if (!req.query.pr)
       return res.status(400).send({ error: 'You must include the "pr" parameter' });
