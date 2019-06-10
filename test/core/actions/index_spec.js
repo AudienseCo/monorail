@@ -10,10 +10,6 @@ describe('Actions builder', () => {
       actions.subscribeCheckersToEvents.should.be.a.Function();
     });
 
-    it('should have the "getPullRequestsDeployInfo method"', () => {
-      actions.getPullRequestsDeployInfo.should.be.a.Function();
-    });
-
     it('should have the "createRelease method"', () => {
       actions.createRelease.should.be.a.Function();
     });

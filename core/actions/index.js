@@ -59,7 +59,6 @@ const cleanUpDeploy = require('../services/cleanUpDeploy')(github);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
-  getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
   createRelease: require('./createRelease')(issueReleaseInfoList, releaseInfoLabel,
     releaseNotesFormatter, releaseService),
   previewRelease: require('./previewRelease')(github, boundIssueExtractor),
