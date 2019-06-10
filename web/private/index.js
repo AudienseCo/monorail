@@ -17,28 +17,6 @@ module.exports = function(actions) {
     res.status(200).send('pong!');
   });
 
-  app.get('/release-notes', (req, res) => {
-    if (!req.query.pr)
-      return res.status(400).send({ error: 'You must include the "pr" parameter' });
-
-    const pullRequestIdsStr = req.query.pr;
-    const pullRequestIds    = pullRequestIdsStr.split(',');
-    const filterLabelsStr   = req.query.labels || '';
-    const filterLabels      = filterLabelsStr.length ? filterLabelsStr.split(',') : [];
-    const repo = req.query.repo || config.github.repo;
-
-    actions.getReleaseNotes(repo, pullRequestIds, filterLabels, (err, result) => {
-      if (err) return res.status(400).send(err);
-
-      const info = {
-        body: result
-      };
-
-      res.status(200).send(info);
-    });
-
-  });
-
   app.get('/slack-preview-release', (req, res) => {
     const verbose = req.query.verbose || false;
     actions.slackPreviewRelease({ verbose }, (err) => {
