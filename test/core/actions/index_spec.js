@@ -10,10 +10,6 @@ describe('Actions builder', () => {
       actions.subscribeCheckersToEvents.should.be.a.Function();
     });
 
-    it('should have the "getReleaseNotes method"', () => {
-      actions.getReleaseNotes.should.be.a.Function();
-    });
-
     it('should have the "slackPreviewRelease method"', () => {
       actions.slackPreviewRelease.should.be.a.Function();
     });

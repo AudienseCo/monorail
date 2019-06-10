@@ -18,7 +18,6 @@ const issueReleaseInfo = require('../services/issueReleaseInfo')(github,
   boundIssueExtractor, issueParticipants);
 const releaseInfoLabel = require('../services/releaseInfoLabel')(github);
 const issueReleaseInfoList = require('../services/issueReleaseInfoList')(issueReleaseInfo);
-const releaseNotesFormatter = require('../services/releaseNotesFormatter')();
 
 const branchesConfig = {
   masterBranch: config.github.masterBranch,
@@ -65,7 +64,6 @@ module.exports = {
     notify,
     config.github.repos
   ),
-  getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter),
   startDeploy: require('./startDeploy')(
     getConfig,
     createDeployTemporaryBranch,
