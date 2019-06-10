@@ -17,26 +17,6 @@ module.exports = function(actions) {
     res.status(200).send('pong!');
   });
 
-  app.get('/preview-release', (req, res) => {
-    if (!req.query.pr)
-      return res.status(400).send({ error: 'You must include the "pr" parameter' });
-
-    const pullRequestIdsStr = req.query.pr;
-    const pullRequestIds    = pullRequestIdsStr.split(',');
-    const repo = req.query.repo || config.github.repo;
-
-    actions.previewRelease(repo, pullRequestIds, (err, result) => {
-      if (err) return res.status(400).send(err);
-
-      const info = result.map(issue => {
-        return `#${issue.number} ${issue.title}`;
-      });
-
-      res.status(200).send(info);
-    });
-
-  });
-
   app.get('/release-notes', (req, res) => {
     if (!req.query.pr)
       return res.status(400).send({ error: 'You must include the "pr" parameter' });
