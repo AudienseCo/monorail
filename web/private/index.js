@@ -4,6 +4,8 @@ const express = require('express');
 const morgan  = require('morgan');
 const bodyParser = require('body-parser');
 const config = require('../../config');
+const logger = require('../../lib/logger');
+
 
 module.exports = function(actions) {
   const app = express();
@@ -21,7 +23,7 @@ module.exports = function(actions) {
     const verbose = req.query.verbose || false;
     actions.slackPreviewRelease({ verbose }, (err) => {
       if (err) {
-        console.error('Error', err);
+        logger.error('Error', err);
         return res.status(400).send(err);
       }
       res.status(200).send('OK');
@@ -33,12 +35,12 @@ module.exports = function(actions) {
     const showPreview = req.query.showPreview || false;
     const repos = req.query.repos || config.github.repos;
     const verbose = req.query.verbose || false;
-    console.info('Deploy started');
+    logger.info('Deploy started');
     actions.startDeploy({ repos, showPreview, verbose }, (err) => {
       if (err) {
-        console.error('Error', err);
+        logger.error('Error', err);
       }
-      console.info('Deploy finished');
+      logger.info('Deploy finished');
     });
 
     res.status(202).send('Accepted');

@@ -1,6 +1,7 @@
 'use strict';
 
-var async = require('async');
+const async = require('async');
+const logger = require('../../lib/logger');
 
 module.exports = function(github, boundIssueExtractor, issueParticipants) {
   const that = {};
@@ -9,10 +10,12 @@ module.exports = function(github, boundIssueExtractor, issueParticipants) {
     async.waterfall([
 
       function getPRInfo(next) {
+        logger.debug('getPRInfo', { repo, prId });
         github.getIssue(repo, prId, next);
       },
 
       function getBoundIssue(prInfo, next) {
+        logger.debug('getBoundIssue', { repo, prId, prInfo });
         const boundIssue = boundIssueExtractor.extract(prInfo.body);
         if (!boundIssue) return next(null, [prInfo]);
 
@@ -22,6 +25,7 @@ module.exports = function(github, boundIssueExtractor, issueParticipants) {
       },
 
       function getParticipants(issueList, next) {
+        logger.debug('getParticipants', { repo, prId, issueList });
         issueParticipants.getParticipants(repo, issueList, (err, participants) => {
           next(err, issueList, participants);
         });

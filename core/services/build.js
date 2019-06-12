@@ -2,6 +2,7 @@
 
 const { eachSeries } = require('async');
 const { get, assignWith, cloneDeep, isNil, defaultsDeep } = require('lodash');
+const logger = require('../../lib/logger');
 
 module.exports = (callCIDriver) => {
   return (branch, jobs, deployConfig,  cb) => {
@@ -10,19 +11,19 @@ module.exports = (callCIDriver) => {
 
       const ciServiceName = get(deployConfig, `ciJobs['${job.name}'].ciService`);
       if (!ciServiceName) {
-        console.error(`Not valid config for job: ${job.name}`)
+        logger.error(`Not valid config for job: ${job.name}`)
         return nextJob();
       }
 
       const ciService = get(deployConfig, `ciServices['${ciServiceName}']`);
       if (!ciService) {
-        console.error(`Not valid config for ciService: ${ciServiceName}`)
+        logger.error(`Not valid config for ciService: ${ciServiceName}`)
         return nextJob();
       }
 
       const finalCIJob = combineCIJobConfigs(job, branch, deployConfig);
       if (!finalCIJob) {
-        console.error(`Not valid config for ciJob: ${job.name}`)
+        logger.error(`Not valid config for ciJob: ${job.name}`)
         return nextJob();
       }
 

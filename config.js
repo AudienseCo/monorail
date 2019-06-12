@@ -11,5 +11,8 @@ module.exports = {
   slack: {
     channel: 'monorail-tests',
     webhookUrl: process.env.SLACK_URL || ''
+  },
+  logger: {
+    level: 'error'
   }
 };

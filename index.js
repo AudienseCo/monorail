@@ -4,6 +4,7 @@ const EventEmitter        = require('events');
 const createPublicWebApp  = require('./web/public');
 const createPrivateWebApp = require('./web/private');
 const actions             = require('./core/actions');
+const logger              = require('./lib/logger');
 
 const emitter = new EventEmitter();
 const githubSecret = process.env.GH_SECRET;
@@ -15,12 +16,12 @@ actions.subscribeCheckersToEvents(emitter);
 
 const publicPort = process.env.PORT || 8080;
 publicWebApp.listen(publicPort, err => {
-  if (err) console.error('Error starting the public server', err);
-  else console.info(`Listening public server in ${publicPort}`);
+  if (err) logger.error('Error starting the public server', err);
+  else logger.info(`Listening public server in ${publicPort}`);
 });
 
 const privatePort = process.PRIVATE_PORT || 8484;
 privateWebApp.listen(privatePort, err => {
-  if (err) console.error('Error starting the private server', err);
-  else console.info(`Listening private server in ${privatePort}`);
+  if (err) logger.error('Error starting the private server', err);
+  else logger.info(`Listening private server in ${privatePort}`);
 });

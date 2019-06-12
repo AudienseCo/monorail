@@ -24,7 +24,8 @@
     "github": "^0.2.4",
     "jenkins": "^0.25.0",
     "lodash": "^4.17.11",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "mocha": "^5.2.0",

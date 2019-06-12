@@ -4,6 +4,7 @@ const express = require('express');
 const morgan  = require('morgan');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const logger = require('../../lib/logger');
 
 module.exports = function(eventEmitter, secret) {
   const app = express();
@@ -27,10 +28,10 @@ module.exports = function(eventEmitter, secret) {
       const signature = req.get('x-hub-signature');
       const computedSignature = signBlob(secret, buffer);
 
-      console.log('verified', signature, computedSignature);
+      logger.debug('verified', signature, computedSignature);
 
       if (signature !== computedSignature) {
-        console.warn('Recieved an invalid HMAC: calculated:' +
+        logger.error('Recieved an invalid HMAC: calculated:' +
           computedSignature + ' != recieved:' + signature);
         throw new Error('Invalid Signature');
       }
@@ -49,7 +50,7 @@ module.exports = function(eventEmitter, secret) {
       res.status(200).send('ok');
     }
     catch (ex) {
-      console.log('ghwebook public endpoint error', ex);
+      logger.error('ghwebook public endpoint error', ex, { payload: req.body.payload });
       res.status(500).send(ex);
     }
 
