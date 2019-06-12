@@ -30,6 +30,7 @@ module.exports = (
     });
 
     function getConfigForEachRepo(repos, cb) {
+      logger.debug('getConfigForEachRepo', { repos });
       mapSeries(repos, (repo, nextRepo) => {
         getConfig(repo, (err, config) => {
           if (err) {
@@ -42,6 +43,7 @@ module.exports = (
     }
 
     function createTemporaryBranchesForEachRepo(reposInfo, cb) {
+      logger.debug('createTemporaryBranchesForEachRepo', reposInfo);
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) return nextRepo(null, repoInfo);
         const devBranch = get(repoInfo, 'config.github.devBranch');
@@ -56,11 +58,13 @@ module.exports = (
     }
 
     function notifyPreviewSlackIfEnabled(showPreview, reposInfo, verbose, cb) {
+      logger.debug('notifyPreviewSlackIfEnabled', { showPreview, reposInfo, verbose });
       if (!showPreview) return cb(null, reposInfo);
       notify(reposInfo, 'preview', verbose, err => cb(err, reposInfo));
     }
 
     function deployEachRepo(reposInfo, cb) {
+      logger.debug('deployEachRepo', reposInfo);
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) {
           cleanUpDeploy(repoInfo, err => {
@@ -80,6 +84,7 @@ module.exports = (
     }
 
     function notifyRelease(reposInfo, cb) {
+      logger.debug('notifyRelease', reposInfo);
       notify(reposInfo, 'release', verbose, err => cb(err, reposInfo));
     }
 
