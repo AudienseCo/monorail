@@ -18,7 +18,6 @@ const issueReleaseInfo = require('../services/issueReleaseInfo')(github,
   boundIssueExtractor, issueParticipants);
 const releaseInfoLabel = require('../services/releaseInfoLabel')(github);
 const issueReleaseInfoList = require('../services/issueReleaseInfoList')(issueReleaseInfo);
-const releaseNotesFormatter = require('../services/releaseNotesFormatter')();
 
 const branchesConfig = {
   masterBranch: config.github.masterBranch,
@@ -59,17 +58,12 @@ const cleanUpDeploy = require('../services/cleanUpDeploy')(github);
 
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
-  getPullRequestsDeployInfo: require('./getPullRequestsDeployInfo')(pullRequestDeployInfo, config),
-  createRelease: require('./createRelease')(issueReleaseInfoList, releaseInfoLabel,
-    releaseNotesFormatter, releaseService),
-  previewRelease: require('./previewRelease')(github, boundIssueExtractor),
   slackPreviewRelease: require('./slackPreviewRelease')(
     getConfig,
     getReleasePreview,
     notify,
     config.github.repos
   ),
-  getReleaseNotes: require('./getReleaseNotes')(issueReleaseInfoList, releaseNotesFormatter),
   startDeploy: require('./startDeploy')(
     getConfig,
     createDeployTemporaryBranch,
