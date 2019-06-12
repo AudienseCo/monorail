@@ -14,6 +14,7 @@ module.exports = function createPreviewRelease(getConfig, getReleasePreview, not
   };
 
   function getConfigForEachRepo(repos, cb) {
+    logger.debug('getConfigForEachRepo', { repos });
     mapSeries(repos, (repo, nextRepo) => {
       getConfig(repo, (err, config) => {
         if (err) {
@@ -26,6 +27,7 @@ module.exports = function createPreviewRelease(getConfig, getReleasePreview, not
   }
 
   function notifyPreviewInSlack(reposInfo, verbose, cb) {
+    logger.debug('notifyPreviewInSlack', { reposInfo, verbose });
     notify(reposInfo, 'preview', verbose, cb);
   }
 };
