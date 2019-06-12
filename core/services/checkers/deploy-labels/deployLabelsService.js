@@ -1,10 +1,12 @@
 'use strict';
 const async = require('async');
+const logger = require('../../../../lib/logger');
 
 module.exports = function createDeployNotesService(deployLabelsChecker, github) {
   const that = {};
 
   that.updatePullRequestCommit = (repo, prInfo) => {
+    logger.debug('updatePullRequestCommit', { repo, prInfo });
     async.waterfall([
       function check(next) {
         deployLabelsChecker.checkPullRequest(repo, prInfo, next);
@@ -18,8 +20,8 @@ module.exports = function createDeployNotesService(deployLabelsChecker, github) 
         status.sha = pr.head.sha;
         status.repo = repo;
         github.updateCommitStatus(status, (err, result) => {
-          if (err) console.log('Update commit state error', err);
-          else console.log('Updated commit state');
+          if (err) logger.error('Update commit state error', err, { status, pr });
+          else logger.info('Updated commit state');
         });
       }
     ]);

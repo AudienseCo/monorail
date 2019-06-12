@@ -1,6 +1,7 @@
 'use strict';
 
 const { waterfall, mapSeries } = require('async');
+const logger = require('../../lib/logger');
 
 module.exports = function createPreviewRelease(getConfig, getReleasePreview, notify, repos) {
 
@@ -16,7 +17,7 @@ module.exports = function createPreviewRelease(getConfig, getReleasePreview, not
     mapSeries(repos, (repo, nextRepo) => {
       getConfig(repo, (err, config) => {
         if (err) {
-          console.error('Error getting repo config', repo, err);
+          logger.error('Error getting repo config', repo, err);
           return nextRepo(null, { repo, failReason: 'INVALID_REPO_CONFIG' });
         }
         nextRepo(null, { repo, config });
