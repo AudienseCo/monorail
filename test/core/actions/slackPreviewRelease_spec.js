@@ -37,7 +37,7 @@ describe('slackPreviewRelease action', () => {
       const githubDummy = createGithubDummy(prInfo, issueInfo, commitsInfo);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-      const options = {};
+      const options = { repos };
       previewRelease(options, (err) => {
         should.not.exist(err);
         const reposInfo = notifyStub.firstCall.args[0];
@@ -53,7 +53,7 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-      const options = {};
+      const options = { repos };
       previewRelease(options, (err) => {
         should.not.exist(err);
         const reposInfo = notifyStub.firstCall.args[0];
@@ -69,7 +69,7 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(2, null, []);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-      const options = {};
+      const options = { repos };
       previewRelease(options, (err) => {
         should.not.exist(err);
         const reposInfo = notifyStub.firstCall.args[0];
@@ -85,7 +85,7 @@ describe('slackPreviewRelease action', () => {
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
-      const options = {};
+      const options = { repos };
       previewRelease(options, (err) => {
         should.not.exist(err);
         const firstRepo = notifyStub.firstCall.args[0][0];
@@ -199,7 +199,7 @@ describe('slackPreviewRelease action', () => {
       const getReleasePreviewStub = getReleasePreview || createGetReleasePreview(pullRequestsFromChangesStub, deployInfoFromPullRequestsStub, issueReleaseInfoListStub);
       const notifyStub = notify || createNotifyStub();
 
-      return createPreviewRelease(getRepoConfigStub, getReleasePreviewStub, notifyStub, repos);
+      return createPreviewRelease(getRepoConfigStub, getReleasePreviewStub, notifyStub);
     }
 
 

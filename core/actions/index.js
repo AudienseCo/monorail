@@ -61,8 +61,7 @@ module.exports = {
   slackPreviewRelease: require('./slackPreviewRelease')(
     getConfig,
     getReleasePreview,
-    notify,
-    config.github.repos
+    notify
   ),
   startDeploy: require('./startDeploy')(
     getConfig,
