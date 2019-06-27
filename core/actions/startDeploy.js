@@ -5,6 +5,7 @@ const { get } = require('lodash');
 const logger = require('../../lib/logger');
 
 module.exports = (
+  deploysController,
   getConfig,
   createDeployTemporaryBranch,
   getReleasePreview,
@@ -13,6 +14,8 @@ module.exports = (
   notify
 ) => {
   return ({ repos, showPreview, verbose = false }, cb) => {
+    if (deploysController.isBusy()) return cb(new Error('DEPLOY_IN_PROGRESS'));
+
     waterfall([
       (next)            => getConfigForEachRepo(repos, next),
       (reposInfo, next) => createTemporaryBranchesForEachRepo(reposInfo, next),

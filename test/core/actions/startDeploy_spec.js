@@ -191,6 +191,19 @@ describe('start deploy action', () => {
     });
   });
 
+  it('it should avoid starting deploys if there is one already running', (done) => {
+    const deploysController = createDeploysController({ busy: true });
+    const startDeploy = createStartDeployWithStubs({ deploysController });
+
+    const repos = ['repo1', 'repo2'];
+    const showPreview = false;
+    startDeploy({ repos, showPreview }, (err) => {
+      should.exist(err);
+      err.message.should.be.eql('DEPLOY_IN_PROGRESS');
+      done();
+    });
+  });
+
   function createConfigDummy() {
     const servicesMap = {
       globalreports: {
@@ -262,7 +275,14 @@ describe('start deploy action', () => {
     return sinon.spy(notify);
   }
 
+  function createDeploysController({ busy = false }) {
+    return {
+      isBusy: () => busy
+    };
+  }
+
   function createStartDeployWithStubs({
+    deploysController,
     createDeployTemporaryBranch,
     getRepoConfig,
     pullRequestsFromChanges,
@@ -276,6 +296,7 @@ describe('start deploy action', () => {
     notify,
     github
   }) {
+    const deploysControllerStub = deploysController || createDeploysController({});
     const githubDummy = github || createGithubDummy();
     const getRepoConfigStub = getRepoConfig || createGetRepoConfig(githubDummy);
     const createDeployTemporaryBranchStub = createDeployTemporaryBranch || createCreateDeployTemporaryBranch(githubDummy, clock);
@@ -298,6 +319,7 @@ describe('start deploy action', () => {
     const notifyStub = notify || createNotifyStub();
 
     return createStartDeploy(
+      deploysControllerStub,
       getRepoConfigStub,
       createDeployTemporaryBranchStub,
       getReleasePreviewStub,
