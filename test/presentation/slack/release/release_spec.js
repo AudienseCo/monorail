@@ -29,25 +29,25 @@ describe('Release Slack Notification Template', () => {
     const msg = releaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
-        text: 'Monorail will not deploy anything because there is no pull request linked to services to deploy.',
+        text: 'Monorail didn\'t deploy anything because there is no pull request linked to services to deploy.',
         color: 'warning',
         title: 'repo1',
         title_link: 'https://github.com/AudienseCo/repo1'
       },
       {
-        text: 'Monorail will not deploy anything as there is one pull request with deploy notes label added.',
+        text: 'Monorail didn\'t deploy anything as there is one pull request with deploy notes label added.',
         color: 'danger',
         title: 'repo2',
         title_link: 'https://github.com/AudienseCo/repo2'
       },
       {
-        text: 'Monorail will not deploy anything as there are no changes since the last deploy.',
+        text: 'Monorail didn\'t deploy anything as there are no changes since the last deploy.',
         color: '#439FE0',
         title: 'repo3',
         title_link: 'https://github.com/AudienseCo/repo3'
       },
       {
-        text: 'Unhandled error. Monorail will not deploy anything.',
+        text: 'Unhandled error. Monorail didn\'t deploy anything.',
         color: 'danger',
         title: 'repo4',
         title_link: 'https://github.com/AudienseCo/repo4'
