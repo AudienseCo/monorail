@@ -60,7 +60,7 @@ describe('getRepoConfig service', () => {
   function createConfigDummy() {
     return {
       github: {
-        masterBranch: 'master'
+        devBranch: 'master'
       }
     };
   }

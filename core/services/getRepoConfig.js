@@ -4,7 +4,7 @@ const CONFIG_FILE_PATH = '.monorail';
 
 module.exports = (github, localConfig) => {
   return (repo, cb) => {
-    const masterBranch = get(localConfig, 'config.github.masterBranch');
+    const masterBranch = get(localConfig, 'config.github.devBranch');
     github.getContent(repo, CONFIG_FILE_PATH, masterBranch, (err, contentInfo) => {
       if (err) return cb(err);
       const content = parseContent(contentInfo);
