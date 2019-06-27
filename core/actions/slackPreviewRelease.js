@@ -3,9 +3,9 @@
 const { waterfall, mapSeries } = require('async');
 const logger = require('../../lib/logger');
 
-module.exports = function createPreviewRelease(getConfig, getReleasePreview, notify, repos) {
+module.exports = function createPreviewRelease(getConfig, getReleasePreview, notify) {
 
-  return ({ verbose = false }, cb) => {
+  return ({ repos, verbose = false }, cb) => {
     waterfall([
       (next)            => getConfigForEachRepo(repos, next),
       (reposInfo, next) => getReleasePreview(reposInfo, next),

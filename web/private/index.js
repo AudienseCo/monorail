@@ -21,7 +21,8 @@ module.exports = function(actions) {
 
   app.get('/slack-preview-release', (req, res) => {
     const verbose = req.query.verbose || false;
-    actions.slackPreviewRelease({ verbose }, (err) => {
+    const repos = req.query.repos || config.github.repos;
+    actions.slackPreviewRelease({ repos, verbose }, (err) => {
       if (err) {
         logger.error('Error', err);
         return res.status(400).send(err);
