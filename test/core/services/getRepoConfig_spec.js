@@ -8,9 +8,10 @@ const createGetRepoConfig = require('../../../core/services/getRepoConfig');
 describe('getRepoConfig service', () => {
   it('should return an error if any of the github operation fails', (done) => {
     const githubDummy = createGithubDummy(new Error('dummy error'));
-    const getRepoConfig = createGetRepoConfig(githubDummy);
-    const repo = '123';
+    const configDummy = createConfigDummy();
+    const getRepoConfig = createGetRepoConfig(githubDummy, configDummy);
 
+    const repo = '123';
     getRepoConfig(repo, (err) => {
       should.exist(err);
       done();
@@ -21,9 +22,10 @@ describe('getRepoConfig service', () => {
     const githubDummy = createGithubDummy(null, {
       content: 'byBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ=='
     });
-    const getRepoConfig = createGetRepoConfig(githubDummy);
-    const repo = '123';
+    const configDummy = createConfigDummy();
+    const getRepoConfig = createGetRepoConfig(githubDummy, configDummy);
 
+    const repo = '123';
     getRepoConfig(repo, (err, config) => {
       should.exist(err);
       err.message.should.be.eql('Invalid config file');
@@ -37,9 +39,10 @@ describe('getRepoConfig service', () => {
       content: 'eyAidGV4dCI6ICJoZWxsbyBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ=='
     });
     const githubSpy = sinon.spy(githubDummy, 'getContent');
-    const getRepoConfig = createGetRepoConfig(githubDummy);
-    const repo = '123';
+    const configDummy = createConfigDummy();
+    const getRepoConfig = createGetRepoConfig(githubDummy, configDummy);
 
+    const repo = '123';
     getRepoConfig(repo, (err, config) => {
       should.not.exist(err);
       githubSpy.withArgs(repo, '.monorail').calledOnce.should.be.ok();
@@ -50,7 +53,15 @@ describe('getRepoConfig service', () => {
 
   function createGithubDummy(err, res) {
     return {
-      getContent: (repo, path, cb) => cb(err, res)
+      getContent: (repo, path, ref, cb) => cb(err, res)
+    };
+  }
+
+  function createConfigDummy() {
+    return {
+      github: {
+        masterBranch: 'master'
+      }
     };
   }
 });

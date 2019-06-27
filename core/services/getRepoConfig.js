@@ -1,10 +1,11 @@
 'use strict';
-
+const { get } = require('lodash');
 const CONFIG_FILE_PATH = '.monorail';
 
-module.exports = (github) => {
+module.exports = (github, localConfig) => {
   return (repo, cb) => {
-    github.getContent(repo, CONFIG_FILE_PATH, (err, contentInfo) => {
+    const masterBranch = get(localConfig, 'config.github.masterBranch');
+    github.getContent(repo, CONFIG_FILE_PATH, masterBranch, (err, contentInfo) => {
       if (err) return cb(err);
       const content = parseContent(contentInfo);
       if (content) cb(null, content)

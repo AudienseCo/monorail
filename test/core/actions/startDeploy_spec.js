@@ -245,7 +245,7 @@ describe('start deploy action', () => {
         cb(err, res || defaultRes);
       },
       merge: (repo, base, head, cb) => cb(err, res),
-      getContent: (repo, path, cb) => cb(err, res || { content: 'eyAidGV4dCI6ICJoZWxsbyBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ==' })
+      getContent: (repo, path, ref, cb) => cb(err, res || { content: 'eyAidGV4dCI6ICJoZWxsbyBiYXNlNjQgZW5jb2RlZCB3b3JsZCIgfQ==' })
     };
   }
 
