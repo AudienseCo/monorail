@@ -14,7 +14,11 @@ module.exports = (
   notify
 ) => {
   return ({ repos, showPreview, verbose = false }, cb) => {
-    if (deploysController.isBusy()) return cb(new Error('DEPLOY_IN_PROGRESS'));
+    try {
+      deploysController.start();
+    } catch (e) {
+      return cb(e);
+    }
 
     waterfall([
       (next)            => getConfigForEachRepo(repos, next),
@@ -24,6 +28,7 @@ module.exports = (
       (reposInfo, next) => deployEachRepo(reposInfo, next),
       (reposInfo, next) => notifyRelease(reposInfo, next),
     ], (err, reposInfo) => {
+      deploysController.finish();
       if (err) {
         logger.error('Error deploying all repos', reposInfo, err);
         mapSeries(reposInfo, cleanUpDeploy, cb);

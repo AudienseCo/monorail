@@ -40,6 +40,9 @@ module.exports = function(actions) {
     actions.startDeploy({ repos, showPreview, verbose }, (err) => {
       if (err) {
         logger.error('Error', err);
+        if (err.message === 'DEPLOY_IN_PROGRESS') {
+          return res.status(429).send(err);
+        } else return res.status(400).send(err);
       }
       logger.info('Deploy finished');
     });
