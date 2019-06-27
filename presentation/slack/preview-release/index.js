@@ -10,7 +10,7 @@ module.exports = module.exports = (config) => {
 
     const attachments = releasePreview.reduce((acc, repoPreview) => {
       if (isFailedReleaseAndFilteredChannel(repoPreview.failReason, filterLabels)) return acc;
-      if (thereIsNoChangesAndInSilentMode(repoPreview.failReason, verbose)) return acc;
+      if (thereIsNothingToDeployAndInSilentMode(repoPreview.failReason, verbose)) return acc;
 
       const attachment = repoPreview.failReason
         ? ERROR_TEMPLATES[repoPreview.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
@@ -37,7 +37,7 @@ module.exports = module.exports = (config) => {
     return failReason && filterLabels && filterLabels.length > 0;
   }
 
-  function thereIsNoChangesAndInSilentMode(failReason, verbose) {
-    return failReason === 'NO_CHANGES' && !verbose;
+  function thereIsNothingToDeployAndInSilentMode(failReason, verbose) {
+    return (failReason === 'NO_CHANGES' || failReason === 'NO_SERVICES') && !verbose;
   }
 };

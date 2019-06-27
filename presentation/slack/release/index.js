@@ -12,7 +12,7 @@ module.exports = (config) => {
     // TODO: add a config setting to notify only if there are filterred issues
     const attachments = releaseInfo.reduce((acc, repoInfo) => {
       if (isFailedReleaseAndFilteredChannel(repoInfo.failReason, filterLabels)) return acc;
-      if (thereIsNoChangesAndInSilentMode(repoInfo.failReason, verbose)) return acc;
+      if (thereIsNothingToDeployAndInSilentMode(repoInfo.failReason, verbose)) return acc;
 
       const attachment = repoInfo.failReason
         ? ERROR_TEMPLATES[repoInfo.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
@@ -37,8 +37,8 @@ module.exports = (config) => {
     return failReason && filterLabels && filterLabels.length > 0;
   }
 
-  function thereIsNoChangesAndInSilentMode(failReason, verbose) {
-    return failReason === 'NO_CHANGES' && !verbose;
+  function thereIsNothingToDeployAndInSilentMode(failReason, verbose) {
+    return (failReason === 'NO_CHANGES' || failReason === 'NO_SERVICES') && !verbose;
   }
 
 };

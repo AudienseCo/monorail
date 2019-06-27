@@ -168,14 +168,14 @@ describe('Preview Release Slack Notification Template', () => {
     });
   });
 
-  it('should not generate template if there are no changes for any repo and verbose is false', () => {
+  it('should not generate template if there is nothing to deploy for any repo and verbose is false', () => {
     const releaseInfo = [{
       repo: 'repo1',
       failReason: 'NO_CHANGES'
     },
     {
       repo: 'repo2',
-      failReason: 'NO_CHANGES'
+      failReason: 'NO_SERVICES'
     },
     {
       repo: 'repo3',
