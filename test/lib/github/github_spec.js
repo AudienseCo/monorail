@@ -377,12 +377,13 @@ describe('Github API wrapper', () => {
 
       const repo = 'another';
       const path = '.monorail';
-      const head = 'deploy-123';
-      github.getContent(repo, path, (err, result) => {
+      const ref = 'deploy-123';
+      github.getContent(repo, path, ref, (err, result) => {
         spy.calledWith({
           user: 'AudienseCo',
           repo: 'another',
           path: '.monorail',
+          ref: 'deploy-123'
         }).should.be.ok();
         done();
       });
