@@ -2,7 +2,8 @@
 
 const should = require('should');
 const createPreviewReleaseTemplate = require('../../../../presentation/slack/preview-release');
-const previewReleaseTemplate = createPreviewReleaseTemplate({ github: { user: 'AudienseCo' } });
+const deploysController = require('../../../../core/services/deploysController')();
+const previewReleaseTemplate = createPreviewReleaseTemplate({ github: { user: 'AudienseCo' } }, deploysController);
 
 describe('Preview Release Slack Notification Template', () => {
   it('should generate templates for the same error and different repos correctly', () => {
@@ -191,5 +192,30 @@ describe('Preview Release Slack Notification Template', () => {
     should.not.exist(msg);
   });
 
+  it('should notify that there is a deploy in progress', () => {
+    deploysController.start();
+    const releaseInfo = [{
+      repo: 'repo1',
+      failReason: 'NO_SERVICES'
+    }];
+    const filterLabels = [];
+    const verbose = true;
+    const msg = previewReleaseTemplate(releaseInfo, filterLabels, verbose);
+    msg.should.be.eql({
+      attachments: [{
+        text: 'There is a deploy in progress.',
+        color: 'danger'
+      },{
+        text: 'PRs, services and issues that would be deployed with the next release...'
+      },{
+        text: 'Monorail will not deploy anything in the next 10 minutes because there is no pull request linked to services to deploy.',
+        color: 'warning',
+        title: 'repo1',
+        title_link: 'https://github.com/AudienseCo/repo1'
+      }]
+    });
+  });
+
+  beforeEach(() => deploysController.finish);
 
 });
