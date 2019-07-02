@@ -22,12 +22,14 @@ module.exports = function(actions) {
   app.get('/slack-preview-release', (req, res) => {
     const verbose = req.query.verbose || false;
     const repos = req.query.repos || config.github.repos;
-    actions.slackPreviewRelease({ repos, verbose }, (err) => {
+    actions.slackPreviewRelease({ repos, verbose }, (err, msgs) => {
       if (err) {
         logger.error('Error', err);
         return res.status(400).send(err);
       }
-      res.status(200).send('OK');
+      res.status(200).json({
+        slack_messages: msgs
+      });
     });
 
   });

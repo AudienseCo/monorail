@@ -10,11 +10,13 @@ module.exports = (templates, slack, config) => {
     const notificationSettings = get(config, `slack.notifications['${notificationName}']`);
     if (!notificationSettings) return cb(new Error('There are no settings for this notification name'));
 
+    const msgs = {};
     eachSeries(notificationSettings, (channelInfo, next) => {
       const msg = template(reposInfo, channelInfo.labels, verbose);
       if (!msg) return next();
       // TODO: publish verbose errors in another channel
+      msgs[channelInfo.channel] = msg;
       slack.send(channelInfo.channel, msg, next);
-    }, cb);
+    }, err => cb(err, msgs));
   };
 }
