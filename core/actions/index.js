@@ -8,6 +8,8 @@ const checkers = [
   require('../services/checkers/deploy-labels')
 ];
 
+const deploysController = require('../services/deploysController')();
+
 const github = require('../../lib/github');
 const slack = require('../../lib/slack');
 const pullRequestDeployInfo = require('../services/pullRequestDeployInfo')(github);
@@ -31,7 +33,7 @@ const getReleasePreview = require('../services/getReleasePreview')(
   issueReleaseInfoList
 );
 
-const slackTemplates = require('../../presentation/slack')(config);
+const slackTemplates = require('../../presentation/slack')(config, deploysController);
 const notify = require('../services/notify')(slackTemplates, slack, config);
 
 const clock = require('../../lib/clock')();
@@ -55,7 +57,6 @@ const deploy = require('../services/deploy')(
 );
 const cleanUpDeploy = require('../services/cleanUpDeploy')(github);
 
-
 module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   slackPreviewRelease: require('./slackPreviewRelease')(
@@ -64,6 +65,7 @@ module.exports = {
     notify
   ),
   startDeploy: require('./startDeploy')(
+    deploysController,
     getConfig,
     createDeployTemporaryBranch,
     getReleasePreview,

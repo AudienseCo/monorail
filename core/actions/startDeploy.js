@@ -5,6 +5,7 @@ const { get } = require('lodash');
 const logger = require('../../lib/logger');
 
 module.exports = (
+  deploysController,
   getConfig,
   createDeployTemporaryBranch,
   getReleasePreview,
@@ -13,6 +14,12 @@ module.exports = (
   notify
 ) => {
   return ({ repos, showPreview, verbose = false }, cb) => {
+    try {
+      deploysController.start();
+    } catch (e) {
+      return cb(e);
+    }
+
     waterfall([
       (next)            => getConfigForEachRepo(repos, next),
       (reposInfo, next) => createTemporaryBranchesForEachRepo(reposInfo, next),
@@ -21,6 +28,7 @@ module.exports = (
       (reposInfo, next) => deployEachRepo(reposInfo, next),
       (reposInfo, next) => notifyRelease(reposInfo, next),
     ], (err, reposInfo) => {
+      deploysController.finish();
       if (err) {
         logger.error('Error deploying all repos', reposInfo, err);
         mapSeries(reposInfo, cleanUpDeploy, cb);

@@ -19,6 +19,7 @@ const createReleaseService = require('../../../core/services/releaseService');
 const createMergeDeployBranch = require('../../../core/services/mergeDeployBranch');
 const createDeploy = require('../../../core/services/deploy');
 const createCleanUpDeploy = require('../../../core/services/cleanUpDeploy');
+const createDeploysController = require('../../../core/services/deploysController');
 const createStartDeploy = require('../../../core/actions/startDeploy');
 
 describe('start deploy action', () => {
@@ -191,6 +192,34 @@ describe('start deploy action', () => {
     });
   });
 
+  it('it should avoid starting deploys if there is one already running', (done) => {
+    const deploysController = createDeploysController();
+    const startDeploy = createStartDeployWithStubs({ deploysController });
+    deploysController.start();
+
+    const repos = ['repo1', 'repo2'];
+    const showPreview = false;
+    startDeploy({ repos, showPreview }, (err) => {
+      should.exist(err);
+      err.message.should.be.eql('DEPLOY_IN_PROGRESS');
+      done();
+    });
+  });
+
+  it('it should allow starting deploys after finishing another one', (done) => {
+    const deploysController = createDeploysController();
+    const startDeploy = createStartDeployWithStubs({ deploysController });
+    const repos = ['repo1', 'repo2'];
+    const showPreview = false;
+    startDeploy({ repos, showPreview }, (err) => {
+      should.not.exist(err);
+      startDeploy({ repos, showPreview }, (err) => {
+        should.not.exist(err);
+        done();
+      });
+    });
+  });
+
   function createConfigDummy() {
     const servicesMap = {
       globalreports: {
@@ -263,6 +292,7 @@ describe('start deploy action', () => {
   }
 
   function createStartDeployWithStubs({
+    deploysController,
     createDeployTemporaryBranch,
     getRepoConfig,
     pullRequestsFromChanges,
@@ -276,6 +306,7 @@ describe('start deploy action', () => {
     notify,
     github
   }) {
+    const deploysControllerStub = deploysController || createDeploysController();
     const githubDummy = github || createGithubDummy();
     const getRepoConfigStub = getRepoConfig || createGetRepoConfig(githubDummy);
     const createDeployTemporaryBranchStub = createDeployTemporaryBranch || createCreateDeployTemporaryBranch(githubDummy, clock);
@@ -298,6 +329,7 @@ describe('start deploy action', () => {
     const notifyStub = notify || createNotifyStub();
 
     return createStartDeploy(
+      deploysControllerStub,
       getRepoConfigStub,
       createDeployTemporaryBranchStub,
       getReleasePreviewStub,
