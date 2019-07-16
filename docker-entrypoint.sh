@@ -8,8 +8,8 @@ file_env() {
 
 	if [ -r "${fileVar}" ]; then
 		val="$(cat "${fileVar}")"
+		export "$var"="$val"
 	fi
-	export "$var"="$val"
 	unset "$fileVar"
 }
 
