@@ -8,5 +8,14 @@ services:
     environment:
       PORT: 8080
       PRIVATE_PORT: 8484
+      GH_SECRET: "${GH_SECRET}"
+      GH_TOKEN: "${GH_TOKEN}"
+      SLACK_URL: "${SLACK_URL}"
     volumes:
       - ./local-config:/app/config/
+
+  monorail-test:
+    build: .
+    volumes:
+      - ./local-config:/app/config/
+    command: npm run test
