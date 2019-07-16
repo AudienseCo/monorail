@@ -1,0 +1,12 @@
+version: '3'
+services:
+  monorail:
+    build: .
+    ports:
+      - "8080:8080"
+      - "8484:8484"
+    environment:
+      PORT: 8080
+      PRIVATE_PORT: 8484
+    volumes:
+      - ./local-config:/app/config/
