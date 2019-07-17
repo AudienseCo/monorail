@@ -23,7 +23,7 @@ You can set them in the file `.env` in order to be automatically used by docker-
 ```
 GH_SECRET=yourSecret
 GH_TOKEN=yourToken
-SLACK_URL=https://yourSlackURL
+SLACK_URL=https://hooks.slack.com/services/yourToken
 ```
 
 To run the monorail service execute:
