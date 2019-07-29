@@ -27,12 +27,7 @@ module.exports = module.exports = (config, deploysController) => {
       attachments.unshift({
         text: 'PRs, services and issues that would be deployed with the next release...'
       });
-      if (deploysController.isBusy()) {
-        attachments.unshift({
-          text: 'There is a deploy in progress.',
-          color: 'danger'
-        });
-      }
+
       return {
         attachments
       };

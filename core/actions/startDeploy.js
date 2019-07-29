@@ -17,6 +17,9 @@ module.exports = (
     try {
       deploysController.start();
     } catch (e) {
+      notify(repos, 'deployInProgress', verbose, err => {
+        logger.error("Already deploying error", repos, err);
+      });
       return cb(e);
     }
 
