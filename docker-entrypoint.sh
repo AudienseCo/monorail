@@ -8,9 +8,9 @@ file_env() {
 
 	if [ -r "${fileVar}" ]; then
 		val="$(cat "${fileVar}")"
+		export "$var"="$val"
+		unset "$fileVar"
 	fi
-	export "$var"="$val"
-	unset "$fileVar"
 }
 
 if [ "$1" = 'node' ]; then
@@ -18,8 +18,7 @@ if [ "$1" = 'node' ]; then
     file_env 'GH_TOKEN'
     file_env 'SLACK_URL'
 else
-    echo "Not running node code, exiting..."
-    exit 1
+    echo "WARN: Not running node code, not loading SECRET files."
 fi
 
 exec "$@"
