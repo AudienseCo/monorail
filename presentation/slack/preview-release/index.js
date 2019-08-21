@@ -4,7 +4,7 @@ const { get } = require('lodash') ;
 const ERROR_TEMPLATES = require('./errors');
 const releasePreviewMsg = require('./release-preview');
 
-module.exports = module.exports = (config, deploysController) => {
+module.exports = module.exports = (config) => {
   return (releasePreview, filterLabels, verbose) => {
     const user = get(config, 'github.user');
 

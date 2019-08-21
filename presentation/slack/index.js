@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = (config, deploysController) => ({
-  deployInProgress: require('./deploy-in-progress')(config, deploysController),
-  preview: require('./preview-release')(config, deploysController),
+module.exports = (config) => ({
+  deployInProgress: require('./deploy-in-progress')(config),
+  preview: require('./preview-release')(config),
   release: require('./release')(config)
 });
