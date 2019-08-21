@@ -20,7 +20,7 @@ module.exports = (
       logger.error("Already deploying error", repos, e);
       notify(repos, 'deployInProgress', verbose, err => {
         if (err) logger.error("Error notifying slack", repos, err);
-        return cb(e);
+        return cb(e, repos);
       });
       return;
     }

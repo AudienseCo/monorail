@@ -47,11 +47,10 @@ module.exports = function(actions) {
         } else return res.status(400).send(err);
       }
       logger.info('Deploy finished');
+      res.status(202).send('Accepted');
     });
 
-    res.status(202).send('Accepted');
   });
-
 
   return app;
 };
