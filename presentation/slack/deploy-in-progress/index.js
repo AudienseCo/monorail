@@ -1,10 +1,14 @@
 'use strict';
 
-module.exports = module.exports = (config) => {
+module.exports = (config) => {
   return () => {
     return {
-      text: 'There is a deploy in progress.',
-      color: 'danger'
+      attachments: [
+        {
+          text: ':no_entry: There is a deploy in progress.',
+          color: 'danger'
+        }
+      ]
     }
   }
 };

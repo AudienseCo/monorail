@@ -17,12 +17,11 @@ module.exports = (
     try {
       deploysController.start();
     } catch (e) {
-      logger.error("Already deploying error", repos, e);
+      logger.error('Already deploying error', repos, e);
       notify(repos, 'deployInProgress', verbose, err => {
-        if (err) logger.error("Error notifying slack", repos, err);
-        return cb(e, repos);
+        if (err) logger.error(`Error notifying slack: ${err.message}`, repos, err);
       });
-      return;
+      return cb(e);
     }
 
     waterfall([

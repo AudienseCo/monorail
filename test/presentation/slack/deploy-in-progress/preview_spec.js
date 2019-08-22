@@ -12,8 +12,12 @@ describe('Deploy In Progress Slack Notification Template', () => {
     const verbose = true;
     const msg = deployInProgressTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
-      text: 'There is a deploy in progress.',
-      color: 'danger'
+      attachments: [
+        {
+          text: ':no_entry: There is a deploy in progress.',
+          color: 'danger'
+        }
+      ]
     });
   });
 
