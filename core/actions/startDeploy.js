@@ -17,7 +17,7 @@ module.exports = (
     try {
       deploysController.start();
     } catch (deployError) {
-      logger.error('Already deploying error', repos, e);
+      logger.error('Already deploying error', repos, deployError);
       notify(repos, 'deployInProgress', verbose, slackError => {
         if (slackError) logger.error(`Error notifying slack: ${err.message}`, repos, slackError);
       });
