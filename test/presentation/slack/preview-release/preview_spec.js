@@ -192,7 +192,7 @@ describe('Preview Release Slack Notification Template', () => {
     should.not.exist(msg);
   });
 
-  it('should notify that there is a deploy in progress', () => {
+  it('should not notify nothing about a deploy in progress', () => {
     deploysController.start();
     const releaseInfo = [{
       repo: 'repo1',
@@ -203,9 +203,6 @@ describe('Preview Release Slack Notification Template', () => {
     const msg = previewReleaseTemplate(releaseInfo, filterLabels, verbose);
     msg.should.be.eql({
       attachments: [{
-        text: 'There is a deploy in progress.',
-        color: 'danger'
-      },{
         text: 'PRs, services and issues that would be deployed with the next release...'
       },{
         text: 'Monorail will not deploy anything in the next 10 minutes because there is no pull request linked to services to deploy.',

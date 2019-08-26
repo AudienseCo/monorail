@@ -33,7 +33,7 @@ const getReleasePreview = require('../services/getReleasePreview')(
   issueReleaseInfoList
 );
 
-const slackTemplates = require('../../presentation/slack')(config, deploysController);
+const slackTemplates = require('../../presentation/slack')(config);
 const notify = require('../services/notify')(slackTemplates, slack, config);
 
 const clock = require('../../lib/clock')();
