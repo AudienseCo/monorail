@@ -1,7 +1,7 @@
 'use strict';
 
 const { eachSeries } = require('async');
-const { get, assignWith, cloneDeep, isNil, defaultsDeep } = require('lodash');
+const { set, get, assignWith, cloneDeep, isNil } = require('lodash');
 const logger = require('../../lib/logger');
 
 module.exports = (callCIDriver) => {
@@ -38,11 +38,11 @@ module.exports = (callCIDriver) => {
     const params = applyBooleanDefaults(job.params, repoCIJobConfig.defaultParams);
 
     if (repoCIJobConfig.servicesParam) {
-      params[repoCIJobConfig.servicesParam.paramName] = job.deployTo.join(repoCIJobConfig.servicesParam.separator);
+      set(params, repoCIJobConfig.servicesParam.paramName, job.deployTo.join(repoCIJobConfig.servicesParam.separator));
     }
 
     if (repoCIJobConfig.sourceVersionParam) {
-      params[repoCIJobConfig.sourceVersionParam.paramName] = branch;
+      set(params, repoCIJobConfig.sourceVersionParam.paramName, branch);
     }
 
     return {

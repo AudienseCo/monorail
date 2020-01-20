@@ -97,6 +97,46 @@ describe('Build service', () => {
     });
   });
 
+  it('overrides sourceVersion param', (done) => {
+    const ciDrivers = createCIDriversDummy();
+    const callCIDriver = createCallCIDriver(ciDrivers);
+    const callCIDriverSpy = sinon.spy(callCIDriver);
+    const build = createBuild(callCIDriverSpy);
+
+    const branch = 'deploy-branch1';
+    const jobs = [
+      {
+        name: 'nodejs v8.6.0',
+        deployTo: ['task-as', 'globalreports-as']
+      }
+    ];
+    const deployConfig = cloneDeep(repoConfig.deploy);
+    deployConfig.ciJobs['nodejs v8.6.0'].sourceVersionParam = {
+      paramName: 'environmentVariablesOverride[2].value'
+    };
+    deployConfig.ciJobs['nodejs v8.6.0'].defaultParams = {
+      environmentVariablesOverride: [
+        { name: 'SERVICE_GROUP', value: 'audiense' },
+        { name: 'SERVICE_NAME', value: 'fake-server02' },
+        { name: 'TF_VAR_image_tag', value: 'mastera2f1329a' }
+      ]
+    };
+
+    build(branch, jobs, deployConfig, (err) => {
+      should.not.exist(err);
+      callCIDriverSpy.calledOnce.should.be.ok();
+      callCIDriverSpy.firstCall.args[3].should.be.eql({
+        environmentVariablesOverride: [
+          { name: 'SERVICE_GROUP', value: 'audiense' },
+          { name: 'SERVICE_NAME', value: 'fake-server02' },
+          { name: 'TF_VAR_image_tag', value: 'deploy-branch1' }
+        ],
+        where_to_deploy: 'task-as,globalreports-as'
+      });
+      done();
+    });
+  });
+
   function createCIDriversDummy() {
     return {
       jenkins: (settings, jobName, params, cb) => cb(null, true)
