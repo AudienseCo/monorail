@@ -38,11 +38,17 @@ module.exports = (callCIDriver) => {
     const params = applyBooleanDefaults(job.params, repoCIJobConfig.defaultParams);
 
     if (repoCIJobConfig.servicesParam) {
-      set(params, repoCIJobConfig.servicesParam.paramName, job.deployTo.join(repoCIJobConfig.servicesParam.separator));
+      if (repoCIJobConfig.servicesParam.paramPath) {
+        set(params, repoCIJobConfig.servicesParam.paramPath, job.deployTo.join(repoCIJobConfig.servicesParam.separator));
+      }
+      else params[repoCIJobConfig.servicesParam.paramName] = job.deployTo.join(repoCIJobConfig.servicesParam.separator);
     }
 
     if (repoCIJobConfig.sourceVersionParam) {
-      set(params, repoCIJobConfig.sourceVersionParam.paramName, branch);
+      if (repoCIJobConfig.sourceVersionParam.paramPath) {
+        set(params, repoCIJobConfig.sourceVersionParam.paramPath, branch);
+      }
+      else params[repoCIJobConfig.sourceVersionParam.paramName] = branch;
     }
 
     return {

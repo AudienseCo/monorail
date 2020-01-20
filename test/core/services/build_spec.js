@@ -97,7 +97,7 @@ describe('Build service', () => {
     });
   });
 
-  it('overrides sourceVersion param', (done) => {
+  it('overrides sourceVersion param with path', (done) => {
     const ciDrivers = createCIDriversDummy();
     const callCIDriver = createCallCIDriver(ciDrivers);
     const callCIDriverSpy = sinon.spy(callCIDriver);
@@ -111,8 +111,9 @@ describe('Build service', () => {
       }
     ];
     const deployConfig = cloneDeep(repoConfig.deploy);
+    delete deployConfig.ciJobs['nodejs v8.6.0'].sourceVersionParam.paramName;
     deployConfig.ciJobs['nodejs v8.6.0'].sourceVersionParam = {
-      paramName: 'environmentVariablesOverride[2].value'
+      paramPath: 'environmentVariablesOverride[2].value'
     };
     deployConfig.ciJobs['nodejs v8.6.0'].defaultParams = {
       environmentVariablesOverride: [
