@@ -14,7 +14,7 @@ describe('notify service', () => {
     const verbose = true;
     notify(reposInfo, notificationName, verbose, (err) => {
       should.exist(err);
-      err.message.should.be.eql('No template defined for this notification name');
+      err.message.should.be.eql(`No template defined for this notification name: ${notificationName}`);
       done();
     });
   });
@@ -27,7 +27,7 @@ describe('notify service', () => {
     const verbose = true;
     notify(reposInfo, notificationName, verbose, (err) => {
       should.exist(err);
-      err.message.should.be.eql('There are no settings for this notification name');
+      err.message.should.be.eql(`There are no settings for this notification name: ${notificationName}`);
       done();
     });
   });

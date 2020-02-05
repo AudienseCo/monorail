@@ -4,7 +4,7 @@ const { get } = require('lodash') ;
 const ERROR_TEMPLATES = require('./errors');
 const releasePreviewMsg = require('./release-preview');
 
-module.exports = module.exports = (config, deploysController) => {
+module.exports = module.exports = (config) => {
   return (releasePreview, filterLabels, verbose) => {
     const user = get(config, 'github.user');
 
@@ -27,12 +27,7 @@ module.exports = module.exports = (config, deploysController) => {
       attachments.unshift({
         text: 'PRs, services and issues that would be deployed with the next release...'
       });
-      if (deploysController.isBusy()) {
-        attachments.unshift({
-          text: 'There is a deploy in progress.',
-          color: 'danger'
-        });
-      }
+
       return {
         attachments
       };

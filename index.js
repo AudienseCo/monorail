@@ -20,7 +20,7 @@ publicWebApp.listen(publicPort, err => {
   else logger.info(`Listening public server in ${publicPort}`);
 });
 
-const privatePort = process.PRIVATE_PORT || 8484;
+const privatePort = process.env.PRIVATE_PORT || 8484;
 privateWebApp.listen(privatePort, err => {
   if (err) logger.error('Error starting the private server', err);
   else logger.info(`Listening private server in ${privatePort}`);

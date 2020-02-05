@@ -43,15 +43,14 @@ module.exports = function(actions) {
       if (err) {
         logger.error('Error', err);
         if (err.message === 'DEPLOY_IN_PROGRESS') {
-          return res.status(429).send(err);
-        } else return res.status(400).send(err);
+          return res.status(429).send('There is a deploy in progress');
+        } else return res.status(400).send('Something failed with the deployment');
       }
       logger.info('Deploy finished');
+      res.status(200).send('Ok');
     });
 
-    res.status(202).send('Accepted');
   });
-
 
   return app;
 };
