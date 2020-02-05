@@ -103,7 +103,7 @@ describe('Github API wrapper', () => {
           merge: (info, cb) => {
             cb(null, result);
           },
-          getContent: (info, cb) => {
+          getContents: (info, cb) => {
             cb(null, result);
           }
         },
@@ -373,7 +373,7 @@ describe('Github API wrapper', () => {
     it('get content', done => {
       const githubApiDummy = createGithubDummy({ id: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.repos, 'getContent');
+      const spy = sinon.spy(githubApiDummy.repos, 'getContents');
 
       const repo = 'another';
       const path = '.monorail';
