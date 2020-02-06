@@ -254,7 +254,7 @@ describe('getConfig service', () => {
           "ciService": "jenkins_deploy",
           "jobName": "monorail-tarball-ecs",
           "servicesParam": {
-            "paramName": "where_to_deploy",
+            "pathName": "where_to_deploy",
             "separator": ","
           },
           "sourceVersionParam": {
@@ -284,7 +284,7 @@ describe('getConfig service', () => {
           "ciService": "jenkins_deploy",
           "jobName": "monorail-tarball-ecs",
           "servicesParam": {
-            "paramName": "where_to_deploy",
+            "pathName": "where_to_deploy",
             "separator": ","
           }
         }

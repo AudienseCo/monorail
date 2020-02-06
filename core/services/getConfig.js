@@ -1,6 +1,7 @@
 'use strict';
 
 const { get, cloneDeep, defaultsDeep, forIn, keys } = require('lodash');
+const logger = require('../../lib/logger');
 
 module.exports = (getRepoConfig, localConfig, ciDrivers) => {
   return (repo, cb) => {
@@ -29,13 +30,13 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
 
   function verifyGithubSettings(github) {
     const expectedSettings = [
-      'repos',
-      'user',
-      'token',
-      'masterBranch',
-      'devBranch',
-      'deployedLabel',
-      'deployNotesLabel'
+      { paths: ['repos'] },
+      { paths: ['user'] },
+      { paths: ['token'] },
+      { paths: ['masterBranch'] },
+      { paths: ['devBranch'] },
+      { paths: ['deployedLabel'] },
+      { paths: ['deployNotesLabel'] }
     ];
     verifySettings('github', github, expectedSettings);
     return true;
@@ -51,8 +52,8 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
 
   function verifyCIServiceSettings(ciService) {
     const expectedSettings = [
-      'driver',
-      'settings'
+      { paths: ['driver'] },
+      { paths: ['settings'] }
     ];
     verifySettings(`${ciService} ciService`, ciService, expectedSettings);
 
@@ -74,11 +75,11 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
 
   function verifyCIJobSettings(ciServices, ciJob) {
     const expectedSettings = [
-      'ciService',
-      'jobName',
-      'servicesParam.paramName',
-      'servicesParam.separator',
-      'sourceVersionParam.paramName'
+      { paths: ['ciService'] },
+      { paths: ['jobName'] },
+      { paths: ['servicesParam.paramName', 'servicesParam.pathName'], optional: true },
+      { paths: ['servicesParam.separator'], optional: true},
+      { paths: ['sourceVersionParam.paramName', 'sourceVersionParam.pathName']}
     ];
     verifySettings(`${ciJob} ciJob`, ciJob, expectedSettings);
 
@@ -99,8 +100,8 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
 
   function verifyServiceSettings(ciJobs, service) {
     const expectedSettings = [
-      'ciJob',
-      'deployTo'
+      { paths: ['ciJob'] },
+      { paths: ['deployTo'] }
     ];
     verifySettings(`${service} service`, service, expectedSettings);
 
@@ -111,11 +112,19 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
 
   function verifySettings(settingName, settings, expectedSettings) {
     for (let setting of expectedSettings) {
-      if (!get(settings, setting)) {
+      const isMissing = !isAnyOfTheSettingPathsDefined(settings, setting.paths);
+      if (isMissing && setting.optional) {
+        logger.warn(`Optional "${setting}" ${settingName} setting is missing at either system of repository config`);
+      }
+      else if (isMissing) {
         throw Error(`"${setting}" ${settingName} setting is missing at either system of repository config`);
       }
     }
     return true;
+  }
+
+  function isAnyOfTheSettingPathsDefined(settings, expectedSettingPaths) {
+    return expectedSettingPaths.some(path => get(settings, path));
   }
 
 };
