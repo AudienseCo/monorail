@@ -114,7 +114,7 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
     for (let setting of expectedSettings) {
       const isMissing = !isAnyOfTheSettingPathsDefined(settings, setting.paths);
       if (isMissing && setting.optional) {
-        logger.warn(`Optional "${setting}" ${settingName} setting is missing at either system of repository config`);
+        logger.info(`Optional "${setting}" ${settingName} setting is missing at either system of repository config`);
       }
       else if (isMissing) {
         throw Error(`"${setting}" ${settingName} setting is missing at either system of repository config`);
