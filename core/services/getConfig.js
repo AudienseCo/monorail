@@ -55,7 +55,7 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
       { paths: ['driver'] },
       { paths: ['settings'] }
     ];
-    verifySettings(`${ciService} ciService`, ciService, expectedSettings);
+    verifySettings(`${ciService.driver} ciService`, ciService, expectedSettings);
 
     // TODO: verify jenkins specific settings
     if (!get(ciDrivers, ciService.driver)) {
@@ -77,11 +77,11 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
     const expectedSettings = [
       { paths: ['ciService'] },
       { paths: ['jobName'] },
-      { paths: ['servicesParam.paramName', 'servicesParam.pathName'], optional: true },
+      { paths: ['servicesParam.paramName', 'servicesParam.paramPath'], optional: true },
       { paths: ['servicesParam.separator'], optional: true},
-      { paths: ['sourceVersionParam.paramName', 'sourceVersionParam.pathName']}
+      { paths: ['sourceVersionParam.paramName', 'sourceVersionParam.paramPath'] }
     ];
-    verifySettings(`${ciJob} ciJob`, ciJob, expectedSettings);
+    verifySettings(`${ciJob.ciService} ciJob`, ciJob, expectedSettings);
 
     if (!get(ciServices, ciJob.ciService)) {
       throw Error(`No ciService defined for "${ciJob.ciService}"`);
@@ -103,7 +103,7 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
       { paths: ['ciJob'] },
       { paths: ['deployTo'] }
     ];
-    verifySettings(`${service} service`, service, expectedSettings);
+    verifySettings(`${service.ciJob} service`, service, expectedSettings);
 
     if (!get(ciJobs, service.ciJob)) {
       throw Error(`No ciJob defined for "${service.ciJob}"`);
@@ -117,7 +117,7 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
         logger.info(`Optional "${setting.paths.join(',')}" ${settingName} setting is missing at either system of repository config`);
       }
       else if (isMissing) {
-        logger.error(`Optional "${setting.paths.join(',')}" ${settingName} setting is missing at either system of repository config`);
+        logger.error(`"${setting.paths.join(',')}" ${settingName} setting is missing at either system of repository config`);
         throw Error(`"${setting.paths.join(',')}" ${settingName} setting is missing at either system of repository config`);
       }
     }

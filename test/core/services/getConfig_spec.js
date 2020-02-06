@@ -254,7 +254,7 @@ describe('getConfig service', () => {
           "ciService": "jenkins_deploy",
           "jobName": "monorail-tarball-ecs",
           "servicesParam": {
-            "pathName": "where_to_deploy",
+            "paramPath": "where_to_deploy",
             "separator": ","
           },
           "sourceVersionParam": {
@@ -284,7 +284,7 @@ describe('getConfig service', () => {
           "ciService": "jenkins_deploy",
           "jobName": "monorail-tarball-ecs",
           "servicesParam": {
-            "pathName": "where_to_deploy",
+            "paramPath": "where_to_deploy",
             "separator": ","
           }
         }
@@ -336,7 +336,7 @@ describe('getConfig service', () => {
           "ciService": "deploy_codebuild",
           "jobName": "terraform-service-deploy-staging",
           "sourceVersionParam": {
-            "pathName": "environmentVariablesOverride[1].value"
+            "paramPath": "environmentVariablesOverride[1].value"
           },
           "defaultParams": {
             "sourceVersion": "staging",
