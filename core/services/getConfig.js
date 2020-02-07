@@ -79,7 +79,12 @@ module.exports = (getRepoConfig, localConfig, ciDrivers) => {
       { paths: ['jobName'] },
       { paths: ['servicesParam.paramName', 'servicesParam.paramPath'], optional: true },
       { paths: ['servicesParam.separator'], optional: true},
-      { paths: ['sourceVersionParam.paramName', 'sourceVersionParam.paramPath'] }
+      { paths: [
+        'sourceVersionParam.paramName',
+        'sourceVersionParam.paramPath',
+        'shaParam.paramName',
+        'shaParam.paramPath'
+      ] }
     ];
     verifySettings(`${ciJob.ciService} ciJob`, ciJob, expectedSettings);
 

@@ -291,10 +291,17 @@ describe('start deploy action', () => {
     return sinon.spy(notify);
   }
 
+  function createGetBranchStatusStub(github) {
+    return (repo, branch, cb) => {
+      cb(null, 'sha', true);
+    }
+  }
+
   function createStartDeployWithStubs({
     deploysController,
     createDeployTemporaryBranch,
     getRepoConfig,
+    getBranchStatus,
     pullRequestsFromChanges,
     pullRequestDeployInfo,
     deployInfoFromPullRequests,
@@ -309,6 +316,7 @@ describe('start deploy action', () => {
     const deploysControllerStub = deploysController || createDeploysController();
     const githubDummy = github || createGithubDummy();
     const getRepoConfigStub = getRepoConfig || createGetRepoConfig(githubDummy);
+    const getBranchStatusStub = getBranchStatus || createGetBranchStatusStub(githubDummy);
     const createDeployTemporaryBranchStub = createDeployTemporaryBranch || createCreateDeployTemporaryBranch(githubDummy, clock);
     const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, branchesConfig);
     const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
@@ -331,6 +339,7 @@ describe('start deploy action', () => {
     return createStartDeploy(
       deploysControllerStub,
       getRepoConfigStub,
+      getBranchStatusStub,
       createDeployTemporaryBranchStub,
       getReleasePreviewStub,
       deployStub,

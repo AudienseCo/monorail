@@ -60,6 +60,10 @@ describe('Github API wrapper', () => {
       github.merge.should.be.a.Function();
     });
 
+    it('should have the "getCommitStatus" method', () => {
+      github.getCommitStatus.should.be.a.Function();
+    });
+
   });
 
   context('Behaviour', () => {
@@ -83,6 +87,9 @@ describe('Github API wrapper', () => {
         },
         statuses: {
           create: (options, cb) => {
+            cb(null, result);
+          },
+          getCombined: (options, cb) => {
             cb(null, result);
           }
         },
@@ -384,6 +391,23 @@ describe('Github API wrapper', () => {
           repo: 'another',
           path: '.monorail',
           ref: 'deploy-123'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('get commit status', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.statuses, 'getCombined');
+
+      const repo = 'another';
+      const sha = '123';
+      github.getCommitStatus(repo, sha, (err, result) => {
+        spy.calledWith({
+          user: 'AudienseCo',
+          repo: 'another',
+          sha: '123'
         }).should.be.ok();
         done();
       });

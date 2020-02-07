@@ -51,6 +51,13 @@ module.exports = (callCIDriver) => {
       else params[repoCIJobConfig.sourceVersionParam.paramName] = branch;
     }
 
+    if (repoCIJobConfig.shaParam) {
+      if (repoCIJobConfig.shaParam.paramPath) {
+        set(params, repoCIJobConfig.shaParam.paramPath, branch);
+      }
+      else params[repoCIJobConfig.shaParam.paramName] = branch;
+    }
+
     return {
       params,
       jobName: repoCIJobConfig.jobName
