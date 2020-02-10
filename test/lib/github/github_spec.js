@@ -65,57 +65,58 @@ describe('Github API wrapper', () => {
   context('Behaviour', () => {
 
     function createGithubDummy(result) {
+      const responsePromise = Promise.resolve({ data: result });
       return {
         authenticate: () => {},
         issues: {
           getIssueLabels: (issue, cb) => {
-            cb(null, result);
+            return responsePromise;
           },
-          getRepoIssue: (number, cb) => {
-            cb(null, result);
+          get: (number, cb) => {
+            return responsePromise;
           },
           getComments: (number, cb) => {
-            cb(null, result);
+            return responsePromise;
           },
           edit: (options, cb) => {
-            cb(null, result);
+            return responsePromise;
           }
         },
         statuses: {
           create: (options, cb) => {
-            cb(null, result);
+            return responsePromise;
           }
         },
         pullRequests: {
           get: (number, cb) => {
-            cb(null, result);
+            return responsePromise;
           }
         },
         releases: {
           createRelease: (info, cb) => {
-            cb(null, result);
+            return responsePromise;
           }
         },
         repos: {
           compareCommits: (info, cb) => {
-            cb(null, result);
+            return responsePromise;
           },
           merge: (info, cb) => {
-            cb(null, result);
+            return responsePromise;
           },
           getContents: (info, cb) => {
-            cb(null, result);
+            return responsePromise;
           }
         },
-        gitdata: {
-          getReference: (info, cb) => {
-            cb(null, result);
+        git: {
+          getRef: (info, cb) => {
+            return responsePromise;
           },
-          createReference: (info, cb) => {
-            cb(null, result);
+          createRef: (info, cb) => {
+            return responsePromise;
           },
-          deleteReference: (info, cb) => {
-            cb(null, result);
+          deleteRef: (info, cb) => {
+            return responsePromise;
           }
         }
       };
@@ -123,7 +124,7 @@ describe('Github API wrapper', () => {
 
     const config = {
       repo: 'socialbro',
-      user: 'AudienseCo'
+      owner: 'AudienseCo'
     };
 
     it('should get the labels for a specified issue', done => {
@@ -134,7 +135,7 @@ describe('Github API wrapper', () => {
       github.getIssueLabels(repo, 1234, (err, labels) => {
         labels.should.be.eql(['tag1', 'tag2']);
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           number: 1234
         }).should.be.ok();
@@ -157,7 +158,7 @@ describe('Github API wrapper', () => {
       github.updateCommitStatus(status, (err, result) => {
         result.context.should.be.eql('test');
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           sha: 'dummysha',
           state: 'success',
@@ -178,7 +179,7 @@ describe('Github API wrapper', () => {
       github.getPullRequest(repo, 1234, (err, result) => {
         result.number.should.be.eql(1234);
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           number: 1234
         }).should.be.ok();
@@ -189,14 +190,14 @@ describe('Github API wrapper', () => {
     it('should get an issue info', done => {
       const githubApiDummy = createGithubDummy({ number: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.issues, 'getRepoIssue');
+      const spy = sinon.spy(githubApiDummy.issues, 'get');
       const repo = 'another';
       github.getIssue(repo, 1234, (err, result) => {
         result.number.should.be.eql(1234);
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
-          number: 1234
+          issue_number: 1234
         }).should.be.ok();
         done();
       });
@@ -210,7 +211,7 @@ describe('Github API wrapper', () => {
       github.getIssueComments(repo, 1234, (err, result) => {
         result.length.should.be.eql(1);
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           number: 1234,
           per_page: 100
@@ -227,7 +228,7 @@ describe('Github API wrapper', () => {
       github.addIssueLabels(repo, 1234, ['foo'], (err, result) => {
         result.length.should.be.eql(1);
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           number: 1234,
           labels: ['foo']
@@ -251,7 +252,6 @@ describe('Github API wrapper', () => {
         result.id.should.be.eql(1234);
         spy.calledWith({
           owner: 'AudienseCo',
-          user: 'AudienseCo',
           repo: 'another',
           tag_name: 'v1.2.3',
           name: 'Release',
@@ -272,7 +272,7 @@ describe('Github API wrapper', () => {
       };
       github.compareCommits(msg, (err, result) => {
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           base: 'master',
           head: 'dev'
@@ -284,14 +284,14 @@ describe('Github API wrapper', () => {
     it('create branch', done => {
       const githubApiDummy = createGithubDummy({ id: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.gitdata, 'createReference');
+      const spy = sinon.spy(githubApiDummy.git, 'createRef');
 
       const repo = 'another';
       const branch = 'master';
       const sha = '123';
       github.createBranch(repo, branch, sha, (err, result) => {
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           ref: 'refs/heads/master',
           sha: '123'
@@ -303,13 +303,13 @@ describe('Github API wrapper', () => {
     it('get branch', done => {
       const githubApiDummy = createGithubDummy({ id: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.gitdata, 'getReference');
+      const spy = sinon.spy(githubApiDummy.git, 'getRef');
 
       const repo = 'another';
       const branch = 'master';
       github.getBranch(repo, branch, (err, result) => {
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           ref: 'heads/master',
         }).should.be.ok();
@@ -320,13 +320,13 @@ describe('Github API wrapper', () => {
     it('remove branch', done => {
       const githubApiDummy = createGithubDummy({ id: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.gitdata, 'deleteReference');
+      const spy = sinon.spy(githubApiDummy.git, 'deleteRef');
 
       const repo = 'another';
       const branch = 'master';
       github.removeBranch(repo, branch, (err, result) => {
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           ref: 'heads/master',
         }).should.be.ok();
@@ -337,13 +337,13 @@ describe('Github API wrapper', () => {
     it('remove tag', done => {
       const githubApiDummy = createGithubDummy({ id: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.gitdata, 'deleteReference');
+      const spy = sinon.spy(githubApiDummy.git, 'deleteRef');
 
       const repo = 'another';
       const tag = '1.5';
       github.removeTag(repo, tag, (err, result) => {
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           ref: 'tags/1.5'
         }).should.be.ok();
@@ -361,7 +361,7 @@ describe('Github API wrapper', () => {
       const head = 'deploy-123';
       github.merge(repo, base, head, (err, result) => {
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           base: 'master',
           head: 'deploy-123'
@@ -380,7 +380,7 @@ describe('Github API wrapper', () => {
       const ref = 'deploy-123';
       github.getContent(repo, path, ref, (err, result) => {
         spy.calledWith({
-          user: 'AudienseCo',
+          owner: 'AudienseCo',
           repo: 'another',
           path: '.monorail',
           ref: 'deploy-123'
