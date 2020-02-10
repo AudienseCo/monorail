@@ -69,31 +69,21 @@ describe('Github API wrapper', () => {
       return {
         authenticate: () => {},
         issues: {
-          getIssueLabels: (issue, cb) => {
+          listLabelsOnIssue: (issue, cb) => {
             return responsePromise;
           },
           get: (number, cb) => {
             return responsePromise;
           },
-          getComments: (number, cb) => {
+          listComments: (number, cb) => {
             return responsePromise;
           },
-          edit: (options, cb) => {
+          update: (options, cb) => {
             return responsePromise;
           }
         },
-        statuses: {
-          create: (options, cb) => {
-            return responsePromise;
-          }
-        },
-        pullRequests: {
+        pulls: {
           get: (number, cb) => {
-            return responsePromise;
-          }
-        },
-        releases: {
-          createRelease: (info, cb) => {
             return responsePromise;
           }
         },
@@ -105,6 +95,12 @@ describe('Github API wrapper', () => {
             return responsePromise;
           },
           getContents: (info, cb) => {
+            return responsePromise;
+          },
+          createStatus: (info, cb) => {
+            return responsePromise;
+          },
+          createRelease: (info, cb) => {
             return responsePromise;
           }
         },
@@ -130,14 +126,14 @@ describe('Github API wrapper', () => {
     it('should get the labels for a specified issue', done => {
       const githubApiDummy = createGithubDummy(['tag1', 'tag2']);
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.issues, 'getIssueLabels');
+      const spy = sinon.spy(githubApiDummy.issues, 'listLabelsOnIssue');
       const repo = 'another'
       github.getIssueLabels(repo, 1234, (err, labels) => {
         labels.should.be.eql(['tag1', 'tag2']);
         spy.calledWith({
           owner: 'AudienseCo',
           repo: 'another',
-          number: 1234
+          issue_number: 1234
         }).should.be.ok();
         done();
       });
@@ -154,7 +150,7 @@ describe('Github API wrapper', () => {
         target_url: 'htttp://foo/bar',
         repo: 'another'
       };
-      const spy = sinon.spy(githubApiDummy.statuses, 'create');
+      const spy = sinon.spy(githubApiDummy.repos, 'createStatus');
       github.updateCommitStatus(status, (err, result) => {
         result.context.should.be.eql('test');
         spy.calledWith({
@@ -174,14 +170,14 @@ describe('Github API wrapper', () => {
     it('should get a pull request info', done => {
       const githubApiDummy = createGithubDummy({ number: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.pullRequests, 'get');
+      const spy = sinon.spy(githubApiDummy.pulls, 'get');
       const repo = 'another';
       github.getPullRequest(repo, 1234, (err, result) => {
         result.number.should.be.eql(1234);
         spy.calledWith({
           owner: 'AudienseCo',
           repo: 'another',
-          number: 1234
+          pull_number: 1234
         }).should.be.ok();
         done();
       });
@@ -206,14 +202,14 @@ describe('Github API wrapper', () => {
     it('should get the comments for an issue', done => {
       const githubApiDummy = createGithubDummy([{ id: 1234 }]);
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.issues, 'getComments');
+      const spy = sinon.spy(githubApiDummy.issues, 'listComments');
       const repo = 'another';
       github.getIssueComments(repo, 1234, (err, result) => {
         result.length.should.be.eql(1);
         spy.calledWith({
           owner: 'AudienseCo',
           repo: 'another',
-          number: 1234,
+          issue_number: 1234,
           per_page: 100
         }).should.be.ok();
         done();
@@ -223,14 +219,14 @@ describe('Github API wrapper', () => {
     it('should add labels to an issue', done => {
       const githubApiDummy = createGithubDummy([{ name: 'foo' }]);
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.issues, 'edit');
+      const spy = sinon.spy(githubApiDummy.issues, 'update');
       const repo = 'another';
       github.addIssueLabels(repo, 1234, ['foo'], (err, result) => {
         result.length.should.be.eql(1);
         spy.calledWith({
           owner: 'AudienseCo',
           repo: 'another',
-          number: 1234,
+          issue_number: 1234,
           labels: ['foo']
         }).should.be.ok();
         done();
@@ -240,7 +236,7 @@ describe('Github API wrapper', () => {
     it('create a release', done => {
       const githubApiDummy = createGithubDummy({ id: 1234 });
       const github = createGithub(githubApiDummy, config);
-      const spy = sinon.spy(githubApiDummy.releases, 'createRelease');
+      const spy = sinon.spy(githubApiDummy.repos, 'createRelease');
       const releaseInfo = {
         tag_name: 'v1.2.3',
         name: 'Release',
