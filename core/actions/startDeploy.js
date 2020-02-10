@@ -62,8 +62,8 @@ module.exports = (
         const devBranch = get(repoInfo, 'config.github.devBranch');
         getBranchStatus(repoInfo.repo, devBranch, (err, sha, _success) => {
           if (err) {
-            logger.error('Error getting repo branch status', repo, devBranch, err);
-            return nextRepo(null, { repo, failReason: 'INVALID_REPO_STATUS' });
+            logger.error('Error getting repo branch status', repoInfo.repo, devBranch, err);
+            return nextRepo(null, { repo: repoInfo.repo, failReason: 'INVALID_REPO_STATUS' });
           }
           nextRepo(null, Object.assign({}, repoInfo, { sha }));
         });
