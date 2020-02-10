@@ -5,7 +5,7 @@ const { set, get, assignWith, cloneDeep, isNil } = require('lodash');
 const logger = require('../../lib/logger');
 
 module.exports = (callCIDriver) => {
-  return (branch, jobs, deployConfig,  cb) => {
+  return (branch, sha, jobs, deployConfig,  cb) => {
 
     eachSeries(jobs, (job, nextJob) => {
 
@@ -21,7 +21,7 @@ module.exports = (callCIDriver) => {
         return nextJob();
       }
 
-      const finalCIJob = combineCIJobConfigs(job, branch, deployConfig);
+      const finalCIJob = combineCIJobConfigs(job, branch, sha, deployConfig);
       if (!finalCIJob) {
         logger.error(`Not valid config for ciJob: ${job.name}`)
         return nextJob();
@@ -31,7 +31,7 @@ module.exports = (callCIDriver) => {
     }, cb);
   }
 
-  function combineCIJobConfigs(job, branch, repoDeployConfig) {
+  function combineCIJobConfigs(job, branch, sha, repoDeployConfig) {
     const repoCIJobConfig = get(repoDeployConfig, `ciJobs['${job.name}']`);
     if (!repoCIJobConfig) return;
 
@@ -53,9 +53,9 @@ module.exports = (callCIDriver) => {
 
     if (repoCIJobConfig.shaParam) {
       if (repoCIJobConfig.shaParam.paramPath) {
-        set(params, repoCIJobConfig.shaParam.paramPath, branch);
+        set(params, repoCIJobConfig.shaParam.paramPath, sha);
       }
-      else params[repoCIJobConfig.shaParam.paramName] = branch;
+      else params[repoCIJobConfig.shaParam.paramName] = sha;
     }
 
     return {
