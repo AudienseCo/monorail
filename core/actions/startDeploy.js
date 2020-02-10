@@ -74,8 +74,7 @@ module.exports = (
       logger.debug('createTemporaryBranchesForEachRepo', reposInfo);
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) return nextRepo(null, repoInfo);
-        const devBranch = get(repoInfo, 'config.github.devBranch');
-        createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
+        createDeployTemporaryBranch(repoInfo.repo, repoInfo.sha, (err, branch) => {
           if (err) {
             logger.error('Error creating temporary branch', repoInfo.repo, err);
             return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'BRANCH_CREATION_FAILED' }));
