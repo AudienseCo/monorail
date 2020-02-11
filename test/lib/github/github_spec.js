@@ -68,6 +68,10 @@ describe('Github API wrapper', () => {
       github.getChecksForRef.should.be.a.Function();
     });
 
+    it('should have the "getCommitStatus" method', () => {
+      github.getCommitStatus.should.be.a.Function();
+    });
+
   });
 
   context('Behaviour', () => {

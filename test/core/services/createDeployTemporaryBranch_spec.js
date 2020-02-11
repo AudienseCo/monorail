@@ -26,10 +26,10 @@ describe('createDeployTemporaryBranch service', () => {
     const githubSpy = sinon.spy(dummyGithub, 'createBranch');
     createDeployTemporaryBranch = createCreateDeployTemporaryBranch(dummyGithub, clock);
     const repo = '456';
-    const devBranch = 'dev';
+    const devBranch = 'devsha';
     createDeployTemporaryBranch(repo, devBranch, (err, branchName) => {
       should.not.exist(err);
-      githubSpy.withArgs(repo, 'deploy-123', 'abc').calledOnce.should.be.ok();
+      githubSpy.withArgs(repo, 'deploy-123', 'devsha').calledOnce.should.be.ok();
       branchName.should.be.eql('deploy-123');
       done();
     });
