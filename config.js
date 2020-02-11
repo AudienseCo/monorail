@@ -6,7 +6,8 @@ module.exports = {
     repos: [],
     token: process.env.GH_TOKEN,
     masterBranch: 'master',
-    devBranch: 'dev'
+    devBranch: 'dev',
+    pollingIntervalMS: 30000
   },
   slack: {
     channel: 'monorail-tests',

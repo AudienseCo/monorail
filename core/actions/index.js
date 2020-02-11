@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('../../config');
+const pollingIntervalMS = config.github.pollingIntervalMS || 30000;
 
 const checkers = [
   require('../services/checkers/qa-review'),
@@ -47,7 +48,7 @@ const getRepoConfig = require('../services/getRepoConfig')(github, config);
 const getConfig = require('../services/getConfig')(getRepoConfig, config, ciDrivers);
 const createDeployTemporaryBranch = require('../services/createDeployTemporaryBranch')(github, clock);
 const mergeDeployBranch = require('../services/mergeDeployBranch')(github);
-const getBranchStatus = require('../services/getBranchStatus')(github);
+const getBranchStatus = require('../services/getBranchStatus')(github, pollingIntervalMS);
 const deploy = require('../services/deploy')(
   getReleaseTag,
   build,

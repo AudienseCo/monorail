@@ -178,7 +178,7 @@ describe('slackPreviewRelease action', () => {
 
     function createGetBranchStatusStub(github) {
       return (repo, branch, cb) => {
-        cb(null, 'sha', true);
+        cb(null, 'sha');
       }
     }
 

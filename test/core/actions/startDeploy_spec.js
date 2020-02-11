@@ -293,7 +293,7 @@ describe('start deploy action', () => {
 
   function createGetBranchStatusStub(github) {
     return (repo, branch, cb) => {
-      cb(null, 'sha', true);
+      cb(null, 'sha');
     }
   }
 

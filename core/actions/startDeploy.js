@@ -60,7 +60,7 @@ module.exports = (
       logger.debug('getBranchStatusForEachRepo', { reposInfo });
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         const devBranch = get(repoInfo, 'config.github.devBranch');
-        getBranchStatus(repoInfo.repo, devBranch, (err, sha, _success) => {
+        getBranchStatus(repoInfo.repo, devBranch, (err, sha) => {
           if (err) {
             logger.error('Error getting repo branch status', repoInfo.repo, devBranch, err);
             return nextRepo(null, { repo: repoInfo.repo, failReason: 'INVALID_REPO_STATUS' });
