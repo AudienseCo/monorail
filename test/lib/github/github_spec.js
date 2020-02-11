@@ -60,6 +60,14 @@ describe('Github API wrapper', () => {
       github.merge.should.be.a.Function();
     });
 
+    it('should have the "getProtectedBranchRequiredStatusChecks" method', () => {
+      github.getProtectedBranchRequiredStatusChecks.should.be.a.Function();
+    });
+
+    it('should have the "getChecksForRef" method', () => {
+      github.getChecksForRef.should.be.a.Function();
+    });
+
   });
 
   context('Behaviour', () => {
@@ -102,6 +110,9 @@ describe('Github API wrapper', () => {
           },
           createRelease: (info, cb) => {
             return responsePromise;
+          },
+          getProtectedBranchRequiredStatusChecks: (repo, branch, cb) => {
+            return responsePromise;
           }
         },
         git: {
@@ -112,6 +123,11 @@ describe('Github API wrapper', () => {
             return responsePromise;
           },
           deleteRef: (info, cb) => {
+            return responsePromise;
+          }
+        },
+        checks: {
+          listForRef: (repo, ref, cb) => {
             return responsePromise;
           }
         }
@@ -380,6 +396,40 @@ describe('Github API wrapper', () => {
           repo: 'another',
           path: '.monorail',
           ref: 'deploy-123'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('get protected branch required status checks', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.repos, 'getProtectedBranchRequiredStatusChecks');
+
+      const repo = 'another';
+      const branch = 'staging';
+      github.getProtectedBranchRequiredStatusChecks(repo, branch, (err, result) => {
+        spy.calledWith({
+          owner: 'AudienseCo',
+          repo: 'another',
+          branch: 'staging'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('get checks for ref', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.checks, 'listForRef');
+
+      const repo = 'another';
+      const ref = 'staging';
+      github.getChecksForRef(repo, ref, (err, result) => {
+        spy.calledWith({
+          owner: 'AudienseCo',
+          repo: 'another',
+          ref: 'staging'
         }).should.be.ok();
         done();
       });
