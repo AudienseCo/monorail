@@ -16,6 +16,7 @@ describe('Build service', () => {
     const build = createBuild(callCIDriverSpy);
 
     const branch = 'deploy-branch1';
+    const sha = '123';
     const jobs = [
       {
         name: 'nodejs v8.6.0',
@@ -36,7 +37,7 @@ describe('Build service', () => {
       }
     ];
     const deployConfig = cloneDeep(repoConfig.deploy);
-    build(branch, jobs, deployConfig, (err) => {
+    build(branch, sha, jobs, deployConfig, (err) => {
       should.not.exist(err);
       callCIDriverSpy.calledTwice.should.be.ok();
       callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
@@ -74,6 +75,7 @@ describe('Build service', () => {
     const build = createBuild(callCIDriverSpy);
 
     const branch = 'deploy-branch1';
+    const sha = '123';
     const jobs = [
       {
         name: 'nodejs v8.6.0',
@@ -83,7 +85,7 @@ describe('Build service', () => {
     const deployConfig = cloneDeep(repoConfig.deploy);
     delete deployConfig.ciJobs['nodejs v8.6.0'].defaultParams;
 
-    build(branch, jobs, deployConfig, (err) => {
+    build(branch, sha, jobs, deployConfig, (err) => {
       should.not.exist(err);
       callCIDriverSpy.calledOnce.should.be.ok();
       callCIDriverSpy.firstCall.args[0].should.be.eql('jenkins');
@@ -91,6 +93,90 @@ describe('Build service', () => {
       callCIDriverSpy.firstCall.args[2].should.be.eql('monorail-tarball-ecs');
       callCIDriverSpy.firstCall.args[3].should.be.eql({
         branch: 'deploy-branch1',
+        where_to_deploy: 'task-as,globalreports-as'
+      });
+      done();
+    });
+  });
+
+  it('overrides sourceVersion param with path', (done) => {
+    const ciDrivers = createCIDriversDummy();
+    const callCIDriver = createCallCIDriver(ciDrivers);
+    const callCIDriverSpy = sinon.spy(callCIDriver);
+    const build = createBuild(callCIDriverSpy);
+
+    const branch = 'deploy-branch1';
+    const sha = '123';
+    const jobs = [
+      {
+        name: 'nodejs v8.6.0',
+        deployTo: ['task-as', 'globalreports-as']
+      }
+    ];
+    const deployConfig = cloneDeep(repoConfig.deploy);
+    delete deployConfig.ciJobs['nodejs v8.6.0'].sourceVersionParam.paramName;
+    deployConfig.ciJobs['nodejs v8.6.0'].sourceVersionParam = {
+      paramPath: 'environmentVariablesOverride[2].value'
+    };
+    deployConfig.ciJobs['nodejs v8.6.0'].defaultParams = {
+      environmentVariablesOverride: [
+        { name: 'SERVICE_GROUP', value: 'audiense' },
+        { name: 'SERVICE_NAME', value: 'fake-server02' },
+        { name: 'TF_VAR_image_tag', value: 'mastera2f1329a' }
+      ]
+    };
+
+    build(branch, sha, jobs, deployConfig, (err) => {
+      should.not.exist(err);
+      callCIDriverSpy.calledOnce.should.be.ok();
+      callCIDriverSpy.firstCall.args[3].should.be.eql({
+        environmentVariablesOverride: [
+          { name: 'SERVICE_GROUP', value: 'audiense' },
+          { name: 'SERVICE_NAME', value: 'fake-server02' },
+          { name: 'TF_VAR_image_tag', value: 'deploy-branch1' }
+        ],
+        where_to_deploy: 'task-as,globalreports-as'
+      });
+      done();
+    });
+  });
+
+  it('overrides sha param with path', (done) => {
+    const ciDrivers = createCIDriversDummy();
+    const callCIDriver = createCallCIDriver(ciDrivers);
+    const callCIDriverSpy = sinon.spy(callCIDriver);
+    const build = createBuild(callCIDriverSpy);
+
+    const branch = 'deploy-branch1';
+    const sha = '123';
+    const jobs = [
+      {
+        name: 'nodejs v8.6.0',
+        deployTo: ['task-as', 'globalreports-as']
+      }
+    ];
+    const deployConfig = cloneDeep(repoConfig.deploy);
+    delete deployConfig.ciJobs['nodejs v8.6.0'].sourceVersionParam;
+    deployConfig.ciJobs['nodejs v8.6.0'].shaParam = {
+      paramPath: 'environmentVariablesOverride[2].value'
+    };
+    deployConfig.ciJobs['nodejs v8.6.0'].defaultParams = {
+      environmentVariablesOverride: [
+        { name: 'SERVICE_GROUP', value: 'audiense' },
+        { name: 'SERVICE_NAME', value: 'fake-server02' },
+        { name: 'TF_VAR_image_tag', value: 'mastera2f1329a' }
+      ]
+    };
+
+    build(branch, sha, jobs, deployConfig, (err) => {
+      should.not.exist(err);
+      callCIDriverSpy.calledOnce.should.be.ok();
+      callCIDriverSpy.firstCall.args[3].should.be.eql({
+        environmentVariablesOverride: [
+          { name: 'SERVICE_GROUP', value: 'audiense' },
+          { name: 'SERVICE_NAME', value: 'fake-server02' },
+          { name: 'TF_VAR_image_tag', value: '123' }
+        ],
         where_to_deploy: 'task-as,globalreports-as'
       });
       done();

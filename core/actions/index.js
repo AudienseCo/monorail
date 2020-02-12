@@ -47,6 +47,7 @@ const getRepoConfig = require('../services/getRepoConfig')(github, config);
 const getConfig = require('../services/getConfig')(getRepoConfig, config, ciDrivers);
 const createDeployTemporaryBranch = require('../services/createDeployTemporaryBranch')(github, clock);
 const mergeDeployBranch = require('../services/mergeDeployBranch')(github);
+const getBranchStatus = require('../services/getBranchStatus')(github);
 const deploy = require('../services/deploy')(
   getReleaseTag,
   build,
@@ -61,12 +62,14 @@ module.exports = {
   subscribeCheckersToEvents: require('./subscribeCheckersToEvents')(checkers),
   slackPreviewRelease: require('./slackPreviewRelease')(
     getConfig,
+    getBranchStatus,
     getReleasePreview,
     notify
   ),
   startDeploy: require('./startDeploy')(
     deploysController,
     getConfig,
+    getBranchStatus,
     createDeployTemporaryBranch,
     getReleasePreview,
     deploy,

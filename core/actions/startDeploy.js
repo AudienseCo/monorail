@@ -7,6 +7,7 @@ const logger = require('../../lib/logger');
 module.exports = (
   deploysController,
   getConfig,
+  getBranchStatus,
   createDeployTemporaryBranch,
   getReleasePreview,
   deploy,
@@ -26,6 +27,7 @@ module.exports = (
 
     waterfall([
       (next)            => getConfigForEachRepo(repos, next),
+      (reposInfo, next) => getBranchStatusForEachRepo(reposInfo, next),
       (reposInfo, next) => createTemporaryBranchesForEachRepo(reposInfo, next),
       (reposInfo, next) => getReleasePreview(reposInfo, next),
       (reposInfo, next) => notifyPreviewSlackIfEnabled(showPreview, reposInfo, verbose, next),
@@ -54,12 +56,25 @@ module.exports = (
       }, cb);
     }
 
+    function getBranchStatusForEachRepo(reposInfo, cb) {
+      logger.debug('getBranchStatusForEachRepo', { reposInfo });
+      mapSeries(reposInfo, (repoInfo, nextRepo) => {
+        const devBranch = get(repoInfo, 'config.github.devBranch');
+        getBranchStatus(repoInfo.repo, devBranch, (err, sha, _success) => {
+          if (err) {
+            logger.error('Error getting repo branch status', repoInfo.repo, devBranch, err);
+            return nextRepo(null, { repo: repoInfo.repo, failReason: 'INVALID_REPO_STATUS' });
+          }
+          nextRepo(null, Object.assign({}, repoInfo, { sha }));
+        });
+      }, cb);
+    }
+
     function createTemporaryBranchesForEachRepo(reposInfo, cb) {
       logger.debug('createTemporaryBranchesForEachRepo', reposInfo);
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) return nextRepo(null, repoInfo);
-        const devBranch = get(repoInfo, 'config.github.devBranch');
-        createDeployTemporaryBranch(repoInfo.repo, devBranch, (err, branch) => {
+        createDeployTemporaryBranch(repoInfo.repo, repoInfo.sha, (err, branch) => {
           if (err) {
             logger.error('Error creating temporary branch', repoInfo.repo, err);
             return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'BRANCH_CREATION_FAILED' }));

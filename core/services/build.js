@@ -1,11 +1,11 @@
 'use strict';
 
 const { eachSeries } = require('async');
-const { get, assignWith, cloneDeep, isNil, defaultsDeep } = require('lodash');
+const { set, get, assignWith, cloneDeep, isNil } = require('lodash');
 const logger = require('../../lib/logger');
 
 module.exports = (callCIDriver) => {
-  return (branch, jobs, deployConfig,  cb) => {
+  return (branch, sha, jobs, deployConfig,  cb) => {
 
     eachSeries(jobs, (job, nextJob) => {
 
@@ -21,7 +21,7 @@ module.exports = (callCIDriver) => {
         return nextJob();
       }
 
-      const finalCIJob = combineCIJobConfigs(job, branch, deployConfig);
+      const finalCIJob = combineCIJobConfigs(job, branch, sha, deployConfig);
       if (!finalCIJob) {
         logger.error(`Not valid config for ciJob: ${job.name}`)
         return nextJob();
@@ -31,18 +31,31 @@ module.exports = (callCIDriver) => {
     }, cb);
   }
 
-  function combineCIJobConfigs(job, branch, repoDeployConfig) {
+  function combineCIJobConfigs(job, branch, sha, repoDeployConfig) {
     const repoCIJobConfig = get(repoDeployConfig, `ciJobs['${job.name}']`);
     if (!repoCIJobConfig) return;
 
     const params = applyBooleanDefaults(job.params, repoCIJobConfig.defaultParams);
 
     if (repoCIJobConfig.servicesParam) {
-      params[repoCIJobConfig.servicesParam.paramName] = job.deployTo.join(repoCIJobConfig.servicesParam.separator);
+      if (repoCIJobConfig.servicesParam.paramPath) {
+        set(params, repoCIJobConfig.servicesParam.paramPath, job.deployTo.join(repoCIJobConfig.servicesParam.separator));
+      }
+      else params[repoCIJobConfig.servicesParam.paramName] = job.deployTo.join(repoCIJobConfig.servicesParam.separator);
     }
 
     if (repoCIJobConfig.sourceVersionParam) {
-      params[repoCIJobConfig.sourceVersionParam.paramName] = branch;
+      if (repoCIJobConfig.sourceVersionParam.paramPath) {
+        set(params, repoCIJobConfig.sourceVersionParam.paramPath, branch);
+      }
+      else params[repoCIJobConfig.sourceVersionParam.paramName] = branch;
+    }
+
+    if (repoCIJobConfig.shaParam) {
+      if (repoCIJobConfig.shaParam.paramPath) {
+        set(params, repoCIJobConfig.shaParam.paramPath, sha);
+      }
+      else params[repoCIJobConfig.shaParam.paramName] = sha;
     }
 
     return {

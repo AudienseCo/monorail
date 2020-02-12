@@ -254,7 +254,7 @@ describe('getConfig service', () => {
           "ciService": "jenkins_deploy",
           "jobName": "monorail-tarball-ecs",
           "servicesParam": {
-            "paramName": "where_to_deploy",
+            "paramPath": "where_to_deploy",
             "separator": ","
           },
           "sourceVersionParam": {
@@ -284,7 +284,7 @@ describe('getConfig service', () => {
           "ciService": "jenkins_deploy",
           "jobName": "monorail-tarball-ecs",
           "servicesParam": {
-            "paramName": "where_to_deploy",
+            "paramPath": "where_to_deploy",
             "separator": ","
           }
         }
@@ -295,6 +295,72 @@ describe('getConfig service', () => {
       getConfig(repo, (err, config) => {
         should.not.exist(err);
         config.deploy.ciJobs.should.be.eql(repoConfig.deploy.ciJobs);
+        done();
+      });
+    });
+
+    it('should combine configs with optional params', (done) => {
+      const repoConfig = cloneDeep(repoConfigFixture);
+      repoConfig.deploy.services = {
+        "typescript_ecs_boilerplate": {
+          "ciJob": "ecs-services",
+          "deployTo": [
+            "typescript-ecs-boilerplate"
+          ],
+          "params": {
+            "environmentVariablesOverride": [
+              {
+                "name": "SERVICE_GROUP",
+                "value": "audiense"
+              },
+              {
+                "name": "SERVICE_NAME",
+                "value": "typescript-ecs-boilerplate"
+              }
+            ]
+          }
+        }
+      };
+      const localConfig = getLocalConfig();
+      localConfig.deploy.ciServices = {
+        "deploy_codebuild": {
+          "driver": "codeBuild",
+          "settings": {
+            "region": "us-east-1",
+            "pollingInterval": 1000
+          }
+        }
+      };
+      localConfig.deploy.ciJobs = {
+        "ecs-services": {
+          "ciService": "deploy_codebuild",
+          "jobName": "terraform-service-deploy-staging",
+          "sourceVersionParam": {
+            "paramPath": "environmentVariablesOverride[1].value"
+          },
+          "defaultParams": {
+            "sourceVersion": "staging",
+            "environmentVariablesOverride": [
+              {
+                "name": "TF_VAR_config_version",
+                "value": ""
+              },
+              {
+                "name": "TF_VAR_image_tag",
+                "value": "latest"
+              }
+            ]
+          }
+        }
+      };
+
+
+      const getConfig = createGetConfigWithStubs(null, repoConfig, localConfig);
+
+      const repo = '123';
+      getConfig(repo, (err, config) => {
+        should.not.exist(err);
+        config.deploy.ciJobs['ecs-services'].should.be.eql(localConfig.deploy.ciJobs['ecs-services']);
         done();
       });
     });
@@ -367,7 +433,8 @@ describe('getConfig service', () => {
   function createGetConfigWithStubs(err, repoConfig, localConfig, ciDrivers) {
     const getRepoConfigDummy = (repo, cb) => cb(err, repoConfig || {});
     const defaultCIDrivers = {
-      jenkins: {}
+      jenkins: {},
+      codeBuild: {}
     };
     return createGetConfig(getRepoConfigDummy, localConfig || {}, ciDrivers || defaultCIDrivers);
   }

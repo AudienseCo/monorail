@@ -176,8 +176,15 @@ describe('slackPreviewRelease action', () => {
       return sinon.spy(notify);
     }
 
+    function createGetBranchStatusStub(github) {
+      return (repo, branch, cb) => {
+        cb(null, 'sha', true);
+      }
+    }
+
     function createPrevieReleaseWithStubs({
       getRepoConfig,
+      getBranchStatus,
       pullRequestsFromChanges,
       pullRequestDeployInfo,
       deployInfoFromPullRequests,
@@ -190,6 +197,7 @@ describe('slackPreviewRelease action', () => {
       const githubDummy = github || createGithubDummy();
       const configDummy = createConfigDummy();
       const getRepoConfigStub = getRepoConfig || createGetRepoConfigStub(githubDummy);
+      const getBranchStatusStub = getBranchStatus || createGetBranchStatusStub(githubDummy);
       const pullRequestsFromChangesStub = pullRequestsFromChanges || createPullRequestsFromChanges(githubDummy, {});
       const pullRequestDeployInfoStub = pullRequestDeployInfo || createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequestsStub = deployInfoFromPullRequests || createDeployInfoFromPullRequests(pullRequestDeployInfoStub);
@@ -199,7 +207,7 @@ describe('slackPreviewRelease action', () => {
       const getReleasePreviewStub = getReleasePreview || createGetReleasePreview(pullRequestsFromChangesStub, deployInfoFromPullRequestsStub, issueReleaseInfoListStub);
       const notifyStub = notify || createNotifyStub();
 
-      return createPreviewRelease(getRepoConfigStub, getReleasePreviewStub, notifyStub);
+      return createPreviewRelease(getRepoConfigStub, getBranchStatusStub, getReleasePreviewStub, notifyStub);
     }
 
 

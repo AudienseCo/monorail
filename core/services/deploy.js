@@ -23,7 +23,7 @@ module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, rel
     });
 
     series([
-      (next) => build(repoInfo.branch, repoInfo.deployInfo.jobs, repoInfo.config.deploy, next),
+      (next) => build(repoInfo.branch, repoInfo.sha, repoInfo.deployInfo.jobs, repoInfo.config.deploy, next),
       (next) => mergeDeployBranch(repoInfo.repo, masterBranch, devBranch, repoInfo.branch, next),
       (next) => {
         if (!deployedLabel) return next();
