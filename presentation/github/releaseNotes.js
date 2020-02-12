@@ -14,7 +14,7 @@ module.exports = () => {
 
     const formatedServices = deployInfo.jobs.map(job => {
       // TODO: combine with default params
-      const formatedParams = map(job.params, (value, key) => `${key}: ${value}`).join('\n');
+      const formatedParams = map(job.params, (value, key) => `${key}: ${JSON.stringify(value)}`).join('\n');
       return [
         `### Deploy job: ${job.name}`,
         `**Services**: ${job.deployTo.join(', ')}`,
