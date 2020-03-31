@@ -9,8 +9,8 @@ describe('Slack API wrapper', () => {
   function createIncomingWebhookDummy(err, result) {
     function IncomingWebhook() {
     }
-    IncomingWebhook.prototype.send = (msg, cb) => {
-      cb(err, result);
+    IncomingWebhook.prototype.send = (msg) => {
+      return Promise.resolve(result);
     }
     return new IncomingWebhook();
   }
