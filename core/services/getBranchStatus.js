@@ -16,7 +16,7 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
         next(null, data.object.sha);
       }),
       (sha, next) => github.getProtectedBranchRequiredStatusChecks(repo, branch, (err, data) => {
-        if (err && err.status == '404') {
+        if (err && err.status === '404') {
           logger.info(`INFO Branch not protected ${repo} ${branch} ${err.status}`, data)
           next(null, sha, []);
         }
