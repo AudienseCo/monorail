@@ -42,9 +42,6 @@ describe('get branch status service', () => {
       },
       getProtectedBranchRequiredStatusChecksError: {
         status: 404
-      },
-      getChecksForRefRes: {
-        check_runs: ['123']
       }
     });
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
@@ -55,6 +52,28 @@ describe('get branch status service', () => {
       should.not.exists(err);
       sha.should.be.eql(aSha);
       githubDummy.wasCalled('gitCheckForRef').should.not.be.true();
+      done();
+    });
+  });
+
+  it('should fail when github reply with status not equal to 200 or 404', (done) => {
+    const aSha = '123';
+    const githubDummy = createGithubDummy(null, {
+      getBranchRes: {
+        object: {
+          sha: aSha
+        }
+      },
+      getProtectedBranchRequiredStatusChecksError: {
+        status: 403
+      }
+    });
+    const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
+
+    const repo = 'audienseCo';
+    const branch = 'staging';
+    getBranchStatus(repo, branch, (err, sha) => {
+      should.exists(err);
       done();
     });
   });
