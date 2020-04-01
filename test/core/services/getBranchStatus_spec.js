@@ -6,6 +6,60 @@ const createGetBranchStatus = require('../../../core/services/getBranchStatus');
 const POLLING_INTERVAL_MS = 1;
 
 describe('get branch status service', () => {
+  it('should succeed when no checks required', (done) => {
+    const aSha = '123';
+    const githubDummy = createGithubDummy(null, {
+      getBranchRes: {
+        object: {
+          sha: aSha
+        }
+      },
+      getProtectedBranchRequiredStatusChecksError: {
+        status: 404
+      },
+      getChecksForRefRes: {
+        check_runs: []
+      }
+    });
+    const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
+
+    const repo = 'audienseCo';
+    const branch = 'staging';
+    getBranchStatus(repo, branch, (err, sha) => {
+      should.not.exists(err);
+      sha.should.be.eql(aSha);
+      done();
+    });
+  });
+
+  it('shouldnt call gitCheckForRef when no checks required', (done) => {
+    const aSha = '123';
+    const githubDummy = createGithubDummy(null, {
+      getBranchRes: {
+        object: {
+          sha: aSha
+        }
+      },
+      getProtectedBranchRequiredStatusChecksError: {
+        status: 404
+      },
+      getChecksForRefRes: {
+        check_runs: ['123']
+      }
+    });
+    const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
+
+    const repo = 'audienseCo';
+    const branch = 'staging';
+    getBranchStatus(repo, branch, (err, sha) => {
+      should.not.exists(err);
+      sha.should.be.eql(aSha);
+      githubDummy.wasCalled('gitCheckForRef').should.not.be.true();
+      done();
+    });
+  });
+
+
   it('should succeed when no checks required or executed', (done) => {
     const aSha = '123';
     const githubDummy = createGithubDummy(null, {
@@ -193,12 +247,24 @@ describe('get branch status service', () => {
     });
   });
 
-  function createGithubDummy(err, { getBranchRes, getProtectedBranchRequiredStatusChecksRes, getChecksForRefRes }) {
+  function createGithubDummy(err, {
+    getBranchRes,
+    getProtectedBranchRequiredStatusChecksRes,
+    getChecksForRefRes,
+    getProtectedBranchRequiredStatusChecksError
+  }) {
+    var calls = [];
+    function called(name, cb) {
+      calls.push(name);
+    }
+    function wasCalled(name) {
+      return calls.includes(name)
+    }
     return {
-      getBranch: (repo, branch, cb) => cb(err, getBranchRes),
-      getProtectedBranchRequiredStatusChecks: (repo, branch, cb) => cb(err, getProtectedBranchRequiredStatusChecksRes),
-      getChecksForRef: (repo, ref, cb) => cb(err, getChecksForRefRes)
+      getBranch: (repo, branch, cb) => called('getBranch', cb(err, getBranchRes)),
+      getProtectedBranchRequiredStatusChecks: (repo, branch, cb) => called('getProtectedBranchRequiredStatusChecks', cb(getProtectedBranchRequiredStatusChecksError, getProtectedBranchRequiredStatusChecksRes)),
+      getChecksForRef: (repo, ref, cb) => called('getChecksForRefRes', cb(err, getChecksForRefRes)),
+      wasCalled: wasCalled
     };
   }
-
 });

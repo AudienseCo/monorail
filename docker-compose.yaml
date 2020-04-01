@@ -22,4 +22,8 @@ services:
     build: .
     volumes:
       - ./local-config:/app/config/
+      - ./test:/app/test
+      - ./core:/app/core
+      - ./lib:/app/lib
+      - ./web:/app/web
     command: npm run test

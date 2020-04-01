@@ -24,9 +24,7 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
           logger.error(`ERROR Getting protected branch required status for ${repo} ${branch} ${err.status}`, data)
           return next(err);
         }
-        else {
-          next(null, sha, data.contexts);
-        }
+        next(null, sha, data.contexts);
       }),
       (sha, requiredChecks, next) => checkStatus(repo, sha, requiredChecks, next)
     ], cb);
@@ -34,8 +32,7 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
 
   function checkStatus(repo, sha, requiredChecks, cb) {
     if (!requiredChecks.length) {
-      cb(null, sha)
-      return
+      return cb(null, sha)
     }
     github.getChecksForRef(repo, sha, (err, data) => {
       if (err) return cb(err);
