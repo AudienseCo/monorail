@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@octokit/rest": "^17.0.0",
+    "@octokit/rest": "^16.43.1",
     "@slack/webhook": "^5.0.2",
     "async": "^2.0.0-rc.3",
     "aws-sdk": "^2.604.0",
