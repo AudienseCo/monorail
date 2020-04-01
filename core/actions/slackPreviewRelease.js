@@ -34,7 +34,7 @@ module.exports = function createPreviewRelease(getConfig, getBranchStatus, getRe
       const devBranch = get(repoInfo, 'config.github.devBranch');
       getBranchStatus(repoInfo.repo, devBranch, (err, sha) => {
         if (err) {
-          logger.error('Error getting repo branch status', repoInfo.repo, devBranch, err);
+          logger.error(`Error getting repo branch status for ${repoInfo.repo} ${devBranch}`, repoInfo.repo, devBranch, err);
           return nextRepo(null, { repo: repoInfo.repo, failReason: 'INVALID_REPO_STATUS' });
         }
         nextRepo(null, Object.assign({}, repoInfo, { sha }));

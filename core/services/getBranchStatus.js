@@ -1,5 +1,7 @@
 'use strict';
 
+const logger = require('../../lib/logger');
+
 const { find } = require('lodash');
 const { waterfall } = require('async');
 
@@ -7,20 +9,37 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
   return (repo, branch, cb) => {
     waterfall([
       (next) => github.getBranch(repo, branch, (err, data) => {
-        if (err) return next(err);
+        if (err) {
+          logger.error(`ERROR Getting branch for ${repo} ${branch}`, data)
+          return next(err);
+        }
         next(null, data.object.sha);
       }),
       (sha, next) => github.getProtectedBranchRequiredStatusChecks(repo, branch, (err, data) => {
-        if (err) return next(err);
-        next(null, sha, data.contexts);
+        if (err && err.status == '404') {
+          logger.info(`INFO Branch not protected ${repo} ${branch} ${err.status}`, data)
+          next(null, sha, []);
+        }
+        else if (err) {
+          logger.error(`ERROR Getting protected branch required status for ${repo} ${branch} ${err.status}`, data)
+          return next(err);
+        }
+        else {
+          next(null, sha, data.contexts);
+        }
       }),
       (sha, requiredChecks, next) => checkStatus(repo, sha, requiredChecks, next)
     ], cb);
   };
 
   function checkStatus(repo, sha, requiredChecks, cb) {
+    if (!requiredChecks.length) {
+      cb(null, sha)
+      return
+    }
     github.getChecksForRef(repo, sha, (err, data) => {
       if (err) return cb(err);
+      logger.info(`INFO Checking status for ${repo} ${sha}`)
       const result = combineChecksResults(data.check_runs, requiredChecks);
       if (!result.finished) {
         return setTimeout(() => checkStatus(repo, sha, requiredChecks, cb), POLLING_INTERVAL_MS);
