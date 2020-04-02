@@ -32,6 +32,26 @@ describe('get branch status service', () => {
     });
   });
 
+  it('should fail when branch is not found', (done) => {
+    const aSha = '123';
+    const githubDummy = createGithubDummy({
+      status: 404
+    }, {
+      getBranchRes: {
+        object: {}
+      }
+    });
+    const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
+
+    const repo = 'audienseCo';
+    const branch = 'staging';
+    getBranchStatus(repo, branch, (err, sha) => {
+      should.exists(err);
+      githubDummy.wasCalled('getProtectedBranchRequiredStatusChecks').should.not.be.true();
+      done();
+    });
+  });
+
   it('shouldnt call gitCheckForRef when no checks required', (done) => {
     const aSha = '123';
     const githubDummy = createGithubDummy(null, {
