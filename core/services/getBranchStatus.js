@@ -49,7 +49,13 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
   function combineChecksResults(checks, requiredChecks) {
     return requiredChecks.reduce(({ finished, succeeded }, checkName) => {
       const check = find(checks, ['name', checkName]);
-      if (!check) return { finished, succeeded: false };
+      if (!check) {
+        logger.info(`INFO Required check ${checkName} was not found`);
+        return { finished, succeeded: false };
+      }
+
+      logger.info(`INFO check ${checkName} finished: ${finished} status: ${check.status} conclusion: ${check.conclusion}`);
+
       return {
         finished: finished && check.status === 'completed',
         succeeded: succeeded && check.conclusion === 'success',
