@@ -50,11 +50,11 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
     return requiredChecks.reduce(({ finished, succeeded }, checkName) => {
       const check = find(checks, ['name', checkName]);
       if (!check) {
-        logger.info(`INFO Required check ${checkName} was not found`)
+        logger.info(`INFO Required check ${checkName} was not found`);
         return { finished, succeeded: false };
       }
 
-      logger.info(`INFO check ${checkName} finished: ${finished} status: ${check.status} conclusion: ${check.conclusion}`)
+      logger.info(`INFO check ${checkName} finished: ${finished} status: ${check.status} conclusion: ${check.conclusion}`);
 
       return {
         finished: finished && check.status === 'completed',
