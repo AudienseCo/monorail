@@ -16,9 +16,6 @@ describe('get branch status service', () => {
       },
       getProtectedBranchRequiredStatusChecksError: {
         status: 404
-      },
-      getChecksForRefRes: {
-        check_runs: []
       }
     });
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
@@ -52,7 +49,7 @@ describe('get branch status service', () => {
     });
   });
 
-  it('shouldnt call gitCheckForRef when no checks required', (done) => {
+  it('shouldnt call getStatusesForRef when no checks required', (done) => {
     const aSha = '123';
     const githubDummy = createGithubDummy(null, {
       getBranchRes: {
@@ -71,7 +68,7 @@ describe('get branch status service', () => {
     getBranchStatus(repo, branch, (err, sha) => {
       should.not.exists(err);
       sha.should.be.eql(aSha);
-      githubDummy.wasCalled('gitCheckForRef').should.not.be.true();
+      githubDummy.wasCalled('getStatusesForRef').should.not.be.true();
       done();
     });
   });
@@ -109,9 +106,6 @@ describe('get branch status service', () => {
       },
       getProtectedBranchRequiredStatusChecksRes: {
         contexts: []
-      },
-      getChecksForRefRes: {
-        check_runs: []
       }
     });
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
@@ -134,14 +128,12 @@ describe('get branch status service', () => {
         }
       },
       getProtectedBranchRequiredStatusChecksRes: {
-        contexts: ['check1']
+        contexts: ['node/check1']
       },
-      getChecksForRefRes: {
-        check_runs: [
-          { name: 'check1', status: 'completed', conclusion: 'success' },
-          { name: 'check2', status: 'completed', conclusion: 'failed' }
-        ]
-      }
+      getStatusesForRefRes: [
+        { context: 'node/check1', state: 'success'},
+        { context: 'node/check2', state: 'failed'}
+      ]
     });
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
 
@@ -163,25 +155,21 @@ describe('get branch status service', () => {
         }
       },
       getProtectedBranchRequiredStatusChecksRes: {
-        contexts: ['check1', 'check3']
+        contexts: ['node/check1', 'node/check3']
       },
-      getChecksForRefRes: null
+      getStatusesForRefRes: null
     });
-    const stub = sinon.stub(githubDummy, 'getChecksForRef');
-    stub.onFirstCall().callsArgWith(2, null, {
-      check_runs: [
-        { name: 'check1', status: 'completed', conclusion: 'success' },
-        { name: 'check2', status: 'completed', conclusion: 'failed' },
-        { name: 'check3', status: 'pending', conclusion: '' },
-      ]
-    });
-    stub.onSecondCall().callsArgWith(2, null, {
-      check_runs: [
-        { name: 'check1', status: 'completed', conclusion: 'success' },
-        { name: 'check2', status: 'completed', conclusion: 'failed' },
-        { name: 'check3', status: 'completed', conclusion: 'success' },
-      ]
-    });
+    const stub = sinon.stub(githubDummy, 'getStatusesForRef');
+    stub.onFirstCall().callsArgWith(2, null, [
+      { context: 'node/check1', state: 'success' },
+      { context: 'node/check2', state: 'failed', },
+      { context: 'node/check3', state: 'pending' },
+    ]);
+    stub.onSecondCall().callsArgWith(2, null, [
+      { context: 'node/check1', state: 'success' },
+      { context: 'node/check2', state: 'failed' },
+      { context: 'node/check3', state: 'success' },
+    ]);
 
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
 
@@ -203,15 +191,13 @@ describe('get branch status service', () => {
         }
       },
       getProtectedBranchRequiredStatusChecksRes: {
-        contexts: ['check1', 'check3']
+        contexts: ['node/check1', 'node/check3']
       },
-      getChecksForRefRes: {
-        check_runs: [
-          { name: 'check1', status: 'completed', conclusion: 'success' },
-          { name: 'check2', status: 'completed', conclusion: 'failed' },
-          { name: 'check3', status: 'completed', conclusion: 'failed' }
-        ]
-      }
+      getStatusesForRefRes: [
+        { context: 'node/check1', state: 'success' },
+        { context: 'node/check2', state: 'failed' },
+        { context: 'node/check3', state: 'failed' }
+      ]
     });
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
 
@@ -233,14 +219,14 @@ describe('get branch status service', () => {
         }
       },
       getProtectedBranchRequiredStatusChecksRes: {
-        contexts: ['check1', 'check3']
+        contexts: ['node/check1', 'node/check3']
       },
       getChecksForRefRes: {
         check_runs: [
-          { name: 'check1', status: 'completed', conclusion: 'failed' },
-          { name: 'check2', status: 'completed', conclusion: 'failed' },
-          { name: 'check3', status: 'completed', conclusion: 'success' },
-          { name: 'check1', status: 'completed', conclusion: 'success' }
+          { context: 'check1', state: 'failed' },
+          { context: 'check2', state: 'failed' },
+          { context: 'check3', state: 'success' },
+          { context: 'check1', state: 'success' }
         ]
       }
     });
@@ -264,16 +250,14 @@ describe('get branch status service', () => {
         }
       },
       getProtectedBranchRequiredStatusChecksRes: {
-        contexts: ['check1', 'check3']
+        contexts: ['node/check1', 'node/check3']
       },
-      getChecksForRefRes: {
-        check_runs: [
-          { name: 'check1', status: 'completed', conclusion: 'success' },
-          { name: 'check2', status: 'completed', conclusion: 'failed' },
-          { name: 'check3', status: 'completed', conclusion: 'success' },
-          { name: 'check1', status: 'completed', conclusion: 'failed' }
-        ]
-      }
+      getStatusesForRefRes: [
+        { context: 'node/check1', state: 'success' },
+        { context: 'node/check2', state: 'failed' },
+        { context: 'node/check3', state: 'success' },
+        { context: 'node/check1', state: 'failed' }
+      ]
     });
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
 
@@ -289,7 +273,7 @@ describe('get branch status service', () => {
   function createGithubDummy(err, {
     getBranchRes,
     getProtectedBranchRequiredStatusChecksRes,
-    getChecksForRefRes,
+    getStatusesForRefRes,
     getProtectedBranchRequiredStatusChecksError
   }) {
     var calls = [];
@@ -302,7 +286,7 @@ describe('get branch status service', () => {
     return {
       getBranch: (repo, branch, cb) => called('getBranch', cb(err, getBranchRes)),
       getProtectedBranchRequiredStatusChecks: (repo, branch, cb) => called('getProtectedBranchRequiredStatusChecks', cb(getProtectedBranchRequiredStatusChecksError, getProtectedBranchRequiredStatusChecksRes)),
-      getChecksForRef: (repo, ref, cb) => called('getChecksForRefRes', cb(err, getChecksForRefRes)),
+      getStatusesForRef: (repo, ref, cb) => called('getStatusesForRefRes', cb(err, getStatusesForRefRes)),
       wasCalled: wasCalled
     };
   }

@@ -68,6 +68,10 @@ describe('Github API wrapper', () => {
       github.getChecksForRef.should.be.a.Function();
     });
 
+    it('should have the "getStatusesForRef" method', () => {
+      github.getStatusesForRef.should.be.Function();
+    })
+
     it('should have the "getCommitStatus" method', () => {
       github.getCommitStatus.should.be.a.Function();
     });
@@ -117,6 +121,9 @@ describe('Github API wrapper', () => {
           },
           getProtectedBranchRequiredStatusChecks: (repo, branch, cb) => {
             return responsePromise;
+          },
+          listStatusesForRef: (repo, branch, cb) => {
+            return responsePromise
           }
         },
         git: {
@@ -430,6 +437,24 @@ describe('Github API wrapper', () => {
       const repo = 'another';
       const ref = 'staging';
       github.getChecksForRef(repo, ref, (err, result) => {
+        spy.calledWith({
+          owner: 'AudienseCo',
+          repo: 'another',
+          ref: 'staging'
+        }).should.be.ok();
+        done();
+      });
+    });
+
+    it('get statuses for ref', done => {
+      const githubApiDummy = createGithubDummy({ id: 1234 });
+      const github = createGithub(githubApiDummy, config);
+      const spy = sinon.spy(githubApiDummy.repos, 'listStatusesForRef');
+
+      const repo = 'another';
+      const ref = 'staging';
+
+      github.getStatusesForRef(repo, ref, (err, result) => {
         spy.calledWith({
           owner: 'AudienseCo',
           repo: 'another',

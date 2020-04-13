@@ -2,7 +2,7 @@
 
 const logger = require('../../lib/logger');
 
-const { find } = require('lodash');
+const { find, map } = require('lodash');
 const { waterfall } = require('async');
 
 module.exports = (github, POLLING_INTERVAL_MS) => {
@@ -34,10 +34,10 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
     if (!requiredChecks.length) {
       return cb(null, sha)
     }
-    github.getChecksForRef(repo, sha, (err, data) => {
+    github.getStatusesForRef(repo, sha, (err, data) => {
       if (err) return cb(err);
       logger.info(`INFO Checking status for ${repo} ${sha}`)
-      const result = combineChecksResults(data.check_runs, requiredChecks);
+      const result = combineStatusesResults(data, requiredChecks);
       if (!result.finished) {
         return setTimeout(() => checkStatus(repo, sha, requiredChecks, cb), POLLING_INTERVAL_MS);
       }
@@ -46,19 +46,19 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
     });
   }
 
-  function combineChecksResults(checks, requiredChecks) {
+  function combineStatusesResults(statuses, requiredChecks) {
     return requiredChecks.reduce(({ finished, succeeded }, checkName) => {
-      const check = find(checks, ['name', checkName]);
+      const check = find(statuses, ['context', checkName]);
       if (!check) {
-        logger.info(`INFO Required check ${checkName} was not found`);
+        logger.info(`INFO Required check ${checkName} was not found "${statuses}"`);
         return { finished, succeeded: false };
       }
 
-      logger.info(`INFO check ${checkName} finished: ${finished} status: ${check.status} conclusion: ${check.conclusion}`);
+      logger.info(`INFO check ${checkName} status: ${check.state}`);
 
       return {
-        finished: finished && check.status === 'completed',
-        succeeded: succeeded && check.conclusion === 'success',
+        succeeded: succeeded && check.state === 'success',
+        finished: finished && ['success', 'failed'].includes(check.state)
       };
     }, { finished: true, succeeded: true });
   }
