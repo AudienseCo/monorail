@@ -221,14 +221,12 @@ describe('get branch status service', () => {
       getProtectedBranchRequiredStatusChecksRes: {
         contexts: ['node/check1', 'node/check3']
       },
-      getChecksForRefRes: {
-        check_runs: [
-          { context: 'check1', state: 'failed' },
-          { context: 'check2', state: 'failed' },
-          { context: 'check3', state: 'success' },
-          { context: 'check1', state: 'success' }
-        ]
-      }
+      getStatusesForRefRes: [
+          { context: 'node/check1', state: 'failed' },
+          { context: 'node/check2', state: 'failed' },
+          { context: 'node/check3', state: 'success' },
+          { context: 'node/check1', state: 'success' }
+      ]
     });
     const getBranchStatus = createGetBranchStatus(githubDummy, POLLING_INTERVAL_MS);
 
