@@ -2,7 +2,7 @@
 
 const logger = require('../../lib/logger');
 
-const { find, map } = require('lodash');
+const { find } = require('lodash');
 const { waterfall } = require('async');
 
 module.exports = (github, POLLING_INTERVAL_MS) => {
