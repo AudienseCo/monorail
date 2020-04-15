@@ -38,9 +38,9 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
       if (err) return cb(err);
       logger.info(`INFO Checking status for ${repo} ${sha}`)
       const result = combineChecksResults(data.check_runs, requiredChecks);
-      if (!result.finished) {
-        return setTimeout(() => checkStatus(repo, sha, requiredChecks, cb), POLLING_INTERVAL_MS);
-      }
+      //if (!result.finished) {
+      //  return setTimeout(() => checkStatus(repo, sha, requiredChecks, cb), POLLING_INTERVAL_MS);
+      //}
       if (!result.succeeded) return cb(new Error('CHECKS_FAILED'));
       cb(null, sha);
     });
@@ -50,11 +50,10 @@ module.exports = (github, POLLING_INTERVAL_MS) => {
     return requiredChecks.reduce(({ finished, succeeded }, checkName) => {
       const check = find(checks, ['name', checkName]);
       if (!check) {
-        logger.info(`INFO Required check ${checkName} was not found`);
-        return { finished, succeeded: false };
+        logger.info(`INFO Required check ${checkName} was not found in commit status, so skipping it`);
+        return { finished: true, succeeded: true }
+        //return { finished, succeeded: false };
       }
-
-      logger.info(`INFO check ${checkName} finished: ${finished} status: ${check.status} conclusion: ${check.conclusion}`);
 
       return {
         finished: finished && check.status === 'completed',
