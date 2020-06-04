@@ -4,6 +4,8 @@ module.exports = function() {
 
   const that = {
     extract: function(text) {
+      if (!text) return null;
+
       const keywords = [
         'close',
         'closes',
