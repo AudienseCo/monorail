@@ -17,6 +17,10 @@ describe('Bound Issue Extractor', () => {
       should.not.exist(boundIssueExtractor.extract(''));
     });
 
+    it('should return null if the input is null', () => {
+      should.not.exist(boundIssueExtractor.extract(null));
+    });
+
     it('should return the issue number (Closes #issue)', () => {
       const input = 'Closes #1234';
       boundIssueExtractor.extract(input).should.be.eql('1234');
@@ -76,6 +80,5 @@ describe('Bound Issue Extractor', () => {
       const input = 'Fixes any text #1234';
       should.not.exist(boundIssueExtractor.extract(input));
     });
-
   });
 });
