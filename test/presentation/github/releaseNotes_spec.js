@@ -25,7 +25,11 @@ describe('Github Release Notes Template', () => {
       deployInfo: {
         jobs: [{
           name: 'nodejs v10',
-          deployTo: ['dashboard', 'tasks'],
+          deployTo: [
+            'dashboard',
+            'tasks',
+            { "name": "rollbackeable service", "rollback": true }
+          ],
           params: {
             grunt: true,
             statics: false
@@ -38,7 +42,7 @@ describe('Github Release Notes Template', () => {
 `## Tag: v2011-10-05T14:48:00.000Z
 
 ### Deploy job: nodejs v10
-**Services**: dashboard, tasks
+**Services**: dashboard, tasks, rollbackeable service
 **Params**:
 grunt: true
 statics: false

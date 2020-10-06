@@ -81,7 +81,10 @@ describe('slackPreviewRelease action', () => {
     it('should notify the release preview with PRs, issues and deploy info', done => {
       const githubDummy = createGithubDummy();
       const stub = sinon.stub(githubDummy, 'getIssueLabels');
-      stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:task-as' }]);
+      stub.onFirstCall().callsArgWith(2, null, [
+        { name: 'deploy-to:task-as' },
+        { name: 'deploy-to:rollbackeable-service' }
+      ]);
       stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }]);
       const notifyStub = createNotifyStub();
       const previewRelease = createPrevieReleaseWithStubs({ github: githubDummy, notify: notifyStub });
@@ -104,7 +107,8 @@ describe('slackPreviewRelease action', () => {
             {
               name: 'nodejs v8.6.0',
               deployTo: [
-                'task-as'
+                'task-as',
+                { "name": "rollbackeable service", "rollback": true }
               ],
               params: {}
             }

@@ -16,7 +16,7 @@ module.exports = ({ repo, prIds, issues, deployInfo }, filterLabels, user) => {
   }, []).join('\n');
   if (!formatedIssues) return;
 
-  const formatedServices = deployInfo.jobs.map(job => `*${job.name}*: ${job.deployTo.join(', ')}`).join('\n');
+  const formatedServices = deployInfo.jobs.map(job => `*${job.name}*: ${job.deployTo.map(job => job.name || job).join(', ')}`).join('\n');
 
   const text =
   `*Pull Requests*: ${formatedPRs}

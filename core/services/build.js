@@ -39,9 +39,9 @@ module.exports = (callCIDriver) => {
 
     if (repoCIJobConfig.servicesParam) {
       if (repoCIJobConfig.servicesParam.paramPath) {
-        set(params, repoCIJobConfig.servicesParam.paramPath, job.deployTo.join(repoCIJobConfig.servicesParam.separator));
+        set(params, repoCIJobConfig.servicesParam.paramPath, joinDeployJobs(job.deployTo, repoCIJobConfig.servicesParam.separator));
       }
-      else params[repoCIJobConfig.servicesParam.paramName] = job.deployTo.join(repoCIJobConfig.servicesParam.separator);
+      else params[repoCIJobConfig.servicesParam.paramName] = joinDeployJobs(job.deployTo, repoCIJobConfig.servicesParam.separator);
     }
 
     if (repoCIJobConfig.sourceVersionParam) {
@@ -69,5 +69,11 @@ module.exports = (callCIDriver) => {
     return assignWith(finalObj, originalObj, (defaultProp, originalProp) => {
       return isNil(originalProp) ? defaultProp : originalProp;
     });
+  }
+
+  function joinDeployJobs(deployTo, separator) {
+    return deployTo
+      .map(job => job.name || job)
+      .join(separator);
   }
 }
