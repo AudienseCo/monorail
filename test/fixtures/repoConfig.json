@@ -132,6 +132,14 @@
         ],
         "params": {
         }
+      },
+      "rollbackeable-service": {
+        "ciJob": "nodejs v8.6.0",
+        "deployTo": [
+          { "name": "rollbackeable service", "rollback": true }
+        ],
+        "params": {
+        }
       }
     }
   }

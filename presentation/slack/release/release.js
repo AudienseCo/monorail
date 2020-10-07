@@ -2,7 +2,7 @@
 
 const { get, intersection } = require('lodash') ;
 
-module.exports = ({ repo, tag, issues }, filterLabels, user, githubToSlakUsernames) => {
+module.exports = ({ repo, tag, issues, deployInfo }, filterLabels, user, githubToSlakUsernames) => {
 
   const formatParticipant = (participant) => {
     const slackUsername = get(githubToSlakUsernames, participant, participant);
@@ -19,11 +19,21 @@ module.exports = ({ repo, tag, issues }, filterLabels, user, githubToSlakUsernam
 
   if (!formatedIssues) return;
 
+  const rollbackJobs = deployInfo.jobs.reduce((acc, job) => {
+    const deployJobs = job.deployTo
+      .filter(deployJob => deployJob.rollback)
+      .map(deployJob => deployJob.name);
+    return acc.concat(deployJobs);
+  }, []);
+  const rollbackCommand = rollbackJobs.length > 0
+    ? `\nRollback: \`!monorail rollback on ${rollbackJobs.join(' ')}\``
+    : '';
+
   const text =
 `*<https://github.com/${user}/${repo}/releases/tag/${tag}|Release ${tag}>*
 
 ${formatedIssues}
-
+${rollbackCommand}
 `;
   return {
     text,

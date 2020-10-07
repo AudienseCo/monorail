@@ -37,7 +37,11 @@ describe('deploy service', () => {
         jobs: [
           {
             name: 'nodejs v8.6.0',
-            deployTo: ['task-as', 'globalreports-as'],
+            deployTo: [
+              'task-as',
+              'globalreports-as',
+              { "name": "rollbackeable service", "rollback": true }
+            ],
             params: {}
           },
           {

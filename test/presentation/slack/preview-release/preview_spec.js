@@ -98,8 +98,8 @@ describe('Preview Release Slack Notification Template', () => {
       }],
       deployInfo: {
         jobs: [{
-          name: 'nodejs v10',
-          deployTo: ['dashboard', 'tasks']
+          name: 'nodejs v8.6.0',
+          deployTo: ['dashboard', 'tasks', { "name": "rollbackeable service", "rollback": true }]
         }]
       }
     }];
@@ -113,7 +113,7 @@ describe('Preview Release Slack Notification Template', () => {
         text:
 `*Pull Requests*: <https://github.com/AudienseCo/repo1/issues/10|#10>, <https://github.com/AudienseCo/repo1/issues/20|#20>, <https://github.com/AudienseCo/repo1/issues/30|#30>
 
-*nodejs v10*: dashboard, tasks
+*nodejs v8.6.0*: dashboard, tasks, rollbackeable service
 
 *Issues*:\n<https://github.com/AudienseCo/repo1/issues/123|#123> issue title
 

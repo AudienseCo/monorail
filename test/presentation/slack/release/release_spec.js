@@ -79,8 +79,8 @@ describe('Release Slack Notification Template', () => {
       }],
       deployInfo: {
         jobs: [{
-          name: 'nodejs v10',
-          deployTo: ['dashboard', 'tasks']
+          name: 'nodejs v8.6.0',
+          deployTo: ['dashboard', 'tasks', { "name": "rollbackeable service", "rollback": true }]
         }]
       }
     }];
@@ -94,6 +94,7 @@ describe('Release Slack Notification Template', () => {
 
 <https://github.com/AudienseCo/repo1/issues/123|#123> issue title <@slack_username1>, <@username2>, <@slack_username3>
 
+Rollback: \`!monorail rollback on rollbackeable service\`
 `,
         color: 'good',
         title: 'repo1',

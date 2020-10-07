@@ -274,7 +274,8 @@ describe('getConfig service', () => {
         "globalreports": {
           "ciJob": "nodejs v8.6.0",
           "deployTo": [
-            "globalreports-as"
+            "globalreports-as",
+            { name: "rollbackeable service", rollback: true }
           ]
         }
       };

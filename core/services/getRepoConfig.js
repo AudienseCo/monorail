@@ -1,5 +1,6 @@
 'use strict';
 const { get } = require('lodash');
+const logger = require('../../lib/logger');
 const CONFIG_FILE_PATH = '.monorail';
 
 module.exports = (github, localConfig) => {
@@ -19,6 +20,7 @@ module.exports = (github, localConfig) => {
       return JSON.parse(content);
     }
     catch(e) {
+      logger.error(`Error parsing ${CONFIG_FILE_PATH} file, invalid JSON.`, e);
       return;
     }
   }

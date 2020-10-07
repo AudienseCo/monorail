@@ -165,7 +165,10 @@ describe('getReleasePreview service', () => {
       reposInfo[0].deployInfo.jobs.should.be.eql([
         {
           name: 'nodejs v8.6.0',
-          deployTo: ['task-as'],
+          deployTo: [
+            { "name": "rollbackeable service", "rollback": true },
+            'task-as'
+          ],
           params: {}
         }
       ]);
@@ -191,7 +194,10 @@ describe('getReleasePreview service', () => {
         };
         cb(err, res || defaultRes);
       },
-      getIssueLabels: (repo, id, cb) => cb(err, [{ name: 'deploy-to:task-as' }]),
+      getIssueLabels: (repo, id, cb) => cb(err, [
+        { name: 'deploy-to:rollbackeable-service'},
+        { name: 'deploy-to:task-as' }
+      ]),
       getPullRequest: (repo, id, cb) => cb(err, { title: 'Foo PR', body: 'Closes #4321' }),
       getIssue: (repo, id, cb) => {
         cb(err, {

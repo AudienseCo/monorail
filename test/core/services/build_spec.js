@@ -20,7 +20,11 @@ describe('Build service', () => {
     const jobs = [
       {
         name: 'nodejs v8.6.0',
-        deployTo: ['task-as', 'globalreports-as'],
+        deployTo: [
+          'task-as',
+          'globalreports-as',
+          { name: "rollbackeable service", rollback: true }
+        ],
         params: {
           grunt: true,
           static_files_version: 'other',
@@ -50,7 +54,7 @@ describe('Build service', () => {
         grunt: true,
         static_files_version: 'other',
         statics: false,
-        where_to_deploy: 'task-as,globalreports-as'
+        where_to_deploy: 'task-as,globalreports-as,rollbackeable service'
       });
       callCIDriverSpy.secondCall.args[0].should.be.eql('jenkins');
       callCIDriverSpy.secondCall.args[1].should.be.eql(deployConfig.ciServices.jenkins_deploy.settings);

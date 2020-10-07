@@ -30,7 +30,11 @@ describe('Get pull requests deploy info service', () => {
       const repo = 'socialbro';
 
       stub.onFirstCall().callsArgWith(2, null, [{ name: 'deploy-to:task-as' }]);
-      stub.onSecondCall().callsArgWith(2, null, [{ name: 'deploy-to:globalreports' }, { name: 'deploy-to:dashboard' }]);
+      stub.onSecondCall().callsArgWith(2, null, [
+        { name: 'deploy-to:globalreports' },
+        { name: 'deploy-to:dashboard' },
+        { name: 'deploy-to:rollbackeable-service' }
+      ]);
       const prDeployInfo = createPullRequestDeployInfo(githubDummy);
       const deployInfoFromPullRequests = createDeployInfoFromPullRequests(prDeployInfo);
       deployInfoFromPullRequests(repo, [1234, 4321], repoConfig.deploy, (err, info) => {
@@ -39,12 +43,19 @@ describe('Get pull requests deploy info service', () => {
           jobs: [
             {
               name: 'nodejs v8.6.0',
-              deployTo: ['task-as', 'globalreports-as'],
+              deployTo: [
+                'task-as',
+                'globalreports-as',
+                { "name": "rollbackeable service", "rollback": true }
+              ],
               params: {}
             },
             {
               name: 'nodejs v10.0.0',
-              deployTo: ['dashboard-as', 'task-as'],
+              deployTo: [
+                'dashboard-as',
+                'task-as'
+              ],
               params: {
                 grunt: true,
                 statics: true
