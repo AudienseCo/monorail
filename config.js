@@ -14,6 +14,6 @@ module.exports = {
     webhookUrl: process.env.SLACK_URL || ''
   },
   logger: {
-    level: 'debug'
+    level: 'error'
   }
 };
