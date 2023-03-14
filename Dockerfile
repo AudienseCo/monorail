@@ -1,8 +1,4 @@
-FROM node:8.6.0-alpine
-
-# Fix https://api.slack.com SSL certificate renewal
-RUN apk update && apk upgrade && apk add ca-certificates
-RUN sed -i 's/mozilla\/DST_Root_CA_X3.crt/!mozilla\/DST_Root_CA_X3.crt/g' /etc/ca-certificates.conf && update-ca-certificates
+FROM node:10-alpine
 
 # Create app directory
 WORKDIR /app
