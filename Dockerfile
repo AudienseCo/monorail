@@ -1,5 +1,7 @@
 FROM node:8.6.0-alpine
 
+RUN apk update && apk upgrade && apk add ca-certificates
+
 # Create app directory
 WORKDIR /app
 
