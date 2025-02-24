@@ -4,7 +4,6 @@ const config = require('../../config');
 const pollingIntervalMS = config.github.pollingIntervalMS || 30000;
 
 const checkers = [
-  require('../services/checkers/qa-review'),
   require('../services/checkers/deploy-notes'),
   require('../services/checkers/deploy-labels')
 ];
