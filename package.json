@@ -18,7 +18,7 @@
   "dependencies": {
     "@octokit/rest": "^16.43.1",
     "@slack/webhook": "^5.0.2",
-    "async": "^2.0.0-rc.3",
+    "async": "^2.6.4",
     "aws-sdk": "^2.604.0",
     "bl": "^1.1.2",
     "body-parser": "^1.15.0",
