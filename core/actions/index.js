@@ -4,8 +4,17 @@ const config = require('../../config');
 const pollingIntervalMS = config.github.pollingIntervalMS || 30000;
 
 const checkers = [
-  require('../services/checkers/deploy-notes'),
-  require('../services/checkers/deploy-labels')
+  require('../services/checkers/deploy-notes')
+  // 'deploy-labels' checker decommissioned: the "Deploy Labels" commit status
+  // is now posted by a native GitHub Action in socialbro
+  // (.github/workflows/deploy-labels.yml). This webhook path was unstable — the
+  // AWS ALB in front of monorail intermittently rejected label webhooks with
+  // 403 and GitHub does not retry 4xx deliveries, so toggling labels often
+  // failed to re-evaluate the check. Disabling the subscriber here stops
+  // monorail from posting (and competing for) that status. The deploy pipeline
+  // reads deploy-to:* labels directly (pullRequestDeployInfo / deploy), so this
+  // does not affect deployments.
+  // require('../services/checkers/deploy-labels')
 ];
 
 const deploysController = require('../services/deploysController')();
