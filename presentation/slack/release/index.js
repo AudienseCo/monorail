@@ -15,7 +15,7 @@ module.exports = (config) => {
       if (thereIsNothingToDeployAndInSilentMode(repoInfo.failReason, verbose)) return acc;
 
       const attachment = repoInfo.failReason
-        ? ERROR_TEMPLATES[repoInfo.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR
+        ? errorMsg(repoInfo)
         : releaseMsg(repoInfo, filterLabels, user, githubToSlakUsernames);
       if (attachment) {
         acc.push(Object.assign({}, attachment, {
@@ -32,6 +32,11 @@ module.exports = (config) => {
       };
     }
   };
+
+  function errorMsg(repoInfo) {
+    const template = ERROR_TEMPLATES[repoInfo.failReason] || ERROR_TEMPLATES.UNkNOWN_ERROR;
+    return typeof template === 'function' ? template(repoInfo) : template;
+  }
 
   function isFailedReleaseAndFilteredChannel(failReason, filterLabels) {
     return failReason && filterLabels && filterLabels.length > 0;

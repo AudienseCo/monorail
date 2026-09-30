@@ -20,6 +20,20 @@ describe('mergeDeployBranch service', () => {
     });
   });
 
+  it('should tell which merge failed and why', (done) => {
+    const conflict = new Error('Merge conflict');
+    conflict.status = 409;
+    const githubDummy = createGithubDummy(conflict);
+    const mergeDeployBranch = createMergeDeployBranch(githubDummy);
+
+    mergeDeployBranch('123', 'master', 'dev', 'deploy-123', (err) => {
+      should.exists(err);
+      err.message.should.be.eql('Error merging deploy-123 into master: Merge conflict (HTTP 409)');
+      err.status.should.be.eql(409);
+      done();
+    });
+  });
+
   it('should merge deploy branch into master', (done) => {
     const githubDummy = createGithubDummy();
     const spy = sinon.spy(githubDummy, 'merge');

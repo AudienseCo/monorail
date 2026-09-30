@@ -66,6 +66,37 @@ describe('jenkins API wrapper', () => {
       });
     });
 
+    it('should fail with the build number, result and url when the build does not succeed', done => {
+      const jenkinsClientDummy = createJenkinsClientDummy();
+      sinon.stub(jenkinsClientDummy.job, 'build').callsArgWith(1, null, 1);
+      sinon.stub(jenkinsClientDummy.queue, 'item').callsArgWith(1, null, { executable: { number: 8217 } });
+      sinon.stub(jenkinsClientDummy.build, 'get').callsArgWith(2, null, { building: false, result: 'UNSTABLE', url: 'http://jenkins/job/deploy/8217/' });
+      const jenkins = createJenkinsDriver(createJenkinsApiDummy(jenkinsClientDummy));
+
+      jenkins({ url: 'http://jenkins/', pollingInterval: 1 }, 'deploy', {}, (err) => {
+        should.exist(err);
+        err.message.should.be.eql('Jenkins job deploy #8217 finished with UNSTABLE (http://jenkins/job/deploy/8217/)');
+        err.ciBuild.should.be.eql({ jobName: 'deploy', buildNumber: 8217, result: 'UNSTABLE', url: 'http://jenkins/job/deploy/8217/' });
+        done();
+      });
+    });
+
+    it('should tell which Jenkins call failed', done => {
+      const jenkinsClientDummy = createJenkinsClientDummy();
+      sinon.stub(jenkinsClientDummy.job, 'build').callsArgWith(1, null, 1);
+      sinon.stub(jenkinsClientDummy.queue, 'item').callsArgWith(1, null, { executable: { number: 8217 } });
+      const socketError = new Error('socket hang up');
+      sinon.stub(jenkinsClientDummy.build, 'get').callsArgWith(2, socketError);
+      const jenkins = createJenkinsDriver(createJenkinsApiDummy(jenkinsClientDummy));
+
+      jenkins({ url: 'http://jenkins/', pollingInterval: 1 }, 'deploy', {}, (err) => {
+        should.exist(err);
+        err.message.should.be.eql('Error polling Jenkins build deploy #8217: socket hang up');
+        err.cause.should.be.equal(socketError);
+        done();
+      });
+    });
+
   });
 
   function createJenkinsClientDummy() {

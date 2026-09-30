@@ -1,4 +1,4 @@
-'use scrict';
+'use strict';
 
 const { mapSeries, waterfall } = require('async');
 const { get } = require('lodash');
@@ -20,7 +20,7 @@ module.exports = (
     } catch (deployError) {
       logger.error('Already deploying error', repos, deployError);
       notify(repos, 'deployInProgress', verbose, slackError => {
-        if (slackError) logger.error(`Error notifying slack: ${err.message}`, repos, slackError);
+        if (slackError) logger.error(`Error notifying slack: ${slackError.message}`, repos, slackError);
       });
       return cb(deployError);
     }
@@ -36,7 +36,7 @@ module.exports = (
     ], (err, reposInfo) => {
       deploysController.finish();
       if (err) {
-        logger.error('Error deploying all repos', reposInfo, err);
+        logger.error(`Error deploying all repos: ${err.message}`, summarize(reposInfo), err);
         mapSeries(reposInfo, cleanUpDeploy, cb);
         return;
       }
@@ -57,7 +57,7 @@ module.exports = (
     }
 
     function getBranchStatusForEachRepo(reposInfo, cb) {
-      logger.debug('getBranchStatusForEachRepo', { reposInfo });
+      logger.debug('getBranchStatusForEachRepo', summarize(reposInfo));
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         const devBranch = get(repoInfo, 'config.github.devBranch');
         getBranchStatus(repoInfo.repo, devBranch, (err, sha) => {
@@ -71,7 +71,7 @@ module.exports = (
     }
 
     function createTemporaryBranchesForEachRepo(reposInfo, cb) {
-      logger.debug('createTemporaryBranchesForEachRepo', reposInfo);
+      logger.debug('createTemporaryBranchesForEachRepo', summarize(reposInfo));
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) return nextRepo(null, repoInfo);
         createDeployTemporaryBranch(repoInfo.repo, repoInfo.sha, (err, branch) => {
@@ -85,13 +85,13 @@ module.exports = (
     }
 
     function notifyPreviewSlackIfEnabled(showPreview, reposInfo, verbose, cb) {
-      logger.debug('notifyPreviewSlackIfEnabled', { showPreview, reposInfo, verbose });
+      logger.debug('notifyPreviewSlackIfEnabled', { showPreview, verbose }, summarize(reposInfo));
       if (!showPreview) return cb(null, reposInfo);
       notify(reposInfo, 'preview', verbose, err => cb(err, reposInfo));
     }
 
     function deployEachRepo(reposInfo, cb) {
-      logger.debug('deployEachRepo', reposInfo);
+      logger.debug('deployEachRepo', summarize(reposInfo));
       mapSeries(reposInfo, (repoInfo, nextRepo) => {
         if (repoInfo.failReason) {
           cleanUpDeploy(repoInfo, err => {
@@ -102,8 +102,13 @@ module.exports = (
         else deploy(repoInfo, (err, tag) => {
           // TODO: deserves a refactor
           if (err) {
-            logger.error('Error deploying', repoInfo.repo, err);
-            return nextRepo(null, Object.assign({}, repoInfo, { failReason: 'REPO_DEPLOY_FAILED' }));
+            const failStep = err.deployStep || 'unknown';
+            logger.error(`Error deploying ${repoInfo.repo} at step "${failStep}": ${err.message}`, { branch: repoInfo.branch, sha: repoInfo.sha }, err);
+            return nextRepo(null, Object.assign({}, repoInfo, {
+              failReason: 'REPO_DEPLOY_FAILED',
+              failStep,
+              failMessage: err.message
+            }));
           }
           nextRepo(null, Object.assign({}, repoInfo, { tag }));
         });
@@ -111,9 +116,15 @@ module.exports = (
     }
 
     function notifyRelease(reposInfo, cb) {
-      logger.debug('notifyRelease', reposInfo);
+      logger.debug('notifyRelease', summarize(reposInfo));
       notify(reposInfo, 'release', verbose, err => cb(err, reposInfo));
     }
 
   };
 };
+
+// the full repo info carries the whole repo config: log only what helps debugging
+function summarize(reposInfo) {
+  return (reposInfo || []).map(({ repo, sha, branch, tag, prIds, failReason, failStep, failMessage }) =>
+    ({ repo, sha, branch, tag, prIds, failReason, failStep, failMessage }));
+}
