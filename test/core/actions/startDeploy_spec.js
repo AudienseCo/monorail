@@ -188,6 +188,27 @@ describe('start deploy action', () => {
       should.not.exist(err);
       const firstRepo = notifyStub.firstCall.args[0][0];
       firstRepo.failReason.should.be.eql('REPO_DEPLOY_FAILED');
+      firstRepo.failStep.should.be.eql('unknown');
+      firstRepo.failMessage.should.be.eql('dummy error');
+      done();
+    });
+  });
+
+  it('it should keep the deploy step that failed', (done) => {
+    const notifyStub = createNotifyStub();
+    const deployStub = (repoInfo, cb) => {
+      const err = new Error('Error merging deploy-1 into master: Merge conflict (HTTP 409)');
+      err.deployStep = 'merge';
+      cb(err);
+    };
+    const getReleasePreviewStub = (repoInfo, cb) => cb(null, [{ repo: 'repo1' }]);
+    const startDeploy = createStartDeployWithStubs({ deploy: deployStub, notify: notifyStub, getReleasePreview: getReleasePreviewStub });
+
+    startDeploy({ repos: ['repo1'], showPreview: false }, (err) => {
+      should.not.exist(err);
+      const firstRepo = notifyStub.firstCall.args[0][0];
+      firstRepo.failStep.should.be.eql('merge');
+      firstRepo.failMessage.should.be.eql('Error merging deploy-1 into master: Merge conflict (HTTP 409)');
       done();
     });
   });

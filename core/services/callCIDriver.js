@@ -8,7 +8,7 @@ module.exports = (ciDrivers) => {
     ciDriver(settings, jobName, params, (err, success) => {
       const error = !success && !err ? new Error('CI job failed') : err;
       if (error) {
-        logger.error('CI job failed', { error, driverName, settings, jobName, params });
+        logger.error(`CI job failed: ${error.message}`, { error, driverName, jobName, params });
         return cb(error);
       }
       cb();

@@ -23,16 +23,29 @@ module.exports = (getReleaseTag, build, mergeDeployBranch, releaseInfoLabel, rel
     });
 
     series([
-      (next) => build(repoInfo.branch, repoInfo.sha, repoInfo.deployInfo.jobs, repoInfo.config.deploy, next),
-      (next) => mergeDeployBranch(repoInfo.repo, masterBranch, devBranch, repoInfo.branch, next),
+      (next) => build(repoInfo.branch, repoInfo.sha, repoInfo.deployInfo.jobs, repoInfo.config.deploy, failedAt('build', next)),
+      (next) => mergeDeployBranch(repoInfo.repo, masterBranch, devBranch, repoInfo.branch, failedAt('merge', next)),
       (next) => {
         if (!deployedLabel) return next();
-        releaseInfoLabel.addLabels(repoInfo.repo, releaseInfoList, [deployedLabel], next);
+        releaseInfoLabel.addLabels(repoInfo.repo, releaseInfoList, [deployedLabel], failedAt('labels', next));
       },
       (next) => {
         const body = releaseNotesTemplate(Object.assign({}, repoInfo, { tag }));
-        releaseService.create(repoInfo.repo, tag, body, next);
+        releaseService.create(repoInfo.repo, tag, body, failedAt('release', next));
       }
     ], (err) => cb(err, tag));
+  };
+}
+
+// tags the error with the deploy step that failed, so the notification can tell
+// "nothing was deployed" apart from "deployed but not merged/released"
+function failedAt(step, cb) {
+  return (err, ...results) => {
+    if (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      error.deployStep = step;
+      return cb(error);
+    }
+    cb(null, ...results);
   };
 }

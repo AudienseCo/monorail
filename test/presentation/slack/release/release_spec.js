@@ -47,12 +47,43 @@ describe('Release Slack Notification Template', () => {
         title_link: 'https://github.com/AudienseCo/repo3'
       },
       {
-        text: 'Unhandled error. Monorail didn\'t deploy anything.',
+        text: 'Monorail failed with an unexpected error (another error). Check the monorail logs before deploying again: some services may have been deployed.',
         color: 'danger',
         title: 'repo4',
         title_link: 'https://github.com/AudienseCo/repo4'
       }]
     });
+  });
+
+  it('should tell what happened when the deploy fails at each step', () => {
+    const releaseTemplate = createReleaseTemplate({ github: { user: 'AudienseCo' } });
+    const failed = (failStep) => ({
+      repo: 'repo1',
+      branch: 'deploy-123',
+      failReason: 'REPO_DEPLOY_FAILED',
+      failStep,
+      failMessage: 'Error merging deploy-123 into master: Merge conflict (HTTP 409)'
+    });
+
+    const texts = ['build', 'merge', 'labels', 'release', 'unknown']
+      .map(step => releaseTemplate([failed(step)], [], true).attachments[0]);
+
+    texts[0].text.should.startWith('Deploy failed in the CI job.');
+    texts[1].text.should.startWith('Services were deployed, but Monorail couldn\'t merge the deploy branch `deploy-123` into master and dev');
+    texts[2].text.should.startWith('Services were deployed and merged, but Monorail couldn\'t add the deployed label');
+    texts[3].text.should.startWith('Services were deployed and merged, but Monorail couldn\'t create the GitHub release.');
+    texts[4].text.should.startWith('Deploy failed. Check the monorail logs');
+    texts.forEach(attachment => {
+      attachment.text.should.endWith('\n>Error merging deploy-123 into master: Merge conflict (HTTP 409)');
+      attachment.title.should.be.eql('repo1');
+      attachment.text.should.not.containEql('didn\'t deploy anything');
+    });
+  });
+
+  it('should truncate long deploy errors', () => {
+    const releaseTemplate = createReleaseTemplate({ github: { user: 'AudienseCo' } });
+    const msg = releaseTemplate([{ repo: 'repo1', failReason: 'REPO_DEPLOY_FAILED', failStep: 'build', failMessage: 'x'.repeat(1000) }], [], true);
+    msg.attachments[0].text.should.endWith(`>${'x'.repeat(500)}…`);
   });
 
   it('should generate release template correctly', () => {
